@@ -189,7 +189,7 @@ enum AgentSessionJump {
         let bundleID: String? = switch destination {
         case .app: session.hostBundleID
         // The terminal that is actually running, not Apple's by name.
-        case .terminal: terminalBundleIDs.first { isRunning(bundleID: $0) }
+        case .terminal: runningTerminal(for: session)
         default: nil
         }
         guard let bundleID, let url = applicationURL(bundleID: bundleID)
@@ -559,9 +559,12 @@ enum AgentSessionJump {
 
     @MainActor
     static func open(
-        _ session: AgentSession,
+        _ reported: AgentSession,
         completion reportResult: @escaping @MainActor (OpenResult) -> Void = { _ in }
     ) {
+        // An agent started before Nano's hooks never reports its app or tab;
+        // its process still carries them.
+        let session = AgentProcessProbe.enriched(reported)
         let triesCmux = CmuxSessionJump.shouldTry(session)
         // tmux runs inside a terminal, so it goes before the terminal's own
         // tab: the IDs a terminal exported to the tmux server may be stale.
@@ -685,6 +688,13 @@ enum AgentSessionJump {
         case .terminal:
             if focusOpenTerminal(for: session) {
                 completion(.opened)
+                return
+            }
+            // Bring the session's terminal forward. Opening the project folder
+            // there made a new window, and in whichever terminal came first.
+            if let bundleID = runningTerminal(for: session) {
+                activate(bundleID: bundleID)
+                completion(.hostActivated)
                 return
             }
         case .folder:
@@ -922,7 +932,7 @@ enum AgentSessionJump {
         case .t3: t3BundleID
         case .claude: claudeBundleID
         case .codex: codexBundleID
-        case .terminal: terminalBundleIDs.first { isRunning(bundleID: $0) } ?? "com.apple.Terminal"
+        case .terminal: frontmostRunningTerminal() ?? "com.apple.Terminal"
         case .folder, .app: "com.apple.finder"
         }
     }
@@ -948,7 +958,12 @@ enum AgentSessionJump {
         var all = queries
         if let cwd { all.append(cwd) }
         guard !all.isEmpty else { return false }
-        for bundleID in terminalBundleIDs where isRunning(bundleID: bundleID) {
+        // The session's own terminal first, so a matching title in another
+        // terminal does not win just by coming earlier in the list.
+        let preferred = runningTerminal(for: session)
+        let order = (preferred.map { [$0] } ?? [])
+            + terminalBundleIDs.filter { $0 != preferred && isRunning(bundleID: $0) }
+        for bundleID in order {
             if AgentHostReveal.focus(bundleID: bundleID, titles: all, ignoring: []) {
                 return true
             }
@@ -987,6 +1002,35 @@ enum AgentSessionJump {
                 atPath: $0.appendingPathComponent(sessionID, isDirectory: true).path
             )
         }
+    }
+
+    /// The terminal the session runs in when that is known and running,
+    /// else the running terminal whose window is in front.
+    static func runningTerminal(for session: AgentSession) -> String? {
+        if let reported = session.hostBundleID?.lowercased(),
+           let known = terminalBundleIDs.first(where: { $0.lowercased() == reported }),
+           isRunning(bundleID: known) {
+            return known
+        }
+        return frontmostRunningTerminal()
+    }
+
+    /// The running terminal with the frontmost window. A fixed list order
+    /// picked Terminal.app whenever it happened to be open behind Warp.
+    static func frontmostRunningTerminal() -> String? {
+        let apps = NSWorkspace.shared.runningApplications
+        var byPID: [pid_t: String] = [:]
+        for id in terminalBundleIDs {
+            for app in apps where app.bundleIdentifier == id { byPID[app.processIdentifier] = id }
+        }
+        guard byPID.count > 1 else { return byPID.values.first }
+        // Front to back. Owner PIDs need no Screen Recording consent.
+        let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)
+            as? [[String: Any]] ?? []
+        for window in windows where (window[kCGWindowLayer as String] as? Int) == 0 {
+            if let pid = window[kCGWindowOwnerPID as String] as? pid_t, let id = byPID[pid] { return id }
+        }
+        return terminalBundleIDs.first { id in byPID.values.contains(id) }
     }
 
     private static func isRunning(bundleID: String) -> Bool {
