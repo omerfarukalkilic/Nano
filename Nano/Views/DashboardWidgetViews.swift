@@ -394,7 +394,9 @@ struct DashboardWidget: View {
                 slot: slot
             )
         case .timer:
-            DashboardTimerWidget(store: viewModel.timerStore, slot: slot)
+            DashboardTimerWidget(store: viewModel.timerStore, slot: slot) {
+                viewModel.openModule(.timer)
+            }
         case .cue:
             DashboardCueWidget(store: viewModel.cueStore)
         case .tray:
@@ -1266,6 +1268,7 @@ private struct SegmentRing: View {
 private struct DashboardTimerWidget: View {
     @ObservedObject var store: FocusTimerStore
     let slot: DashboardSlot
+    let openTimer: () -> Void
 
     private var isRunning: Bool { store.state == .running }
 
@@ -1285,6 +1288,7 @@ private struct DashboardTimerWidget: View {
 
     /// The current goal, or what comes after.
     private var nextLabel: String {
+        if let cue = store.cue { return cue.title }
         if store.mode == .rest { return "Then back to it" }
         if let goal = store.nextTask { return goal.title }
         return "Then a \(Int(store.suggestedBreak / 60)) min break"
@@ -1300,14 +1304,21 @@ private struct DashboardTimerWidget: View {
     }
 
     private func toggle() {
-        isRunning ? store.pause() : store.startOrResume()
+        if store.isAwaitingCueDecision {
+            openTimer()
+        } else if isRunning {
+            store.pause()
+        } else {
+            store.startOrResume()
+        }
     }
 
     private var playButton: some View {
         DashboardCircleButton(
-            symbol: isRunning ? "pause.fill" : "play.fill",
-            size: slot == .wide ? 34 : 32,
-            help: isRunning ? "Pause" : "Start",
+            symbol: store.isAwaitingCueDecision ? "arrow.up.right" : (isRunning ? "pause.fill" : "play.fill"),
+            size: slot == .strip ? 28 : (slot == .wide ? 34 : 32),
+            prominent: slot != .strip,
+            help: store.isAwaitingCueDecision ? "Open Timer" : (isRunning ? "Pause" : "Start"),
             action: toggle
         )
     }
@@ -1318,7 +1329,7 @@ private struct DashboardTimerWidget: View {
             HStack {
                 DashboardStyle.label("Timer · \(store.mode.title)", symbol: "timer")
                 Spacer()
-                if !store.tasks.isEmpty {
+                if store.cue == nil, !store.tasks.isEmpty {
                     Text("\(store.completedTaskCount) of \(store.tasks.count) goals")
                         .font(.system(size: 10))
                         .foregroundStyle(DashboardStyle.tertiary)
@@ -1340,6 +1351,7 @@ private struct DashboardTimerWidget: View {
                     Text(nextLabel)
                         .font(.system(size: 10))
                         .foregroundStyle(DashboardStyle.tertiary)
+                        .lineLimit(1)
                 }
                 .padding(.bottom, 6)
             }
@@ -1350,7 +1362,7 @@ private struct DashboardTimerWidget: View {
                 playButton
                 if store.canUndoReset {
                     DashboardPillButton(title: "Undo reset") { store.undoReset() }
-                } else {
+                } else if !store.isAwaitingCueDecision {
                     DashboardPillButton(title: "+5 min") { store.addTime(300) }
                         .help("Add five minutes")
                 }
@@ -1407,8 +1419,10 @@ private struct DashboardTimerWidget: View {
             Spacer(minLength: 8)
             HStack(spacing: 6) {
                 playButton
-                DashboardPillButton(title: "+5") { store.addTime(300) }
-                    .help("Add five minutes")
+                if !store.isAwaitingCueDecision {
+                    DashboardPillButton(title: "+5") { store.addTime(300) }
+                        .help("Add five minutes")
+                }
             }
         }
     }
@@ -1427,13 +1441,7 @@ private struct DashboardTimerWidget: View {
                     .lineLimit(1)
             }
             Spacer(minLength: 0)
-            DashboardCircleButton(
-                symbol: isRunning ? "pause.fill" : "play.fill",
-                size: 28,
-                prominent: false,
-                help: isRunning ? "Pause" : "Start",
-                action: toggle
-            )
+            playButton
         }
     }
 
@@ -1817,19 +1825,16 @@ enum DashboardWidgetOptions {
             return options
         case .timer:
             let store = viewModel.timerStore
-            return [
-                DashboardWidgetOption(title: "Timer", kind: .header),
-                DashboardWidgetOption(title: "Start 25 Minute Session", kind: .action) {
-                    store.startFocus(minutes: 25)
-                },
-                DashboardWidgetOption(title: "Start 50 Minute Session", kind: .action) {
-                    store.startFocus(minutes: 50)
-                },
-                DashboardWidgetOption(title: "Start 90 Minute Session", kind: .action) {
-                    store.startFocus(minutes: 90)
-                },
-                DashboardWidgetOption(title: "Reset Timer", kind: .action) { store.reset() },
-            ]
+            var options = [DashboardWidgetOption(title: "Timer", kind: .header)]
+            if store.cue == nil {
+                options += [25, 50, 90].map { minutes in
+                    DashboardWidgetOption(title: "Start \(minutes) Minute Session", kind: .action) {
+                        store.startFocus(minutes: minutes)
+                    }
+                }
+            }
+            options.append(DashboardWidgetOption(title: "Reset Timer", kind: .action) { store.reset() })
+            return options
         case .agents:
             return [DashboardWidgetOption(title: "Show Quota As", kind: .header)] + UsageDisplayMode.allCases.map { mode in
                 DashboardWidgetOption(title: mode.title, kind: .toggle(settings.usageDisplayMode == mode)) {

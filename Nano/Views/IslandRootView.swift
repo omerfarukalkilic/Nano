@@ -169,7 +169,7 @@ struct IslandRootView: View {
         // unchanged and falls through to the resize spring.
         .animation(islandPhaseMotion, value: viewModel.phase)
         .animation(NanoMotion.islandResize(reduceMotion: reduceMotion), value: islandSize)
-        .accessibilityElement(children: viewModel.phase.isExpanded ? .contain : .combine)
+        .accessibilityElement(children: viewModel.phase.isExpanded || exposesCompactCueFocus ? .contain : .combine)
         .accessibilityLabel(
             viewModel.phase.showsDashboard
                 ? "Nano dashboard"
@@ -177,6 +177,10 @@ struct IslandRootView: View {
                     ? (viewModel.notificationCenter.current?.title ?? "Nano")
                     : "Nano"
         )
+    }
+
+    private var exposesCompactCueFocus: Bool {
+        viewModel.phase == .idleCompact && viewModel.onboardingIsland == nil && viewModel.timerStore.cue != nil
     }
 
     private var chromeIsland: some View {
@@ -516,7 +520,7 @@ private struct CompactIslandView: View {
                 .transition(.nanoSwap(anchor: .leading, scale: 0.94, reduceMotion: reduceMotion))
         } else if timer.state != .idle {
             VStack(alignment: .leading, spacing: 0) {
-                Text(timer.sessionName.nilIfBlank ?? timer.mode.title)
+                Text(timer.displayName.nilIfBlank ?? timer.mode.title)
                     .font(.system(size: 10, weight: .semibold))
                     .lineLimit(1)
                 Text(timerStateLabel)
@@ -647,7 +651,7 @@ private struct CompactIslandView: View {
                 .minimumScaleFactor(0.8)
                 .contentTransition(.numericText(countsDown: true))
                 .animation(.snappy(duration: 0.3), value: timer.formattedRemaining)
-                .accessibilityLabel("\(timer.sessionName.nilIfBlank ?? timer.mode.title), \(timer.formattedRemaining) left")
+                .accessibilityLabel("\(timer.displayName.nilIfBlank ?? timer.mode.title), \(timer.formattedRemaining) left")
         } else if agentsAreShowing, musicIsPlaying {
             NanoArtworkTile(image: media.artwork, size: 18, cornerRadius: 6, symbolSize: 8)
                 .transition(.nanoSwap(anchor: .trailing, scale: 0.94, reduceMotion: reduceMotion))

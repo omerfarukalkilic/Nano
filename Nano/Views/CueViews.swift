@@ -1119,6 +1119,12 @@ private struct CueItemRow: View {
                 .buttonStyle(CueActionStyle(prominent: item.isDone))
                 .help("Copy to the clipboard")
             if !item.isDone {
+                if viewModel.settings.isEnabled(.timer) {
+                    focusButton("Focus \(focusMinutes) min")
+                        .buttonStyle(CueActionStyle())
+                        .opacity(viewModel.canStartCueFocus ? 1 : 0.4)
+                        .help(viewModel.canStartCueFocus ? "Focus on this Cue for \(focusMinutes) minutes" : "Finish or reset the current timer first")
+                }
                 Button("Copy + done") {
                     withAnimation(.snappy(duration: 0.22)) { store.copy(item.id, markDone: true) }
                 }
@@ -1134,6 +1140,9 @@ private struct CueItemRow: View {
     private var menuItems: some View {
         Button("Copy") { store.copy(item.id, markDone: false) }
         if !item.isDone {
+            if viewModel.settings.isEnabled(.timer) {
+                focusButton("Focus for \(focusMinutes) Minutes")
+            }
             Button("Copy + done") { store.copy(item.id, markDone: true) }
             Button("Move to Top") { withAnimation(.snappy(duration: 0.2)) { store.moveToTop(item.id) } }
         }
@@ -1152,6 +1161,15 @@ private struct CueItemRow: View {
         Button("Delete", role: .destructive) {
             withAnimation(.snappy(duration: 0.2)) { store.delete(item.id, undoable: true) }
         }
+    }
+
+    private var focusMinutes: Int {
+        max(Int((viewModel.timerStore.cueFocusLength / 60).rounded()), 1)
+    }
+
+    private func focusButton(_ title: String) -> some View {
+        Button(title) { viewModel.startCueFocus(item.id) }
+            .disabled(!viewModel.canStartCueFocus)
     }
 
     /// A one-time copy to a connected app's list. Only shown once an app is connected.

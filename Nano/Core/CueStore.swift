@@ -206,6 +206,8 @@ final class CueStore: ObservableObject {
     /// Called after the library changes in Cue, and when an Undo offer runs
     /// out. Not called for changes sync applies itself.
     var onChange: (() -> Void)?
+    /// Reports the final items after a save attempt, including sync edits.
+    var onItemsChange: (([CueItem]) -> Void)?
 
     /// Cues sync must leave alone for now: deleted ones whose Undo is still on
     /// offer, and the cues of a deleted folder whose Undo is still on offer.
@@ -781,6 +783,7 @@ final class CueStore: ObservableObject {
     /// Small enough to write whole on every change, and nothing is lost if
     /// Nano quits a moment later.
     func save() {
+        defer { onItemsChange?(items) }
         guard !libraryIsUnreadable else { return }
         do {
             try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
