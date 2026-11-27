@@ -656,6 +656,10 @@ struct AgentSession: Identifiable, Equatable, Sendable {
     var cmuxLocation: CmuxSessionJump.Location? = nil
     /// The Warp terminal session running this session, from its hooks.
     var warpSessionID: String? = nil
+    /// The tmux server and pane running this session, from its hooks.
+    var tmuxLocation: TmuxSessionJump.Location? = nil
+    /// The iTerm2 session running this session, from its hooks.
+    var itermSessionID: String? = nil
 
     /// What to call this session on screen.
     ///
@@ -2115,6 +2119,14 @@ final class AgentSessionStore: ObservableObject {
             session.warpSessionID = state.warpSessionID
             changed = true
         }
+        if session.tmuxLocation != state.tmuxLocation {
+            session.tmuxLocation = state.tmuxLocation
+            changed = true
+        }
+        if session.itermSessionID != state.itermSessionID {
+            session.itermSessionID = state.itermSessionID
+            changed = true
+        }
         if let detail = state.lastToolInputDescription, session.currentActivity != detail {
             session.currentActivity = detail
             changed = true
@@ -2177,6 +2189,8 @@ final class AgentSessionStore: ObservableObject {
         built.hostBundleID = state.hostBundleID
         built.cmuxLocation = state.cmuxLocation
         built.warpSessionID = state.warpSessionID
+        built.tmuxLocation = state.tmuxLocation
+        built.itermSessionID = state.itermSessionID
         built.startedAt = state.firstSeen
         // The same silence rule as `merge`. A disk scan rebuilds the list
         // without hook-only sessions, and this path puts them back, so
@@ -4394,6 +4408,8 @@ enum AgentSessionParsers {
         if winner.hostBundleID == nil { winner.hostBundleID = other.hostBundleID }
         if winner.cmuxLocation == nil { winner.cmuxLocation = other.cmuxLocation }
         if winner.warpSessionID == nil { winner.warpSessionID = other.warpSessionID }
+        if winner.tmuxLocation == nil { winner.tmuxLocation = other.tmuxLocation }
+        if winner.itermSessionID == nil { winner.itermSessionID = other.itermSessionID }
         if winner.gitBranch == nil { winner.gitBranch = other.gitBranch }
         if winner.startedAt == nil { winner.startedAt = other.startedAt }
         if winner.contextWindow == nil { winner.contextWindow = other.contextWindow }
