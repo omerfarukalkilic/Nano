@@ -222,6 +222,13 @@ final class IslandViewModel: ObservableObject {
     }()
     lazy var modelPricing = NanoModelPricing()
     lazy var tokenLedger = TokenLedger(resolver: modelPricing)
+    /// Sounds and reminders for agent cards.
+    lazy var agentAlerts = AgentAlertCenter(
+        preferences: { [unowned self] in settings.agentAlerts },
+        isPending: { [unowned self] id in hookBridge.pending.contains { $0.id == id } },
+        represent: { [weak self] attention in self?.routeNotification(.agent(attention)) }
+    )
+
     lazy var sessionStore: AgentSessionStore = {
         let store = AgentSessionStore()
         // The session count drives the module's height, and this view model owns
@@ -1860,6 +1867,7 @@ final class IslandViewModel: ObservableObject {
             let context = AgentProviderRegistry.notificationContext(source: attention.source, host: live?.host,
                 explicitBundleID: live?.hostBundleID, sessionTitle: session?.displayName)
             notificationRouter.receiveAgent(attention, context: context)
+            agentAlerts.didPresent(attention)
         }
         if phase.showsDashboard, notification.source.docksBelowDashboard {
             notificationCenter.present(notification)
