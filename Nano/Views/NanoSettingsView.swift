@@ -1908,6 +1908,15 @@ private struct AgentSettingsPane: View {
                         .toggleStyle(HeroSwitchToggleStyle(showsLabel: false))
                 }
                 .settingsAnchor("agents.codexApprovals")
+                SettingsToggleRow(
+                    "Open sessions in cmux",
+                    subtitle: CmuxSessionJump.isInstalled
+                        ? "Jumps to the exact cmux tab running the session. In cmux, set Settings › Automation › Socket Control to Automation so Nano can reach it."
+                        : "cmux isn't installed.",
+                    isOn: $settings.opensSessionsInCmux
+                )
+                .disabled(!CmuxSessionJump.isInstalled)
+                .settingsAnchor("agents.cmux")
             }
 
             SettingsCard {

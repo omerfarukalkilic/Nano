@@ -177,6 +177,8 @@ final class AgentHookBridge: ObservableObject {
         /// Grok, Codex, and other agents.
         var host: AgentSessionJump.Host? = nil
         var hostBundleID: String? = nil
+        /// The cmux workspace and tab the agent runs in, when it runs in cmux.
+        var cmuxLocation: CmuxSessionJump.Location? = nil
         var workingDirectory: String?
         /// Supplied by the agent, so the right transcript is known without
         /// enumerating a directory to guess at it.
@@ -432,6 +434,9 @@ final class AgentHookBridge: ObservableObject {
         var event = payload["event"] as? [String: Any] ?? [:]
         if event["host_bundle_id"] == nil, let host = payload["host_bundle_id"] as? String {
             event["host_bundle_id"] = host
+        }
+        for key in ["cmux_workspace_id", "cmux_surface_id"] where event[key] == nil {
+            if let value = payload[key] as? String, !value.isEmpty { event[key] = value }
         }
         // Devin's payloads carry no cwd; the bridge script adds the agent's
         // DEVIN_PROJECT_DIR at the top level so the session still gets a
@@ -798,6 +803,13 @@ final class AgentHookBridge: ObservableObject {
         if let bundleID = event["host_bundle_id"] as? String, !bundleID.isEmpty {
             state.hostBundleID = bundleID.lowercased()
         }
+        // Every bridge hook reports the pair, empty outside cmux. A session
+        // resumed somewhere else loses its old tab here instead of jumping
+        // back to it.
+        state.cmuxLocation = CmuxSessionJump.location(
+            workspaceID: event["cmux_workspace_id"] as? String,
+            surfaceID: event["cmux_surface_id"] as? String
+        )
         if let cwd = (event["cwd"] as? String) ?? (event["workspaceRoot"] as? String),
            !cwd.isEmpty {
             state.workingDirectory = cwd
@@ -2281,6 +2293,11 @@ final class AgentHookBridge: ObservableObject {
     # that delegated it, so the island folds the child into that parent.
     parent=$(printf '%s' "${NANO_PARENT_SESSION_ID:-}" | tr -cd 'A-Za-z0-9._:-')
 
+    # cmux names the workspace and tab every terminal it owns runs in, so the
+    # island can focus that exact tab when the user opens the session.
+    cmux_workspace=$(printf '%s' "${CMUX_WORKSPACE_ID:-}" | tr -cd 'A-Fa-f0-9-')
+    cmux_surface=$(printf '%s' "${CMUX_SURFACE_ID:-}" | tr -cd 'A-Fa-f0-9-')
+
     # Devin's hook payloads carry no cwd; it exports DEVIN_PROJECT_DIR to hook
     # processes instead. Escape the two characters JSON strings cannot hold
     # verbatim so the path survives as a value.
@@ -2290,8 +2307,8 @@ final class AgentHookBridge: ObservableObject {
     # (Claude in bypass mode approves a command while its PermissionRequest
     # hook is still running) kills them, and the island retracts the card.
     # The socket cannot say so: nc half-closes as soon as it has sent.
-    reply=$(printf '{"token":"%s","source":"%s","host_bundle_id":"%s","project_dir":"%s","parent_session_id":"%s","hook_pids":[%s,%s],"event":%s}\\n' \\
-      "$token" "$source" "$host" "$project_dir" "$parent" "$$" "$PPID" "$payload" | nc -U "$sock" 2>/dev/null)
+    reply=$(printf '{"token":"%s","source":"%s","host_bundle_id":"%s","project_dir":"%s","parent_session_id":"%s","cmux_workspace_id":"%s","cmux_surface_id":"%s","hook_pids":[%s,%s],"event":%s}\\n' \\
+      "$token" "$source" "$host" "$project_dir" "$parent" "$cmux_workspace" "$cmux_surface" "$$" "$PPID" "$payload" | nc -U "$sock" 2>/dev/null)
 
     if [ -n "$reply" ]; then echo "$reply"; else echo '{}'; fi
     exit 0
