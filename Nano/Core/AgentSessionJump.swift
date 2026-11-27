@@ -563,16 +563,24 @@ enum AgentSessionJump {
         completion reportResult: @escaping @MainActor (OpenResult) -> Void = { _ in }
     ) {
         let triesCmux = CmuxSessionJump.shouldTry(session)
-        let triesWarp = WarpSessionJump.shouldTry(session)
-        guard triesCmux || triesWarp else {
+        // tmux runs inside a terminal, so it goes before the terminal's own
+        // tab: the IDs a terminal exported to the tmux server may be stale.
+        let triesTmux = TmuxSessionJump.shouldTry(session)
+        let triesITerm = !triesTmux && ITermSessionJump.shouldTry(session)
+        let triesWarp = !triesTmux && WarpSessionJump.shouldTry(session)
+        guard triesCmux || triesTmux || triesITerm || triesWarp else {
             openInHost(session, completion: reportResult)
             return
         }
-        // cmux and Warp know the exact tab. When neither holds this session,
+        // These know the exact tab or pane. When none holds this session,
         // or it refuses Nano, the usual host routing still applies.
         Task { @MainActor in
             if triesCmux,
                await CmuxSessionJump.focus(sessionID: session.id, reported: session.cmuxLocation) {
+                reportResult(.opened)
+            } else if triesTmux, await TmuxSessionJump.focus(session) {
+                reportResult(.opened)
+            } else if triesITerm, await ITermSessionJump.focus(session) {
                 reportResult(.opened)
             } else if triesWarp, await WarpSessionJump.focus(session) {
                 reportResult(.opened)
