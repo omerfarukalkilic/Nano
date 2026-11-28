@@ -3070,9 +3070,9 @@ struct AgentUsagePill: View {
     /// its duration. A provider's own feature name is kept when it has one.
     static func canonicalLabel(_ window: NanoUsageWindow) -> String {
         let seconds = span(of: window)
-        guard seconds != .max else { return window.label }
+        guard seconds != .max else { return NanoUsageFormat.localizedLabel(window.label) }
 
-        let duration = NanoUsageFormat.windowLabel(seconds: seconds)
+        let duration = NanoUsageFormat.localizedWindowLabel(seconds: seconds)
         guard let feature = featureName(in: window.label) else { return duration }
         return "\(feature) \(duration)"
     }
@@ -3150,7 +3150,7 @@ struct AgentUsagePill: View {
     private static func short(_ label: String) -> String {
         switch label {
         case "Cursor Models": return "Cursor"
-        case "Other Models": return String(localized: "Other")
+        case "Other Models", String(localized: "Other Models"): return String(localized: "Other")
         default: break
         }
         guard label.count > 12 else { return label }

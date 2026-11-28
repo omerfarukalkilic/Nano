@@ -195,12 +195,13 @@ struct AgentSubagentEntry: Identifiable, Equatable, Sendable {
     /// width as the seconds roll over.
     static func duration(from start: Date, to end: Date, padded: Bool) -> String {
         let seconds = max(Int(end.timeIntervalSince(start)), 0)
-        if seconds < 60 { return "\(seconds)s" }
+        if seconds < 60 { return String(localized: "\(seconds)s") }
         if seconds < 3600 {
             let rest = seconds % 60
-            return "\(seconds / 60)m \(padded && rest < 10 ? "0" : "")\(rest)s"
+            let restText = padded && rest < 10 ? "0\(rest)" : "\(rest)"
+            return String(localized: "\(seconds / 60)m \(restText)s")
         }
-        return "\(seconds / 3600)h \((seconds % 3600) / 60)m"
+        return String(localized: "\(seconds / 3600)h \((seconds % 3600) / 60)m")
     }
 }
 
@@ -795,13 +796,14 @@ struct AgentSession: Identifiable, Equatable, Sendable {
         }
     }
 
-    /// Compact age: "now", "4m", "2h", "3d".
+    /// Compact age: "now", "4m", "2h", "3d". "now" is a marker callers swap
+    /// for their own wording, so only the counted forms are translated.
     static func age(since date: Date, now: Date = Date()) -> String {
         let seconds = Int(now.timeIntervalSince(date))
         if seconds < 45 { return "now" }
-        if seconds < 3600 { return "\(seconds / 60)m" }
-        if seconds < 86_400 { return "\(seconds / 3600)h" }
-        return "\(seconds / 86_400)d"
+        if seconds < 3600 { return String(localized: "\(seconds / 60)m") }
+        if seconds < 86_400 { return String(localized: "\(seconds / 3600)h") }
+        return String(localized: "\(seconds / 86_400)d")
     }
 
     /// Needs you, then Working, then Done, then Idle; newest first in each.

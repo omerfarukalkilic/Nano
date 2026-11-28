@@ -59,9 +59,33 @@ enum NanoUsageFormat {
         let days = total / 86_400
         let hours = (total % 86_400) / 3_600
         let minutes = (total % 3_600) / 60
-        if days > 0 { return hours > 0 ? "\(days)d\(hours)h" : "\(days)d" }
-        if hours > 0 { return minutes > 0 ? "\(hours)h\(minutes)m" : "\(hours)h" }
-        return "\(minutes)m"
+        if days > 0 { return hours > 0 ? String(localized: "\(days)d\(hours)h") : String(localized: "\(days)d") }
+        if hours > 0 { return minutes > 0 ? String(localized: "\(hours)h\(minutes)m") : String(localized: "\(hours)h") }
+        return String(localized: "\(minutes)m")
+    }
+
+    /// `windowLabel` for display. The plain label is data that `span(of:)`
+    /// parses back, so it stays English and only this copy is translated.
+    static func localizedWindowLabel(seconds: Int) -> String {
+        guard seconds > 0 else { return String(localized: "Window") }
+        if seconds < 172_800, seconds % 3_600 == 0 { return String(localized: "\(seconds / 3_600)h") }
+        if seconds % 86_400 == 0 { return String(localized: "\(seconds / 86_400)d") }
+        if seconds % 3_600 == 0 { return String(localized: "\(seconds / 3_600)h") }
+        if seconds % 60 == 0 { return String(localized: "\(seconds / 60)m") }
+        return String(localized: "\(seconds)s")
+    }
+
+    /// Provider labels that name a period or pool rather than a feature.
+    static func localizedLabel(_ label: String) -> String {
+        switch label {
+        case "Window": String(localized: "Window")
+        case "Weekly": String(localized: "Weekly")
+        case "Daily": String(localized: "Daily")
+        case "Monthly": String(localized: "Monthly")
+        case "Credits": String(localized: "Credits")
+        case "Other Models": String(localized: "Other Models")
+        default: label
+        }
     }
 }
 

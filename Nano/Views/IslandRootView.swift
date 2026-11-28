@@ -807,7 +807,37 @@ private struct CompactIslandView: View {
     }
 
     private func activityLabel(_ snapshot: AgentProviderSnapshot) -> String {
-        snapshot.activityDetail ?? String(localized: "Working")
+        snapshot.activityDetail.map(Self.localizedActivity) ?? String(localized: "Working")
+    }
+
+    /// Activity details stay English in the model because the symbol above is
+    /// picked from their verb, so they are translated only for display.
+    static func localizedActivity(_ detail: String) -> String {
+        switch detail {
+        case "Editing files": return String(localized: "Editing files")
+        case "Reading files": return String(localized: "Reading files")
+        case "Searching files": return String(localized: "Searching files")
+        case "Searching the web": return String(localized: "Searching the web")
+        case "Running a command": return String(localized: "Running a command")
+        case "Using a tool": return String(localized: "Using a tool")
+        case "Delegating to a subagent": return String(localized: "Delegating to a subagent")
+        case "Thinking": return String(localized: "Thinking")
+        case "Writing a response": return String(localized: "Writing a response")
+        default: break
+        }
+        let verbs: [(String, (String) -> String)] = [
+            ("Editing ", { String(localized: "Editing \($0)") }),
+            ("Reading ", { String(localized: "Reading \($0)") }),
+            ("Running ", { String(localized: "Running \($0)") }),
+            ("Searching ", { String(localized: "Searching \($0)") }),
+            ("Using ", { String(localized: "Using \($0)") }),
+            ("Delegating ", { String(localized: "Delegating \($0)") }),
+            ("Writing ", { String(localized: "Writing \($0)") }),
+        ]
+        for (prefix, format) in verbs where detail.hasPrefix(prefix) {
+            return format(String(detail.dropFirst(prefix.count)))
+        }
+        return detail
     }
 
     private func activitySymbol(_ snapshot: AgentProviderSnapshot) -> String {

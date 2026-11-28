@@ -1631,6 +1631,16 @@
         }
       }
     },
+    "%lldd%lldh": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld g %lld sa"
+          }
+        }
+      }
+    },
     "%lldh": {
       "localizations": {
         "tr": {
@@ -1681,6 +1691,16 @@
         }
       }
     },
+    "%lldh%lldm": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld sa %lld dk"
+          }
+        }
+      }
+    },
     "%lldm": {
       "localizations": {
         "tr": {
@@ -1691,12 +1711,32 @@
         }
       }
     },
+    "%lldm %@s": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld dk %@ sn"
+          }
+        }
+      }
+    },
     "%lldm ago": {
       "localizations": {
         "tr": {
           "stringUnit": {
             "state": "translated",
             "value": "%lld dk önce"
+          }
+        }
+      }
+    },
+    "%llds": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld sn"
           }
         }
       }
@@ -5654,6 +5694,16 @@
         }
       }
     },
+    "Credits": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kredi"
+          }
+        }
+      }
+    },
     "Cross off": {
       "localizations": {
         "tr": {
@@ -5824,6 +5874,16 @@
         }
       }
     },
+    "Daily": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günlük"
+          }
+        }
+      }
+    },
     "Daily cost for the last 14 days": {
       "localizations": {
         "tr": {
@@ -5880,6 +5940,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Devretti: %@"
+          }
+        }
+      }
+    },
+    "Delegating %@": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devrediliyor: %@"
+          }
+        }
+      }
+    },
+    "Delegating to a subagent": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alt agent'a devrediliyor"
           }
         }
       }
@@ -6610,6 +6690,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Düzenledi"
+          }
+        }
+      }
+    },
+    "Editing %@": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Düzenleniyor: %@"
+          }
+        }
+      }
+    },
+    "Editing files": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dosyalar düzenleniyor"
           }
         }
       }
@@ -9876,6 +9976,16 @@
         }
       }
     },
+    "Monthly": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aylık"
+          }
+        }
+      }
+    },
     "More": {
       "localizations": {
         "tr": {
@@ -12366,6 +12476,16 @@
         }
       }
     },
+    "Other Models": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diğer Modeller"
+          }
+        }
+      }
+    },
     "Other app…": {
       "localizations": {
         "tr": {
@@ -13706,12 +13826,32 @@
         }
       }
     },
+    "Reading %@": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Okunuyor: %@"
+          }
+        }
+      }
+    },
     "Reading audio device": {
       "localizations": {
         "tr": {
           "stringUnit": {
             "state": "translated",
             "value": "Ses aygıtını okuma"
+          }
+        }
+      }
+    },
+    "Reading files": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dosyalar okunuyor"
           }
         }
       }
@@ -14816,6 +14956,26 @@
         }
       }
     },
+    "Running %@": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çalıştırılıyor: %@"
+          }
+        }
+      }
+    },
+    "Running a command": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Komut çalıştırılıyor"
+          }
+        }
+      }
+    },
     "Runs as admin": {
       "localizations": {
         "tr": {
@@ -15052,6 +15212,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aradı"
+          }
+        }
+      }
+    },
+    "Searching %@": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aranıyor: %@"
+          }
+        }
+      }
+    },
+    "Searching files": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dosyalarda aranıyor"
+          }
+        }
+      }
+    },
+    "Searching the web": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Web'de aranıyor"
           }
         }
       }
@@ -18596,6 +18786,26 @@
         }
       }
     },
+    "Using %@": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanılıyor: %@"
+          }
+        }
+      }
+    },
+    "Using a tool": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Araç kullanılıyor"
+          }
+        }
+      }
+    },
     "Verbatim": {
       "localizations": {
         "tr": {
@@ -19122,6 +19332,16 @@
         }
       }
     },
+    "Weekly": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haftalık"
+          }
+        }
+      }
+    },
     "Welcome": {
       "localizations": {
         "tr": {
@@ -19482,6 +19702,16 @@
         }
       }
     },
+    "Window": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pencere"
+          }
+        }
+      }
+    },
     "Without hooks, Nano sees sessions but can't show approvals or questions.": {
       "localizations": {
         "tr": {
@@ -19638,6 +19868,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yazım"
+          }
+        }
+      }
+    },
+    "Writing %@": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yazılıyor: %@"
+          }
+        }
+      }
+    },
+    "Writing a response": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yanıt yazılıyor"
           }
         }
       }
