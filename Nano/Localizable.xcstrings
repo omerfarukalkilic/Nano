@@ -167,7 +167,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yapılacak, istem veya ekran görüntüsü kaydetmek için herhangi bir uygulamada %@. Bu sayfa kullandıkça dolar."
+            "value": "Herhangi bir uygulamada %@ ile yapılacak, prompt veya ekran görüntüsü kaydedilir. Bu sayfa kullandıkça dolar."
           }
         }
       }
@@ -318,7 +318,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ yanıtını başka bir yerden aldı"
+            "value": "%@ başka yerden yanıtlandı"
           }
         }
       }
@@ -350,7 +350,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ · taşımak için sürükleyin, değiştirmek için tıklayın"
+            "value": "%@ · taşımak için sürükle, değiştirmek için tıkla"
           }
         }
       }
@@ -423,7 +423,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld agent yanıtını bekliyor"
+            "value": "%lld agent yanıt bekliyor"
           }
         }
       }
@@ -503,7 +503,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld kayıtlı"
+            "value": "%lld kayıt"
           }
         }
       }
@@ -799,7 +799,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bağlı klasör, projesinin yolunu gösterir"
+            "value": "Bağlı klasörde proje yolu görünür"
           }
         }
       }
@@ -809,7 +809,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quill'in duyup senin istediğin gibi yazması gereken bir ad ya da kelime. Biliyorsan neyle karıştırdığını da ekle."
+            "value": "Quill'in tanıyıp senin istediğin gibi yazacağı bir ad ya da kelime. Biliyorsan neyle karıştırdığını da ekle."
           }
         }
       }
@@ -829,7 +829,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ko-fi üzerinden tek seferlik bir bağış, Nano'yu ve yaptığım diğer araçları geliştirmeye devam etmeme yardımcı olur. Hiçbir zaman gerekli değil, Nano her iki durumda da aynı şekilde çalışır; ama her bağış için çok teşekkür ederim."
+            "value": "Ko-fi'den yapacağın tek seferlik bir bağış, Nano'yu ve diğer araçlarımı geliştirmeye devam etmemi sağlar. Zorunlu değil; Nano her durumda aynı şekilde çalışır. Ama her bağış benim için çok değerli."
           }
         }
       }
@@ -859,7 +859,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ üzerinde bir test isteği bekliyor. İzin Ver'e veya Reddet'e bas. Hiçbir şey çalışmayacak."
+            "value": "%@ üzerinde bir test isteği bekliyor. İzin Ver'e ya da Reddet'e bas; hiçbir şey çalıştırılmaz."
           }
         }
       }
@@ -889,7 +889,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "API eşdeğeri tahmin, abonelik faturanız değil."
+            "value": "API karşılığı tahmin; abonelik faturası değil."
           }
         }
       }
@@ -919,7 +919,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uygulamaya uyum sağla"
+            "value": "Uygulamaya göre uyarla"
           }
         }
       }
@@ -969,7 +969,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bir hedef ekleyin, ardından Return'e basın"
+            "value": "Hedef ekle ve Return'e bas"
           }
         }
       }
@@ -1019,7 +1019,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aşağıdan bir tane ekle. O zamana kadar cue'lar Gelen Kutusu'na gider."
+            "value": "Aşağıdan eklenebilir. O zamana kadar cue'lar Gelen Kutusu'na gider."
           }
         }
       }
@@ -1069,7 +1069,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nano'nun hook'larını seninkilerin yanına ekler. Yedek: .nano-bak"
+            "value": "Nano'nun hook'larını mevcut hook'ların yanına ekler. Yedek: .nano-bak"
           }
         }
       }
@@ -1079,7 +1079,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nano'nun hook'larını %@ öğesine ekler"
+            "value": "Nano'nun hook'larını şuraya ekler: %@"
           }
         }
       }
@@ -1109,7 +1109,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kaydettikten sonra odak, bulunduğun uygulamaya geri döner."
+            "value": "Kaydedince odak önceki uygulamaya döner."
           }
         }
       }
@@ -1129,7 +1129,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Agent istemleri temizlenir, shell komutları söylendiği gibi yazılır, sohbette nokta konmaz, e-posta selamlamaları ayrı satıra gelir"
+            "value": "Agent prompt'ları düzenlenir, shell komutları söylendiği gibi kalır, sohbette sona nokta konmaz, e-postada selamlama ayrı satıra geçer"
           }
         }
       }
@@ -1139,7 +1139,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Agent güncellemeleri altı saniye görünür. Onaylar ve sorular sen yanıtlayana kadar kalır."
+            "value": "Agent güncellemeleri altı saniye görünür. Onaylar ve sorular yanıtlanana kadar kalır."
           }
         }
       }
@@ -1159,7 +1159,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nano'nun bu Mac'te bulamadığı agent'lar listelenmez. Codex, olay göndermeden önce yeni hook'ları /hooks ile onaylamanı isteyebilir."
+            "value": "Nano'nun bu Mac'te bulamadığı agent'lar listelenmez. Codex, olay göndermeden önce yeni hook'ların /hooks ile onaylanmasını isteyebilir."
           }
         }
       }
@@ -1209,7 +1209,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bir limit azaldığında uyar"
+            "value": "Limit azaldığında uyar"
           }
         }
       }
@@ -1249,7 +1249,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bunların hepsi ücretsiz."
+            "value": "Hepsi ücretsiz."
           }
         }
       }
@@ -1279,7 +1279,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kişiler'e izin ver"
+            "value": "Kişiler'e İzin Ver"
           }
         }
       }
@@ -1329,7 +1329,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Şöyle de duyulabilir (isteğe bağlı)"
+            "value": "Yanlış duyulan hâli (isteğe bağlı)"
           }
         }
       }
@@ -1339,7 +1339,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bir agent yanıtını bekliyor"
+            "value": "Bir agent yanıt bekliyor"
           }
         }
       }
@@ -1349,7 +1349,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tek bir uygulamaya ait giriş, o uygulamada aynı ifadeye sahip tüm-uygulamalar girişini geçersiz kılar."
+            "value": "Bir uygulamaya özel giriş, o uygulamada aynı ifadeli genel girişin yerine geçer."
           }
         }
       }
@@ -1409,7 +1409,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mixer'da ayarladığınız uygulamalar burada görünür."
+            "value": "Mixer'da ayarlanan uygulamalar burada görünür."
           }
         }
       }
@@ -1419,7 +1419,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Soru soruyor"
+            "value": "Soru sorduğunda"
           }
         }
       }
@@ -1549,7 +1549,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mola · biraz uzaklaşın"
+            "value": "Mola · biraz uzaklaş"
           }
         }
       }
@@ -1559,7 +1559,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mola · sonra %@ işine dönüş"
+            "value": "Mola · sonra: %@"
           }
         }
       }
@@ -1619,7 +1619,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yakala"
+            "value": "Yakalama"
           }
         }
       }
@@ -1639,7 +1639,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Şuna dönüştür"
+            "value": "Türünü değiştir"
           }
         }
       }
@@ -1719,7 +1719,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Şimdi denetle"
+            "value": "Şimdi Denetle"
           }
         }
       }
@@ -1739,7 +1739,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kullanım her yenilendiğinde denetlenir. Sıfırlanana kadar pencere başına bir uyarı."
+            "value": "Kullanım her yenilendiğinde kontrol edilir. Her pencere için sıfırlanana kadar tek uyarı verilir."
           }
         }
       }
@@ -1749,7 +1749,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dosya seç…"
+            "value": "Dosya Seç…"
           }
         }
       }
@@ -1779,7 +1779,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude yapılandırma klasörü"
+            "value": "Claude config klasörü"
           }
         }
       }
@@ -1829,7 +1829,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Temizleme"
+            "value": "Düzenleme"
           }
         }
       }
@@ -1859,7 +1859,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tamamlananları temizle…"
+            "value": "Tamamlananları Temizle…"
           }
         }
       }
@@ -1879,7 +1879,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ öğesini yerleştirmek için vurgulanan bir yuvaya tıklayın."
+            "value": "%@ için vurgulanan bir yuvaya tıkla."
           }
         }
       }
@@ -1889,7 +1889,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Süre yazmak için tıklayın, örneğin 90 veya 1:30"
+            "value": "Süre girmek için tıkla (ör. 90 veya 1:30)"
           }
         }
       }
@@ -1899,7 +1899,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Panoyu kapat"
+            "value": "Dashboard'u Kapat"
           }
         }
       }
@@ -1979,7 +1979,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Onayları ve soruları çentikten yanıtlamak için bunları bağlayın."
+            "value": "Bağlanırsa onaylar ve sorular çentikten yanıtlanabilir."
           }
         }
       }
@@ -1989,7 +1989,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bağlandı"
+            "value": "Bağlı"
           }
         }
       }
@@ -2029,7 +2029,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Devam et"
+            "value": "Devam Et"
           }
         }
       }
@@ -2059,7 +2059,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bir kodlama agent'ına bir uygulamaya Cue eşzamanlamasını nasıl ekleyeceğini anlatan bir Markdown rehberi kopyalar"
+            "value": "Bir uygulamaya Cue eşzamanlamasının nasıl ekleneceğini kodlama agent'ına anlatan Markdown rehberini kopyalar"
           }
         }
       }
@@ -2109,7 +2109,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kurulum rehberini kopyala"
+            "value": "Kurulum Rehberini Kopyala"
           }
         }
       }
@@ -2169,7 +2169,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ üstünü çiz"
+            "value": "Üstünü çiz: %@"
           }
         }
       }
@@ -2189,7 +2189,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Geçerli"
+            "value": "Burada"
           }
         }
       }
@@ -2219,7 +2219,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pano"
+            "value": "Dashboard"
           }
         }
       }
@@ -2339,7 +2339,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bağlantıyı kes"
+            "value": "Bağlantıyı Kes"
           }
         }
       }
@@ -2369,7 +2369,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ekran"
+            "value": "Görünüm"
           }
         }
       }
@@ -2429,7 +2429,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ öğesini panoya sürükleyin veya almak için tıklayın"
+            "value": "%@ öğesini panoya sürükle ya da seçmek için tıkla"
           }
         }
       }
@@ -2439,7 +2439,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nano'yu listeye sürükleyin"
+            "value": "Nano'yu listeye sürükle"
           }
         }
       }
@@ -2459,7 +2459,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bir dosya, bağlantı veya görüntüyü çentiğe sürükleyin"
+            "value": "Çentiğe dosya, bağlantı veya görsel sürükle"
           }
         }
       }
@@ -2469,7 +2469,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tutulan her şeyi tek seferde sürükle"
+            "value": "Hepsini birlikte sürükle"
           }
         }
       }
@@ -2479,7 +2479,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Özellikleri yuvalara sürükle ya da seçmek için bir yuvaya tıkla."
+            "value": "Özellikleri yuvalara sürükle ya da bir yuvaya tıklayıp seç."
           }
         }
       }
@@ -2559,7 +2559,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Her eklenti açıkken kenar çubuğunda kendi sayfasını alır."
+            "value": "Açık olan her eklentinin kenar çubuğunda kendi sayfası olur."
           }
         }
       }
@@ -2609,7 +2609,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Boş %@ yuvası · özellik seçmek için tıklayın"
+            "value": "Boş %@ yuvası · özellik seçmek için tıkla"
           }
         }
       }
@@ -2689,7 +2689,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Oturum adı girin"
+            "value": "Oturum adı"
           }
         }
       }
@@ -2699,7 +2699,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Standart API liste fiyatlarıyla tahmini token maliyeti, abonelik faturanız değil. İstek başına uzun bağlam ve hizmet katmanı ayarlamaları, araç ücretleri ve önbellek depolaması dahil değildir."
+            "value": "Standart API liste fiyatlarıyla tahmini token maliyeti; abonelik faturası değil. İstek başına uzun bağlam ve hizmet katmanı farkları, araç ücretleri ve önbellek depolama dahil değildir."
           }
         }
       }
@@ -2719,7 +2719,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Island'ı kendiliğinden açan olaylar. Canlı görmek için bir önizlemeye tıkla."
+            "value": "Island'ı kendiliğinden açan olaylar. Canlı görmek için önizlemeye tıkla."
           }
         }
       }
@@ -2759,7 +2759,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Buradaki her şey tamamlandı."
+            "value": "Hepsi tamamlandı."
           }
         }
       }
@@ -2809,7 +2809,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "FaceTime ve iPhone aramalarında, macOS banner'ı açıkken kimin aradığı gösterilir. Aramayı o banner'dan yanıtla ya da reddet; macOS bunun için başka bir yol sunmuyor. FaceTime'ı açmak için karta dokun. Bunu kapatmak için FaceTime'ı veya Telefon'u aşağıdaki Sessize alınan uygulamalar listesine ekle."
+            "value": "FaceTime ve iPhone aramalarında, macOS banner'ı açıkken arayanın kim olduğu gösterilir. Yanıtlamak ya da reddetmek için o banner'ı kullan; macOS başka bir yol sunmuyor. Karta tıklayınca FaceTime açılır. Kapatmak için FaceTime'ı veya Telefon'u aşağıdaki Sessize alınan uygulamalar listesine ekle."
           }
         }
       }
@@ -2829,7 +2829,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Özellikler yalnızca kendileri için tasarlanmış yuva boyutlarında görünür. Birini kaldırmak için × simgesine tıklayın."
+            "value": "Her özellik yalnızca kendisi için tasarlanmış yuva boyutlarında görünür. Kaldırmak için × işaretine tıkla."
           }
         }
       }
@@ -2869,7 +2869,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Konumun bulunuyor…"
+            "value": "Konum bulunuyor…"
           }
         }
       }
@@ -2899,7 +2899,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Önce geçerli zamanlayıcıyı bitir veya sıfırla"
+            "value": "Önce çalışan zamanlayıcıyı bitir ya da sıfırla"
           }
         }
       }
@@ -2909,7 +2909,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bitti"
+            "value": "Bittiğinde"
           }
         }
       }
@@ -2919,7 +2919,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ için uygun"
+            "value": "Uygun yuva: %@"
           }
         }
       }
@@ -2939,7 +2939,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld dakika bu Cue'ya odaklan"
+            "value": "Bu cue'ya %lld dakika odaklan"
           }
         }
       }
@@ -3039,7 +3039,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Her uygulamaya kendi ses düzeyini ver"
+            "value": "Her uygulamaya ayrı ses düzeyi"
           }
         }
       }
@@ -3049,7 +3049,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Her uygulamaya kendi ses düzeyini verin."
+            "value": "Her uygulamaya ayrı ses düzeyi."
           }
         }
       }
@@ -3059,7 +3059,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "İstem kitaplığı veya bir gün yapılacaklar listesi için uygun."
+            "value": "İstem kitaplığı ya da “bir gün” listesi için."
           }
         }
       }
@@ -3069,7 +3069,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "İzin ver"
+            "value": "İzin Ver"
           }
         }
       }
@@ -3079,7 +3079,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Verildi"
+            "value": "İzin verildi"
           }
         }
       }
@@ -3209,7 +3209,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ tuşunu basılı tut ve konuş. Nano kelimeleri ve süreyi sayar, kelimelerin kendisini asla saklamaz."
+            "value": "%@ tuşunu basılı tut ve konuş. Nano kelime sayısını ve süreyi tutar, söylediklerini asla tutmaz."
           }
         }
       }
@@ -3219,7 +3219,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bir kısayolu basılı tut, konuş, metin yapışsın. Her şey bu Mac'te çalışır."
+            "value": "Kısayolu basılı tut ve konuş; metin yapıştırılır. Her şey bu Mac'te çalışır."
           }
         }
       }
@@ -3229,7 +3229,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kısayolu basılı tut, konuş, bırak. Sözlerin buraya düşer."
+            "value": "Kısayolu basılı tut, konuş, bırak. Söylediklerin buraya yazılır."
           }
         }
       }
@@ -3239,7 +3239,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Panodakini tut: dosyalar, bağlantı, görüntü veya metin"
+            "value": "Panodakini tut: dosya, bağlantı, görsel veya metin"
           }
         }
       }
@@ -3249,7 +3249,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Saatler"
+            "value": "Saat aralığı"
           }
         }
       }
@@ -3259,7 +3259,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Üzerime istediğin zaman gel."
+            "value": "İstediğin zaman üzerime gel."
           }
         }
       }
@@ -3329,7 +3329,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "JSON içe aktar…"
+            "value": "JSON'dan içe aktar…"
           }
         }
       }
@@ -3369,7 +3369,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fiyatsız modeller içerir"
+            "value": "Fiyatsız modeller dahil"
           }
         }
       }
@@ -3409,7 +3409,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Durum satırını yükle"
+            "value": "Durum Satırını Yükle"
           }
         }
       }
@@ -3449,7 +3449,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bir şey olmadığında gizlenir. Geri getirmek için imleci yerine götür."
+            "value": "Bir şey olmadığında gizlenir. İmleci yerine götürünce geri gelir."
           }
         }
       }
@@ -3459,7 +3459,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "İhtiyacın olana kadar burada bekler"
+            "value": "Gerekene kadar burada bekler"
           }
         }
       }
@@ -3489,7 +3489,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aramaya katıl"
+            "value": "Görüşmeye katıl"
           }
         }
       }
@@ -3519,7 +3519,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dökümleri 24 saat sakla"
+            "value": "Metinleri 24 saat sakla"
           }
         }
       }
@@ -3601,7 +3601,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "En son %1$@ üzerinde çalındı · %2$@"
+            "value": "Son çalınan: %1$@ · %2$@"
           }
         }
       }
@@ -3641,7 +3641,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code'un varsayılanını ya da ayarlıysa CLAUDE_CONFIG_DIR'i kullanmak için boş bırak."
+            "value": "Boş bırakılırsa Claude Code'un varsayılanı, ayarlıysa CLAUDE_CONFIG_DIR kullanılır."
           }
         }
       }
@@ -3651,7 +3651,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%@” ifadesini çıkar"
+            "value": "“%@” yazılmasın"
           }
         }
       }
@@ -3661,7 +3661,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%@” ifadesini çıkarır"
+            "value": "“%@” yazılmaz"
           }
         }
       }
@@ -3781,7 +3781,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Liste API fiyatları — planlar bunu zaten kapsıyor."
+            "value": "API liste fiyatları — plan bunu zaten kapsıyor."
           }
         }
       }
@@ -3932,7 +3932,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yapılmadı olarak işaretle"
+            "value": "Tamamlanmadı olarak işaretle"
           }
         }
       }
@@ -4132,7 +4132,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sessiz"
+            "value": "Sessize Al"
           }
         }
       }
@@ -4232,7 +4232,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nano, %@ dosyasına bir durum satırı ekler. Zaten bir durum satırın varsa o da çalışmaya devam eder. Nano'nunkini kaldırmak için Claude kullanımını kapat."
+            "value": "Nano, %@ dosyasına bir durum satırı ekler. Mevcut durum satırın varsa çalışmaya devam eder. Nano'nunkini kaldırmak için Claude kullanımını kapat."
           }
         }
       }
@@ -4242,7 +4242,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nano önce her dosyanın yedeğini alır. Bağlantıyı kesmek bu satırları kaldırır."
+            "value": "Nano önce her dosyanın yedeğini alır. Bağlantıyı kesince bu satırlar kaldırılır."
           }
         }
       }
@@ -4252,7 +4252,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nano bu banner'ın kaybolduğunu doğrulayamadı. Erişilebilirlik iznini denetle ya da Bildirimlere İzin Ver açık kalacak şekilde bu uygulamanın Masaüstü banner'larını kapat."
+            "value": "Nano bu banner'ın kaybolduğunu doğrulayamadı. Erişilebilirlik iznini denetle ya da Bildirimlere İzin Ver'i açık bırakıp bu uygulamanın Masaüstü banner'larını kapat."
           }
         }
       }
@@ -4262,7 +4262,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nano bu dosyalara yazamadı. Salt okunur olmadıklarını kontrol et ve tekrar dene."
+            "value": "Nano bu dosyalara yazamadı. Salt okunur olmadıklarını denetleyip tekrar dene."
           }
         }
       }
@@ -4272,7 +4272,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nano ücretsiz ve açık kaynaklıdır; ödeme duvarı, deneme süresi ya da hesap yoktur."
+            "value": "Nano ücretsiz ve açık kaynak. Ödeme duvarı, deneme süresi ya da hesap yok."
           }
         }
       }
@@ -4342,7 +4342,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nano; Claude Code, Codex, Cursor, Gemini ve diğerleriyle çalışır. Birini yükleyin, burada görünsün."
+            "value": "Nano; Claude Code, Codex, Cursor, Gemini ve diğerleriyle çalışır. Yüklenen agent burada görünür."
           }
         }
       }
@@ -4382,7 +4382,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Onay gerekiyor"
+            "value": "Onay istediğinde"
           }
         }
       }
@@ -4392,7 +4392,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seni bekliyor"
+            "value": "Yanıt bekliyor"
           }
         }
       }
@@ -4742,7 +4742,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Şimdi değil"
+            "value": "Şimdi Değil"
           }
         }
       }
@@ -4762,7 +4762,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Henüz yüklü değil mi? Daha sonra Ayarlar › Agent'lar bölümünden bağla."
+            "value": "Henüz yüklü değil mi? Daha sonra Ayarlar › Agent'lar bölümünden bağlayabilirsin."
           }
         }
       }
@@ -4792,7 +4792,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Eşzamanlanmadı"
+            "value": "Eşzamanlanmıyor"
           }
         }
       }
@@ -5032,7 +5032,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Panoda"
+            "value": "Dashboard'da"
           }
         }
       }
@@ -5042,7 +5042,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nano günde bir kez GitHub'dan en son sürümü sorar. Seninle ilgili hiçbir şey gönderilmez."
+            "value": "Nano günde bir kez GitHub'da yeni sürüm olup olmadığına bakar. Seninle ilgili hiçbir şey gönderilmez."
           }
         }
       }
@@ -5062,7 +5062,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Her satıra bir terim ya da virgülle ayır. Bir ifadenin nasıl yazılacağını değiştirmek için “söylenen → yazılan” biçiminde yaz, örneğin “cloud code → Claude Code”."
+            "value": "Her satıra bir terim yaz ya da virgülle ayır. Bir ifadenin nasıl yazılacağını değiştirmek için “söylenen → yazılan” biçimini kullan, örneğin “cloud code → Claude Code”."
           }
         }
       }
@@ -5102,7 +5102,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yalnızca kelime çiftleri, bu Mac'te saklanır."
+            "value": "Yalnızca kelime çiftleri saklanır, o da bu Mac'te."
           }
         }
       }
@@ -5142,7 +5142,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Erişilebilirlik ayarlarını aç"
+            "value": "Erişilebilirlik Ayarlarını Aç"
           }
         }
       }
@@ -5162,7 +5162,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Panoyu aç"
+            "value": "Dashboard'u Aç"
           }
         }
       }
@@ -5232,7 +5232,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Klasöre göre açık"
+            "value": "Klasöre göre açık cue'lar"
           }
         }
       }
@@ -5342,7 +5342,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tarayıcında, Nano ve macOS sürümlerin doldurulmuş bir GitHub issue'su açar"
+            "value": "Nano ve macOS sürümleri doldurulmuş bir GitHub issue'sunu tarayıcıda açar"
           }
         }
       }
@@ -5352,7 +5352,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tarayıcında, Nano ve macOS sürümlerin doldurulmuş bir GitHub issue'su açar."
+            "value": "Nano ve macOS sürümleri doldurulmuş bir GitHub issue'sunu tarayıcıda açar."
           }
         }
       }
@@ -5532,7 +5532,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uygulama başına ses düzeyi Nano çalıştığı sürece etkin kalır."
+            "value": "Uygulama bazlı ses düzeyi, Nano açık olduğu sürece etkin kalır."
           }
         }
       }
@@ -5612,7 +5612,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ çal"
+            "value": "%@ sesini çal"
           }
         }
       }
@@ -5622,7 +5622,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$@ öğesini %2$@ ile çal"
+            "value": "%2$@ ile çal: %1$@"
           }
         }
       }
@@ -5632,7 +5632,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ sesini çal"
+            "value": "Sesi çal: %@"
           }
         }
       }
@@ -5652,7 +5652,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bir şey çalın, burada görünsün."
+            "value": "Bir şey çaldığında burada görünür."
           }
         }
       }
@@ -5772,7 +5772,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yeni kısayola bas ya da iptal için Esc'ye bas"
+            "value": "Yeni kısayola bas; iptal için Esc"
           }
         }
       }
@@ -5792,7 +5792,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kısayola bas, konuş, tekrar bas. Sözlerin buraya düşer."
+            "value": "Kısayola bas, konuş, tekrar bas. Söylediklerin buraya yazılır."
           }
         }
       }
@@ -5872,7 +5872,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bir projeye bağlı olmayan, tekrar kullandığın istemler ve fikirler"
+            "value": "Projeye bağlı olmayan, tekrar kullanılan prompt'lar ve fikirler"
           }
         }
       }
@@ -5902,7 +5902,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sessiz"
+            "value": "Sessiz mod"
           }
         }
       }
@@ -5942,7 +5942,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quill daha iyi olabilir"
+            "value": "Quill bunu öğrenebilir"
           }
         }
       }
@@ -5982,7 +5982,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Windows için Quill ve diğer açık depolarım"
+            "value": "Windows için Quill ve herkese açık diğer depolarım"
           }
         }
       }
@@ -6012,7 +6012,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quill'in mikrofona ihtiyacı var"
+            "value": "Quill için mikrofon izni gerekli"
           }
         }
       }
@@ -6072,7 +6072,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Son"
+            "value": "Son kullanılanlar"
           }
         }
       }
@@ -6102,7 +6102,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tanıma ve temizleme yerelde çalışır"
+            "value": "Tanıma ve düzenleme bu Mac'te yapılır"
           }
         }
       }
@@ -6122,7 +6122,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Şu şekilde yeniden yap"
+            "value": "Yeniden yap"
           }
         }
       }
@@ -6162,7 +6162,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yanıtlanmamış istekleri bana hatırlat"
+            "value": "Yanıtlanmamış istekleri hatırlat"
           }
         }
       }
@@ -6202,7 +6202,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tümünü kaldır…"
+            "value": "Tümünü Kaldır…"
           }
         }
       }
@@ -6232,7 +6232,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Panodan kaldır"
+            "value": "Dashboard'dan kaldır"
           }
         }
       }
@@ -6282,7 +6282,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yeniden adlandır…"
+            "value": "Yeniden Adlandır…"
           }
         }
       }
@@ -6292,7 +6292,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yeniden oynat"
+            "value": "Tekrarla"
           }
         }
       }
@@ -6302,7 +6302,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kurulumu yeniden oynat"
+            "value": "Kurulumu tekrarla"
           }
         }
       }
@@ -6332,7 +6332,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ kişisine yanıt ver"
+            "value": "Yanıtla: %@"
           }
         }
       }
@@ -6342,7 +6342,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hata bildir"
+            "value": "Hata Bildir"
           }
         }
       }
@@ -6412,7 +6412,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Açmak için tıklama gereksin"
+            "value": "Yalnızca tıklayınca aç"
           }
         }
       }
@@ -6432,7 +6432,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Görünümü sıfırla"
+            "value": "Görünümü Sıfırla"
           }
         }
       }
@@ -6442,7 +6442,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Boyutu ve konumu sıfırla"
+            "value": "Boyutu ve Konumu Sıfırla"
           }
         }
       }
@@ -6502,7 +6502,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Varsayılana döndür"
+            "value": "Varsayılana Döndür"
           }
         }
       }
@@ -6592,7 +6592,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "S1-mini İngilizce metni temizler. Temizleme bir “not” kelimesini atacak ya da olmayan bir sayı ekleyecekse Quill senin kelimelerini korur."
+            "value": "S1-mini İngilizce metni düzenler. Düzenleme bir “not”u atacak ya da uydurma bir sayı ekleyecekse Quill senin kelimelerini korur."
           }
         }
       }
@@ -6612,7 +6612,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Island'dan yapılacak, istem veya ekran görüntüsü kaydet. Bu sayfa kullandıkça dolar."
+            "value": "Island'dan yapılacak, prompt veya ekran görüntüsü kaydedilir. Bu sayfa kullandıkça dolar."
           }
         }
       }
@@ -6652,7 +6652,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gerisi için kaydır"
+            "value": "Devamı için kaydır"
           }
         }
       }
@@ -6682,7 +6682,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uygulamalarda ara"
+            "value": "Uygulama ara"
           }
         }
       }
@@ -6772,7 +6772,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Oturumlar, bir agent'ın oturumlarını, onaylarını ve token sayılarını gösterir. Kullanım, her planın kalan kotasını bir agent turunu bitirdikten sonra, diğer zamanlarda ise yaklaşık 12 dakikada bir denetler. Cline, Qwen Code, Kilo Code ve Goose çalışırken görünür, ancak henüz island'dan yanıtlanamaz."
+            "value": "Oturumlar, bir agent'ın oturumlarını, onaylarını ve token sayılarını gösterir. Kullanım, her planın kalan kotasını agent bir turu bitirdiğinde, bunun dışında da yaklaşık 12 dakikada bir denetler. Cline, Qwen Code, Kilo Code ve Goose çalışırken görünür ama henüz island'dan yanıtlanamaz."
           }
         }
       }
@@ -6782,7 +6782,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Panoyu kur"
+            "value": "Dashboard'u ayarla"
           }
         }
       }
@@ -6802,7 +6802,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Daha sonra kur"
+            "value": "Sonra kur"
           }
         }
       }
@@ -6812,7 +6812,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Daha sonra kur seçeneği, Ayarlar'da Kurulumu yeniden oynat ile birlikte bir kontrol listesi tutar."
+            "value": "Sonra kur dersen Ayarlar'da bir kontrol listesi ve Kurulumu tekrarla seçeneği kalır."
           }
         }
       }
@@ -6842,7 +6842,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kurulum tamamlanmış sayılır. Ayarlar'da bir kontrol listesi ve Kurulumu yeniden oynat seçeneği bulunur."
+            "value": "Kurulum tamamlanmış sayılır. Ayarlar'da bir kontrol listesi ve Kurulumu tekrarla seçeneği kalır."
           }
         }
       }
@@ -6862,7 +6862,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Şekil, boyut ve yüzey. Önizleme yaptığın değişiklikleri izler."
+            "value": "Şekil, boyut ve yüzey. Önizleme değişiklikleri anında gösterir."
           }
         }
       }
@@ -6902,7 +6902,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld öncekini göster"
+            "value": "Öncekileri göster (%lld)"
           }
         }
       }
@@ -6992,7 +6992,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kotayı şöyle göster"
+            "value": "Kota gösterimi"
           }
         }
       }
@@ -7032,7 +7032,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "5 sa, 7 g veya plan penceresi eşiği geçtiğinde bir kart gösterir."
+            "value": "5 sa, 7 g veya plan penceresi eşiği aşınca kart gösterir."
           }
         }
       }
@@ -7062,7 +7062,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quill'in duyduğunu ve yapıştırdığını gösterir, başka bir stilde yeniden yapmana izin verir"
+            "value": "Quill'in duyduğunu ve yapıştırdığını gösterir; başka bir stilde yeniden yapılabilir"
           }
         }
       }
@@ -7132,7 +7132,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sesli listeler listeye dönüşür"
+            "value": "Söylenen listeler liste olur"
           }
         }
       }
@@ -7162,7 +7162,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bir agent başlatın, burada görünsün."
+            "value": "Başlatılan agent burada görünür."
           }
         }
       }
@@ -7192,7 +7192,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quill'i Kestirmeler'den başlatma kapalı. Nano Ayarları'nda Quill'i başlatmak için bağlantılara ve Kestirmeler'e izin ver seçeneğini aç."
+            "value": "Kestirmeler'den Quill başlatma kapalı. Nano Ayarları'nda bağlantıların ve Kestirmeler'in Quill'i başlatmasına izin ver."
           }
         }
       }
@@ -7202,7 +7202,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quill dikte başlatır veya devam edeni durdurur."
+            "value": "Quill ile dikteyi başlatır ya da süren dikteyi durdurur."
           }
         }
       }
@@ -7212,7 +7212,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quill dikte başlatır. Metin bulunduğun alana gider."
+            "value": "Quill ile dikteyi başlatır. Metin, imlecin olduğu alana yazılır."
           }
         }
       }
@@ -7272,7 +7272,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Geçerli Quill dikteyi durdurur ve metni yapıştırır."
+            "value": "Süren Quill diktesini durdurur ve metni yapıştırır."
           }
         }
       }
@@ -7302,7 +7302,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ içinde stil"
+            "value": "%@ stili"
           }
         }
       }
@@ -7422,7 +7422,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sıfırlandığında bana haber ver"
+            "value": "Sıfırlanınca haber ver"
           }
         }
       }
@@ -7452,7 +7452,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Geçerli çıkış aygıtı ana ses düzeyi sunmuyor."
+            "value": "Bu çıkış aygıtında ana ses düzeyi ayarı yok."
           }
         }
       }
@@ -7472,7 +7472,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Son eşzamanlama bir kerede %lld yapılacağı silecekti. Bunu istediysen devam et."
+            "value": "Son eşzamanlama tek seferde %lld yapılacağı silecekti. İstenen buysa devam et."
           }
         }
       }
@@ -7512,7 +7512,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sonra açın. macOS istediğinde Nano yeniden açılır."
+            "value": "Ardından anahtarı aç. macOS isterse Nano yeniden açılır."
           }
         }
       }
@@ -7542,7 +7542,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bu tur %@ süredir çalışıyor"
+            "value": "Bu tur %@ süredir devam ediyor"
           }
         }
       }
@@ -7552,7 +7552,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bu oturumu at"
+            "value": "Bu oturumu iptal et"
           }
         }
       }
@@ -7582,7 +7582,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yapılacaklar her uygulamayla eşzamanlanır. Destekleyen uygulamalar istemleri, fikirleri, bağlantıları ve görselleri de alır; diğerleri için cue üzerindeki Gönder… seçeneğini kullan."
+            "value": "Yapılacaklar her uygulamayla eşzamanlanır. Destekleyen uygulamalar prompt, fikir, bağlantı ve görselleri de alır; diğerlerinde cue'daki Gönder… komutu kullanılır."
           }
         }
       }
@@ -7592,7 +7592,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Proje başına yapılacaklar, istemler ve ekran görüntüleri. Eşzamanlamayı kurmadıkça bu Mac'te kalır."
+            "value": "Proje başına yapılacaklar, prompt'lar ve ekran görüntüleri. Eşzamanlama kurulmadıkça bu Mac'te kalır."
           }
         }
       }
@@ -7662,7 +7662,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dökümler dikte ettikten sonra burada görünür"
+            "value": "Dikte ettiğin metinler burada görünür"
           }
         }
       }
@@ -7692,7 +7692,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "“cloud code” ifadesini “Claude Code” olarak yazmayı ya da kapanış satırı için “my sign off” ifadesini dene"
+            "value": "Örneğin “cloud code” → “Claude Code” ya da kapanış satırı için “my sign off”"
           }
         }
       }
@@ -7732,7 +7732,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Anımsatıcılar listeleriyle ve iCloud üzerinden iPhone'unla çift yönlü eşzamanlama."
+            "value": "Anımsatıcılar listeleriyle ve iCloud üzerinden iPhone ile çift yönlü eşzamanlama."
           }
         }
       }
@@ -7742,7 +7742,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Todoist projeleriyle çift yönlü eşzamanlama. Kişisel API token'ını kullanır."
+            "value": "Todoist projeleriyle çift yönlü eşzamanlama. Kişisel API token'ı kullanılır."
           }
         }
       }
@@ -7862,7 +7862,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ sabitlemesini kaldır"
+            "value": "%@: sabitlemeyi kaldır"
           }
         }
       }
@@ -7872,7 +7872,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uygulamanın sabitlemesini kaldır"
+            "value": "Sabitlemeyi kaldır"
           }
         }
       }
@@ -7882,7 +7882,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Island'ın sabitlemesini kaldır"
+            "value": "Sabitlemeyi kaldır"
           }
         }
       }
@@ -7932,7 +7932,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Güncellemeler ve üzerinde çalıştığım şeyler"
+            "value": "Güncellemeler ve üzerinde çalıştıklarım"
           }
         }
       }
@@ -8002,7 +8002,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Otomatik adı kullan"
+            "value": "Otomatik Adı Kullan"
           }
         }
       }
@@ -8022,7 +8022,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Varsayılanı kullan (%@)"
+            "value": "Varsayılanı Kullan (%@)"
           }
         }
       }
@@ -8042,7 +8042,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Erişilebilirlik'i kullanır"
+            "value": "Erişilebilirlik iznini kullanır"
           }
         }
       }
@@ -8108,7 +8108,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sözlük bir kelimenin nasıl yazılacağını belirler. Snippet, söylediğin bir ifadeyi yazdığın metinle değiştirir. Düzenlemek için girişe çift tıkla."
+            "value": "Sözlük, bir kelimenin nasıl yazılacağını belirler. Snippet, söylediğin bir ifadenin yerine yazdığın metni koyar. Düzenlemek için girişe çift tıkla."
           }
         }
       }
@@ -8158,7 +8158,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Özellikleri ve eklentileri yeniden gözden geçir. Ayarların korunur."
+            "value": "Özellik ve eklenti adımlarını baştan geç. Ayarların korunur."
           }
         }
       }
@@ -8198,7 +8198,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nano'nun bu Mac'te erişebildikleri. Okuduğu hiçbir şey Mac'ten çıkmaz."
+            "value": "Nano'nun bu Mac'te erişebildiği yerler. Okuduğu hiçbir şey bu Mac'ten çıkmaz."
           }
         }
       }
@@ -8218,7 +8218,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Neyi hatırlaman gerekiyor?"
+            "value": "Ne hatırlanacak?"
           }
         }
       }
@@ -8228,7 +8228,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ne yapıştırılır"
+            "value": "Yapıştırılan içerik"
           }
         }
       }
@@ -8238,7 +8238,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bu cue'nun türü"
+            "value": "Cue türü"
           }
         }
       }
@@ -8248,7 +8248,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yeniden söylediğinde hemen öncesinde söylediğin atılır"
+            "value": "Düzelterek tekrar söylediğinde, hemen öncesinde söylediğin silinir"
           }
         }
       }
@@ -8258,7 +8258,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kaydettiklerin"
+            "value": "Kaydedilenler"
           }
         }
       }
@@ -8268,7 +8268,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seçili olan her şey cue olur"
+            "value": "Seçili olan metin cue olur"
           }
         }
       }
@@ -8278,7 +8278,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bir agent size ihtiyaç duyduğunda veya bitirdiğinde."
+            "value": "Bir agent yanıt beklediğinde veya işini bitirdiğinde."
           }
         }
       }
@@ -8388,7 +8388,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bu Mac'teki cue'larından hesaplanır. Hiçbir şey yüklenmez."
+            "value": "Bu Mac'teki cue'lardan hesaplanır. Hiçbir şey yüklenmez."
           }
         }
       }
@@ -8470,7 +8470,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sende %@ var. İndirme tarayıcında açılır."
+            "value": "Yüklü sürüm: %@. İndirme tarayıcıda açılır."
           }
         }
       }
@@ -8480,7 +8480,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yeniden başlatmadan sonra Nano'yu kendin açarsın."
+            "value": "Yeniden başlattıktan sonra Nano'yu kendin açman gerekir."
           }
         }
       }
@@ -8506,7 +8506,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%1$@” dedin ve öncesini %2$@ sildin. Bu, fikir değiştirme olarak algılansın mı?"
+            "value": "“%1$@” deyip öncesini %2$@ sildin. Bu, “vazgeçtim” anlamına mı gelsin?"
           }
         }
       }
@@ -8516,7 +8516,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hazırsın."
+            "value": "Her şey hazır."
           }
         }
       }
@@ -8526,7 +8526,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mevcut düzenin değiştirilir."
+            "value": "Mevcut düzenin yerine varsayılan gelir."
           }
         }
       }
@@ -8536,7 +8536,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Panon boş."
+            "value": "Dashboard boş."
           }
         }
       }
@@ -8546,7 +8546,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kendi uygulaman ya da görev içeren herhangi bir uygulama. Kurulum rehberini geliştiricisine ya da kodlama agent'ına ver, sonra buradan bağla."
+            "value": "Kendi uygulaman ya da görev tutan herhangi bir uygulama. Kurulum rehberini geliştiricisine ya da kodlama agent'ına verip buradan bağla."
           }
         }
       }
@@ -8646,7 +8646,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "macOS bildirimleri, ses, parlaklık, Bluetooth, şarj ve agent'lar island'a düştükten sonra burada görünür."
+            "value": "Island'da gösterilen macOS bildirimleri, ses, parlaklık, Bluetooth, şarj ve agent uyarıları burada listelenir."
           }
         }
       }
@@ -8726,7 +8726,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ sıfırlanır"
+            "value": "%@ içinde sıfırlanır"
           }
         }
       }
@@ -8801,7 +8801,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gezinmek için ↑↓, açmak için ↩"
+            "value": "↑↓ ile gezin, ↩ ile aç"
           }
         }
       }
@@ -8813,7 +8813,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "⌃⌥C ile yapılacak, istem veya ekran görüntüsü yakala"
+            "value": "⌃⌥C ile yapılacak iş, prompt veya ekran görüntüsü ekle"
           }
         }
       }
@@ -8823,7 +8823,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yakalamak için ⌃⌥C"
+            "value": "Eklemek için ⌃⌥C"
           }
         }
       }
