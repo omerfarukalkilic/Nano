@@ -617,6 +617,28 @@ final class IslandNotificationTests: XCTestCase {
         )).cardHeight)
     }
 
+    func testWrittenReplyFieldMakesRoomOnQuestionAndPlanCards() {
+        var question = AgentHookBridge.PendingRequest(
+            id: "written", source: "claude", kind: .question, title: "Choose a route",
+            detail: nil, options: (0..<2).map { .init(id: $0, label: "Option \($0 + 1)") },
+            sessionID: "session-1", receivedAt: Date()
+        )
+        let plain = IslandAgentAttention(question)
+        question.takesWrittenReply = true
+        let written = IslandAgentAttention(question)
+        XCTAssertEqual(written.measuredCardHeight, plain.measuredCardHeight + IslandAgentAttention.writtenReplyRowHeight + 4)
+        XCTAssertGreaterThan(written.cardHeight, plain.cardHeight)
+
+        var plan = AgentHookBridge.PendingRequest(
+            id: "plan", source: "claude", kind: .permission, title: "ExitPlanMode",
+            detail: nil, options: [.init(id: 0, label: "Deny"), .init(id: 1, label: "Allow")],
+            sessionID: "session-1", receivedAt: Date(), preview: .plan("1. One\n2. Two")
+        )
+        let plainPlan = IslandAgentAttention(plan)
+        plan.takesWrittenReply = true
+        XCTAssertEqual(IslandAgentAttention(plan).cardHeight, plainPlan.cardHeight + IslandAgentAttention.writtenReplyRowHeight)
+    }
+
     func testTopClearanceAppliesToEveryNotificationTypeInEveryPlacement() {
         var notifications = IslandNotificationSource.allCases.map {
             IslandNotification.preview(for: $0)

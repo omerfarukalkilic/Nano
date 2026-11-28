@@ -214,6 +214,9 @@ struct IslandAgentAttention: Equatable, Sendable {
     let projectName: String?
     let respondsThroughBridge: Bool
     let preview: AgentHookBridge.Preview
+    /// The card has a field for written text: a question's own answer, or
+    /// what to change in a plan.
+    let takesWrittenReply: Bool
 
     init(_ request: AgentHookBridge.PendingRequest) {
         requestID = request.id
@@ -226,7 +229,12 @@ struct IslandAgentAttention: Equatable, Sendable {
         projectName = request.projectName
         respondsThroughBridge = request.respondsThroughBridge
         preview = request.preview
+        takesWrittenReply = request.takesWrittenReply
     }
+
+    /// The written-answer field under a question's choices, or above a plan's
+    /// buttons: a 28pt field and its spacing.
+    static let writtenReplyRowHeight: CGFloat = 34
 
     var headline: String {
         switch kind {
@@ -339,11 +347,12 @@ struct IslandAgentAttention: Equatable, Sendable {
             // Header, title, up to five steps, the "more" line, then the footer.
             let steps = CGFloat(min(plan.steps.count, AgentPlanSummary.visibleSteps))
             let more: CGFloat = plan.steps.count > AgentPlanSummary.visibleSteps ? 20 : 0
-            return 24 + 26 + 12 + 24 + steps * 24 + more + 16 + 42
+            let written: CGFloat = takesWrittenReply ? Self.writtenReplyRowHeight : 0
+            return 24 + 26 + 12 + 24 + steps * 24 + more + 16 + written + 42
         }
         return switch kind {
         case .question where respondsThroughBridge && !options.isEmpty:
-            max(126 + CGFloat(options.count) * 40, measuredCardHeight)
+            max(126 + CGFloat(options.count + (takesWrittenReply ? 1 : 0)) * 40, measuredCardHeight)
         // Measured, not floored: content sits at the bottom of the card, so
         // any extra height opened a gap under the header.
         case .permission, .question:
@@ -370,9 +379,10 @@ struct IslandAgentAttention: Equatable, Sendable {
         if kind == .question, respondsThroughBridge, !options.isEmpty {
             // Each choice: 10pt insets, a 13pt check, 9pt spacing, then its label.
             let labelWidth = textWidth - 20 - 13 - 9
-            let rows = options.map { option in
+            var rows = options.map { option in
                 max(34, Self.textHeight(option.label, size: 11, weight: .medium, width: labelWidth, maxLines: 2) + 14)
             }
+            if takesWrittenReply { rows.append(Self.writtenReplyRowHeight) }
             content += 4 + 6 + rows.reduce(0, +) + CGFloat(rows.count - 1) * 4
         }
         let footer: CGFloat = 1 + 36
