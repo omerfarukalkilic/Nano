@@ -47,6 +47,9 @@ final class AgentHookBridge: ObservableObject {
         /// from the island rather than by switching to the terminal to look.
         var preview: Preview
         var projectName: String?
+        /// The card can send written text instead of one of its options: an
+        /// answer of the user's own to a question, or what to change in a plan.
+        var takesWrittenReply = false
         /// Set once the card has been answered. The card stays up briefly
         /// to say so; a card that vanishes on the tap looks like it did
         /// nothing, and the host's own prompt may still be on screen.
@@ -265,6 +268,8 @@ final class AgentHookBridge: ObservableObject {
     private let server = HookSocketServer()
     private var token = ""
     private var waiters: [String: CheckedContinuation<Int?, Never>] = [:]
+    /// Text sent with `reply(to:text:)`, read once the request's waiter resumes.
+    private var writtenReplies: [String: String] = [:]
     private var waiterExpiryTasks: [String: Task<Void, Never>] = [:]
     /// Requests whose hook died unanswered, so `decision(for:)` can tell a
     /// retraction from a dismissal.
@@ -330,6 +335,7 @@ final class AgentHookBridge: ObservableObject {
     func stop() {
         let activeWaiters = Array(waiters.values)
         waiters.removeAll()
+        writtenReplies.removeAll()
         waiterExpiryTasks.values.forEach { $0.cancel() }
         waiterExpiryTasks.removeAll()
         hostCardExpiryTasks.values.forEach { $0.cancel() }
@@ -577,7 +583,7 @@ final class AgentHookBridge: ObservableObject {
                 answerable = answerable && answersCodexApprovals
             }
 
-            let request = PendingRequest(
+            var request = PendingRequest(
                 id: answerable ? UUID().uuidString : "permission:\(sessionID ?? "unknown")",
                 source: source,
                 kind: .permission,
@@ -598,6 +604,13 @@ final class AgentHookBridge: ObservableObject {
                 )
             )
 
+            // Claude hands a denied plan's message to the model, so it can
+            // keep planning with what the user wants changed.
+            if case .plan = request.preview, answerable,
+               adapter?.decisionEncoding == .hookSpecificOutput {
+                request.takesWrittenReply = true
+            }
+
             guard answerable else {
                 // Kimi reports this just before it waits for approval and
                 // takes no answer from the hook, and Codex can be left to
@@ -609,7 +622,13 @@ final class AgentHookBridge: ObservableObject {
             }
 
             guard let choice = await decision(for: request, hookPIDs: hookPIDs) else { return nil }
-            guard let response = adapter?.permissionResponse(allowed: choice == 1) else {
+            let note = writtenReplies.removeValue(forKey: request.id)
+            guard let response = adapter?.permissionResponse(
+                allowed: choice == 1,
+                message: choice == 1 ? nil : note,
+                // Claude's plan approval needs the plan handed back with it.
+                updatedInput: tool == "ExitPlanMode" ? input : nil
+            ) else {
                 return nil
             }
             return try? JSONSerialization.data(withJSONObject: response)
@@ -639,7 +658,7 @@ final class AgentHookBridge: ObservableObject {
                 return nil
             }
 
-            let request = PendingRequest(
+            var request = PendingRequest(
                 id: UUID().uuidString,
                 source: source,
                 kind: .question,
@@ -650,12 +669,16 @@ final class AgentHookBridge: ObservableObject {
                 receivedAt: Date(),
                 projectName: AgentSession.projectLabel(directory: event["cwd"] as? String)
             )
-            guard let choice = await decision(for: request, hookPIDs: hookPIDs),
-                  parsed.options.indices.contains(choice),
+            // Claude takes any text as the answer, as its own "Other" row
+            // does. OpenCode's plugin answers with a label, so it keeps to those.
+            request.takesWrittenReply = adapter.decisionEncoding == .hookSpecificOutput
+            guard let choice = await decision(for: request, hookPIDs: hookPIDs) else { return nil }
+            let written = writtenReplies.removeValue(forKey: request.id)
+            guard let answer = written ?? (parsed.options.indices.contains(choice) ? parsed.options[choice] : nil),
                   let response = adapter.questionResponse(
                       originalInput: input,
                       question: parsed.question,
-                      answer: parsed.options[choice]
+                      answer: answer
                   )
             else { return nil }
             return try? JSONSerialization.data(withJSONObject: response)
@@ -1352,6 +1375,20 @@ final class AgentHookBridge: ObservableObject {
     func dismiss(_ id: String) {
         respond(to: id, choice: nil)
     }
+
+    /// Answers a card that takes written text: a question gets the text as
+    /// its answer, a plan is sent back with it. Blank text answers nothing.
+    func reply(to id: String, text: String) {
+        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty, waiters[id] != nil,
+              let request = pending.first(where: { $0.id == id }), request.takesWrittenReply
+        else { return }
+        writtenReplies[id] = text
+        respond(to: id, choice: request.kind == .question ? Self.writtenChoice : 0)
+    }
+
+    /// The choice a written answer resumes a question with; no option has it.
+    nonisolated static let writtenChoice = -1
 
     // MARK: - Waits only the agent's window can answer
 
@@ -2353,7 +2390,9 @@ final class AgentHookBridge: ObservableObject {
     reply=$(printf '{"token":"%s","source":"%s","host_bundle_id":"%s","project_dir":"%s","parent_session_id":"%s","cmux_workspace_id":"%s","cmux_surface_id":"%s","warp_session_id":"%s","tmux_socket":"%s","tmux_pane":"%s","iterm_session_id":"%s","hook_pids":[%s,%s],"event":%s}\\n' \\
       "$token" "$source" "$host" "$project_dir" "$parent" "$cmux_workspace" "$cmux_surface" "$warp_session" "$tmux_socket" "$tmux_pane" "$iterm_session" "$$" "$PPID" "$payload" | nc -U "$sock" 2>/dev/null)
 
-    if [ -n "$reply" ]; then echo "$reply"; else echo '{}'; fi
+    # printf, not echo: macOS sh's echo turns the \\n inside a JSON string
+    # (a plan, a note) into a real line break, and the agent drops the reply.
+    if [ -n "$reply" ]; then printf '%s\\n' "$reply"; else echo '{}'; fi
     exit 0
     """
 }

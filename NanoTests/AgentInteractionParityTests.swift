@@ -265,6 +265,152 @@ final class AgentInteractionParityTests: XCTestCase {
         XCTAssertEqual(updated["answers"] as? [String: String], ["Ship now?": "No"])
     }
 
+    func testClaudeQuestionTakesAWrittenAnswer() async throws {
+        let bridge = AgentHookBridge()
+        let input: [String: Any] = ["questions": [[
+            "question": "Ship now?", "header": "Release",
+            "options": [["label": "Yes"], ["label": "No"]],
+        ]]]
+        let data = try payload(source: "claude", [
+            "hook_event_name": "PreToolUse", "session_id": "claude-1",
+            "tool_name": "AskUserQuestion", "tool_input": input,
+        ])
+
+        let reply = Task { await bridge.handle(data) }
+        let request = try await waitForPending(bridge)
+        XCTAssertTrue(request.takesWrittenReply)
+        bridge.reply(to: request.id, text: "  After the tests pass  ")
+
+        let answered = try object(await reply.value)
+        let output = try XCTUnwrap(answered["hookSpecificOutput"] as? [String: Any])
+        XCTAssertEqual(output["permissionDecision"] as? String, "allow")
+        let updated = try XCTUnwrap(output["updatedInput"] as? [String: Any])
+        XCTAssertEqual(updated["answers"] as? [String: String], ["Ship now?": "After the tests pass"])
+    }
+
+    func testPlanFeedbackDeniesWithTheWrittenMessage() async throws {
+        let bridge = AgentHookBridge()
+        let data = try payload(source: "claude", [
+            "hook_event_name": "PermissionRequest", "session_id": "claude-1",
+            "tool_name": "ExitPlanMode", "tool_input": ["plan": "1. Rewrite auth"],
+        ])
+
+        let reply = Task { await bridge.handle(data) }
+        let request = try await waitForPending(bridge)
+        XCTAssertTrue(request.takesWrittenReply)
+        bridge.reply(to: request.id, text: "Keep the session table")
+
+        let answered = try object(await reply.value)
+        let output = try XCTUnwrap(answered["hookSpecificOutput"] as? [String: Any])
+        let decision = try XCTUnwrap(output["decision"] as? [String: Any])
+        XCTAssertEqual(decision["behavior"] as? String, "deny")
+        XCTAssertEqual(decision["message"] as? String, "Keep the session table")
+    }
+
+    func testApprovedPlanCarriesItsInputBack() async throws {
+        let bridge = AgentHookBridge()
+        let input: [String: Any] = ["plan": "1. Rewrite auth", "planFilePath": "/tmp/plan.md"]
+        let data = try payload(source: "claude", [
+            "hook_event_name": "PermissionRequest", "session_id": "claude-1",
+            "tool_name": "ExitPlanMode", "tool_input": input,
+        ])
+
+        let reply = Task { await bridge.handle(data) }
+        let request = try await waitForPending(bridge)
+        bridge.respond(to: request.id, choice: 1)
+
+        let answered = try object(await reply.value)
+        let output = try XCTUnwrap(answered["hookSpecificOutput"] as? [String: Any])
+        let decision = try XCTUnwrap(output["decision"] as? [String: Any])
+        XCTAssertEqual(decision["behavior"] as? String, "allow")
+        XCTAssertEqual(decision["updatedInput"] as? [String: String], input as? [String: String])
+    }
+
+    func testApprovedCommandSendsNoUpdatedInput() async throws {
+        let bridge = AgentHookBridge()
+        let data = try payload(source: "claude", [
+            "hook_event_name": "PermissionRequest", "session_id": "claude-1",
+            "tool_name": "Bash", "tool_input": ["command": "ls"],
+        ])
+
+        let reply = Task { await bridge.handle(data) }
+        let request = try await waitForPending(bridge)
+        bridge.respond(to: request.id, choice: 1)
+
+        let answered = try object(await reply.value)
+        let output = try XCTUnwrap(answered["hookSpecificOutput"] as? [String: Any])
+        let decision = try XCTUnwrap(output["decision"] as? [String: Any])
+        XCTAssertEqual(decision["behavior"] as? String, "allow")
+        XCTAssertNil(decision["updatedInput"])
+    }
+
+    /// The reply goes out byte for byte. A plan's `\\n` that came out as a
+    /// line break made the JSON unreadable, so the plan was never approved.
+    func testBridgeScriptPrintsTheReplyUnchanged() throws {
+        let line = try XCTUnwrap(
+            AgentHookBridge.bridgeScript.split(separator: "\n").first { $0.contains("[ -n \"$reply\" ]") }
+        )
+        let reply = ##"{"decision":{"updatedInput":{"plan":"# Plan\n1. One\t\\ two"}}}"##
+        let shell = Process()
+        shell.executableURL = URL(fileURLWithPath: "/bin/sh")
+        shell.arguments = ["-c", "reply=\"$1\"\n" + line, "sh", reply]
+        let out = Pipe()
+        shell.standardOutput = out
+        try shell.run()
+        shell.waitUntilExit()
+        let printed = String(decoding: out.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+        XCTAssertEqual(printed, reply + "\n")
+        XCTAssertNotNil(try JSONSerialization.jsonObject(with: Data(printed.utf8)))
+    }
+
+    func testPlainKeepPlanningSendsNoMessage() async throws {
+        let bridge = AgentHookBridge()
+        let data = try payload(source: "claude", [
+            "hook_event_name": "PermissionRequest", "session_id": "claude-1",
+            "tool_name": "ExitPlanMode", "tool_input": ["plan": "1. Rewrite auth"],
+        ])
+
+        let reply = Task { await bridge.handle(data) }
+        let request = try await waitForPending(bridge)
+        bridge.reply(to: request.id, text: "   ")
+        bridge.respond(to: request.id, choice: 0)
+
+        let answered = try object(await reply.value)
+        let output = try XCTUnwrap(answered["hookSpecificOutput"] as? [String: Any])
+        let decision = try XCTUnwrap(output["decision"] as? [String: Any])
+        XCTAssertEqual(decision["behavior"] as? String, "deny")
+        XCTAssertNil(decision["message"])
+    }
+
+    func testOnlyClaudeQuestionsAndPlansTakeAWrittenReply() async throws {
+        let bridge = AgentHookBridge()
+        let command = Task { await bridge.handle(try self.payload(source: "claude", [
+            "hook_event_name": "PermissionRequest", "session_id": "claude-1",
+            "tool_name": "Bash", "tool_input": ["command": "ls"],
+        ])) }
+        let request = try await waitForPending(bridge)
+        XCTAssertFalse(request.takesWrittenReply)
+        // Ignored: nothing here can carry the text.
+        bridge.reply(to: request.id, text: "Run the tests instead")
+        XCTAssertEqual(bridge.pending.first?.id, request.id)
+        bridge.respond(to: request.id, choice: 0)
+        _ = try await command.value
+
+        let other = AgentHookBridge()
+        let question = Task { await other.handle(try self.payload(source: "opencode", [
+            "hook_event_name": "PreToolUse", "session_id": "ses_1",
+            "tool_name": "question",
+            "tool_input": ["questions": [[
+                "question": "Which database?",
+                "options": [["label": "SQLite"], ["label": "Postgres"]],
+            ]]],
+        ])) }
+        let asked = try await waitForPending(other)
+        XCTAssertFalse(asked.takesWrittenReply)
+        other.respond(to: asked.id, choice: nil)
+        _ = try await question.value
+    }
+
     // MARK: - OpenCode questions
 
     func testOpenCodeQuestionRoundTrip() async throws {
