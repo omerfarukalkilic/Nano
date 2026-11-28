@@ -22,25 +22,25 @@ enum IslandNotificationSource: String, CaseIterable, Identifiable, Codable, Send
 
     var title: String {
         switch self {
-        case .volume: "Volume"
-        case .brightness: "Brightness"
-        case .bluetooth: "Bluetooth"
-        case .battery: "Battery"
-        case .timer: "Timer"
-        case .agent: "Agents"
-        case .system: "Notifications"
+        case .volume: String(localized: "Volume")
+        case .brightness: String(localized: "Brightness")
+        case .bluetooth: String(localized: "Bluetooth")
+        case .battery: String(localized: "Battery")
+        case .timer: String(localized: "Timer")
+        case .agent: String(localized: "Agents")
+        case .system: String(localized: "Notifications")
         }
     }
 
     var subtitle: String {
         switch self {
-        case .volume: "Show the island when the volume keys change the output level."
-        case .brightness: "Show the island when the brightness keys change the display."
-        case .bluetooth: "Announce AirPods, mice, keyboards, and other accessories connecting or leaving."
-        case .battery: "Announce when a laptop starts charging."
-        case .timer: "Announce completed timers without opening the Timer module automatically."
-        case .agent: "Show when an agent finishes, needs approval, asks a question, or is waiting on you."
-        case .system: "Show every macOS notification in the island: iMessage, calls, Mail, and any app. Requires Full Disk Access to read the Notification Center store."
+        case .volume: String(localized: "Show the island when the volume keys change the output level.")
+        case .brightness: String(localized: "Show the island when the brightness keys change the display.")
+        case .bluetooth: String(localized: "Announce AirPods, mice, keyboards, and other accessories connecting or leaving.")
+        case .battery: String(localized: "Announce when a laptop starts charging.")
+        case .timer: String(localized: "Announce completed timers without opening the Timer module automatically.")
+        case .agent: String(localized: "Show when an agent finishes, needs approval, asks a question, or is waiting on you.")
+        case .system: String(localized: "Show every macOS notification in the island: iMessage, calls, Mail, and any app. Requires Full Disk Access to read the Notification Center store.")
         }
     }
 
@@ -117,15 +117,15 @@ enum BluetoothAccessoryCategory: String, Sendable {
 
     var label: String {
         switch self {
-        case .headphones: "Headphones"
-        case .headset: "Headset"
-        case .keyboard: "Keyboard"
-        case .mouse: "Mouse"
-        case .trackpad: "Trackpad"
-        case .gameController: "Controller"
+        case .headphones: String(localized: "Headphones")
+        case .headset: String(localized: "Headset")
+        case .keyboard: String(localized: "Keyboard")
+        case .mouse: String(localized: "Mouse")
+        case .trackpad: String(localized: "Trackpad")
+        case .gameController: String(localized: "Controller")
         case .phone: "iPhone"
-        case .computer: "Computer"
-        case .other: "Accessory"
+        case .computer: String(localized: "Computer")
+        case .other: String(localized: "Accessory")
         }
     }
 
@@ -231,7 +231,7 @@ struct IslandAgentAttention: Equatable, Sendable {
     var headline: String {
         switch kind {
         case .permission:
-            return respondsThroughBridge ? "\(source.capitalized) wants to run \(title)" : title
+            return respondsThroughBridge ? String(localized: "\(source.capitalized) wants to run \(title)") : title
         case .question:
             return title
         case .notification:
@@ -242,7 +242,7 @@ struct IslandAgentAttention: Equatable, Sendable {
                 || lowered.contains("failed") || lowered.contains("done") {
                 return title
             }
-            return "\(title) finished"
+            return String(localized: "\(title) finished")
         }
     }
 
@@ -283,14 +283,14 @@ struct IslandAgentAttention: Equatable, Sendable {
     }
 
     var statusLabel: String {
-        if isFailure { return "Error" }
+        if isFailure { return String(localized: "Error") }
         return switch kind {
         case .permission, .question:
-            "Needs you"
+            String(localized: "Needs you")
         case .completion:
-            "Done"
+            String(localized: "Done")
         case .notification:
-            "Update"
+            String(localized: "Update")
         }
     }
 
@@ -300,12 +300,12 @@ struct IslandAgentAttention: Equatable, Sendable {
             if respondsThroughBridge {
                 return AgentApprovalCopy.headline(provider: providerName, tool: title, preview: preview)
             }
-            return "Approval waiting in \(providerName)"
+            return String(localized: "Approval waiting in \(providerName)")
         case .question:
             if respondsThroughBridge { return title }
-            return "Question waiting in \(providerName)"
+            return String(localized: "Question waiting in \(providerName)")
         case .completion:
-            return isFailure ? title : "\(providerName) finished"
+            return isFailure ? title : String(localized: "\(providerName) finished")
         case .notification:
             return title
         }
@@ -318,11 +318,11 @@ struct IslandAgentAttention: Equatable, Sendable {
             return title
         case .question:
             if respondsThroughBridge {
-                return detail ?? "Choose an answer so the agent can continue."
+                return detail ?? String(localized: "Choose an answer so the agent can continue.")
             }
             return title
         case .completion:
-            return detail ?? projectName ?? "The agent finished its turn."
+            return detail ?? projectName ?? String(localized: "The agent finished its turn.")
         case .notification:
             return detail ?? projectName
         }
@@ -451,21 +451,21 @@ struct IslandAgentAttention: Equatable, Sendable {
         case let .command(command):
             let summary = AgentToolLabel.shellSummary(command)
             guard !summary.isEmpty else { return detail }
-            return "Run \(AgentToolLabel.truncated(summary, 96))."
+            return String(localized: "Run \(AgentToolLabel.truncated(summary, 96)).")
         case let .diff(path, _, _, _):
-            return "Change \(path)."
+            return String(localized: "Change \(path).")
         case let .arguments(fields):
             return fields.joined(separator: " · ")
         case .plan:
-            return "Review the plan."
+            return String(localized: "Review the plan.")
         case .none:
             guard let detail, !detail.isEmpty else { return projectName }
             if ["bash", "shell", "terminal", "exec", "exec_command", "shell_command"]
                 .contains(title.lowercased()) {
-                return "Run \(AgentToolLabel.truncated(AgentToolLabel.shellSummary(detail), 96))."
+                return String(localized: "Run \(AgentToolLabel.truncated(AgentToolLabel.shellSummary(detail), 96)).")
             }
             if detail.hasPrefix("/") {
-                return "Access \(URL(fileURLWithPath: detail).lastPathComponent)."
+                return String(localized: "Access \(URL(fileURLWithPath: detail).lastPathComponent).")
             }
             return AgentToolLabel.truncated(detail, 100)
         }
@@ -667,7 +667,7 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
         case .timer:
             .timerCompletion(
                 mode: .focus,
-                sessionName: "Deep Work",
+                sessionName: String(localized: "Deep Work"),
                 configuredDuration: 25 * 60
             )
         case .system:
@@ -688,9 +688,9 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
         var title: String {
             switch self {
             case .message: "iMessage"
-            case .call: "FaceTime call"
+            case .call: String(localized: "FaceTime call")
             case .mail: "Mail"
-            case .app: "Any app"
+            case .app: String(localized: "Any app")
             }
         }
     }
@@ -701,8 +701,8 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
         case .message:
             content = SystemNotificationContent(
                 recordID: -1, uuid: "preview-system:message", bundleID: "com.apple.MobileSMS",
-                appName: "Messages", title: "Ada Lovelace", subtitle: nil,
-                body: "On my way — save me a seat.", deliveredAt: Date(),
+                appName: String(localized: "Messages"), title: "Ada Lovelace", subtitle: nil,
+                body: String(localized: "On my way — save me a seat."), deliveredAt: Date(),
                 message: SystemNotificationMessageContext(
                     chatGUID: "preview", handle: "preview", isGroup: false
                 )
@@ -711,19 +711,19 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
             content = SystemNotificationContent(
                 recordID: -1, uuid: "preview-system:call", bundleID: "com.apple.facetime",
                 appName: "FaceTime", title: "Ada Lovelace", subtitle: nil,
-                body: "Incoming FaceTime Video", deliveredAt: Date()
+                body: String(localized: "Incoming FaceTime Video"), deliveredAt: Date()
             )
         case .mail:
             content = SystemNotificationContent(
                 recordID: -1, uuid: "preview-system:mail", bundleID: "com.apple.mail",
-                appName: "Mail", title: "Grace Hopper", subtitle: "Re: Compiler notes",
-                body: "Attached the revised draft. Let me know what you think.", deliveredAt: Date()
+                appName: "Mail", title: "Grace Hopper", subtitle: String(localized: "Re: Compiler notes"),
+                body: String(localized: "Attached the revised draft. Let me know what you think."), deliveredAt: Date()
             )
         case .app:
             content = SystemNotificationContent(
                 recordID: -1, uuid: "preview-system:app", bundleID: "com.apple.reminders",
-                appName: "Reminders", title: "Pick up the package", subtitle: nil,
-                body: "Today at 5:00 PM", deliveredAt: Date()
+                appName: "Reminders", title: String(localized: "Pick up the package"), subtitle: nil,
+                body: String(localized: "Today at 5:00 PM"), deliveredAt: Date()
             )
         }
         return .system(content)
@@ -746,32 +746,32 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
             respondsThroughBridge = adapter?.controls.contains(.approvePermission) == true
             title = respondsThroughBridge
                 ? "Bash"
-                : "\(provider.title) needs approval for Terminal"
+                : String(localized: "\(provider.title) needs approval for Terminal")
             detail = "xcodebuild test -project Nano.xcodeproj -scheme Nano"
             options = respondsThroughBridge
-                ? [.init(id: 0, label: "Deny"), .init(id: 1, label: "Allow once")]
+                ? [.init(id: 0, label: String(localized: "Deny")), .init(id: 1, label: String(localized: "Allow once"))]
                 : []
             preview = .command("xcodebuild test -project Nano.xcodeproj -scheme Nano")
         case .question:
             respondsThroughBridge = adapter?.controls.contains(.answerStructuredQuestion) == true
             title = respondsThroughBridge
-                ? "Where should Nano return you?"
-                : "\(provider.title) is waiting for your answer"
-            detail = respondsThroughBridge ? "Choose the exact session or its project." : nil
+                ? String(localized: "Where should Nano return you?")
+                : String(localized: "\(provider.title) is waiting for your answer")
+            detail = respondsThroughBridge ? String(localized: "Choose the exact session or its project.") : nil
             options = respondsThroughBridge
-                ? [.init(id: 0, label: "Exact session"), .init(id: 1, label: "Project")]
+                ? [.init(id: 0, label: String(localized: "Exact session")), .init(id: 1, label: String(localized: "Project"))]
                 : []
             preview = .none
         case .completion:
             respondsThroughBridge = false
-            title = "Fix Nano notifications"
-            detail = "The agent finished its turn."
+            title = String(localized: "Fix Nano notifications")
+            detail = String(localized: "The agent finished its turn.")
             options = []
             preview = .none
         case .notification:
             respondsThroughBridge = false
-            title = "\(provider.title) sent an update"
-            detail = "Open the working session for details."
+            title = String(localized: "\(provider.title) sent an update")
+            detail = String(localized: "Open the working session for details.")
             options = []
             preview = .none
         }
@@ -782,8 +782,8 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
                     id: "preview-agent:\(provider.rawValue):\(kind.rawValue)",
                     source: provider.rawValue,
                     kind: kind,
-                    title: failure ? "Build failed" : title,
-                    detail: failure ? "Missing dependency: SwiftLint" : detail,
+                    title: failure ? String(localized: "Build failed") : title,
+                    detail: failure ? String(localized: "Missing dependency: SwiftLint") : detail,
                     options: options,
                     sessionID: nil,
                     receivedAt: Date(),
@@ -799,7 +799,7 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
         IslandNotification(
             id: UUID(),
             source: .system,
-            title: "Nano \(update.version) is available",
+            title: String(localized: "Nano \(update.version) is available"),
             subtitle: update.notes,
             symbol: "arrow.down.circle.fill",
             duration: nil,
@@ -814,13 +814,13 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
     static func usage(_ alert: AgentUsageAlert) -> Self {
         let percent = Int(alert.window.usedPercent.rounded())
         let title = alert.kind == .threshold
-            ? "\(alert.provider.title) \(alert.window.label) limit at \(percent)%"
-            : "\(alert.provider.title) \(alert.window.label) limit reset"
+            ? String(localized: "\(alert.provider.title) \(alert.window.label) limit at \(percent)%")
+            : String(localized: "\(alert.provider.title) \(alert.window.label) limit reset")
         return IslandNotification(
             id: UUID(),
             source: .agent,
             title: title,
-            subtitle: alert.kind == .threshold ? alert.window.resetCountdown.map { "Resets in \($0)" } : "\(percent)% used now",
+            subtitle: alert.kind == .threshold ? alert.window.resetCountdown.map { String(localized: "Resets in \($0)") } : String(localized: "\(percent)% used now"),
             symbol: alert.kind == .threshold ? "gauge.with.dots.needle.67percent" : "arrow.clockwise",
             duration: 8,
             coalesceKey: "usage:\(alert.key)",
@@ -833,7 +833,7 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
         IslandNotification(
             id: UUID(),
             source: .system,
-            title: "Quill can get better",
+            title: String(localized: "Quill can get better"),
             subtitle: nil,
             symbol: "waveform",
             duration: nil,
@@ -849,8 +849,8 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
         IslandNotification(
             id: UUID(),
             source: .agent,
-            title: "\(provider.title) is new on this Mac",
-            subtitle: "Connect it to see its sessions, usage, and approvals on the island.",
+            title: String(localized: "\(provider.title) is new on this Mac"),
+            subtitle: String(localized: "Connect it to see its sessions, usage, and approvals on the island."),
             symbol: "terminal.fill",
             duration: nil,
             coalesceKey: "agent-setup:\(provider.rawValue)",
@@ -869,7 +869,7 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
                     kind: .permission,
                     title: "ExitPlanMode",
                     detail: nil,
-                    options: [.init(id: 0, label: "Keep planning"), .init(id: 1, label: "Approve")],
+                    options: [.init(id: 0, label: String(localized: "Keep planning")), .init(id: 1, label: String(localized: "Approve"))],
                     sessionID: nil,
                     receivedAt: Date(),
                     respondsThroughBridge: true,
@@ -894,8 +894,8 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
         return IslandNotification(
             id: UUID(),
             source: .volume,
-            title: "Volume",
-            subtitle: muted ? "Muted" : "\(Int((clamped * 100).rounded()))%",
+            title: String(localized: "Volume"),
+            subtitle: muted ? String(localized: "Muted") : "\(Int((clamped * 100).rounded()))%",
             symbol: muted
                 ? "speaker.slash.fill"
                 : clamped == 0
@@ -919,8 +919,8 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
         IslandNotification(
             id: UUID(),
             source: .volume,
-            title: "Microphone",
-            subtitle: muted ? "Muted" : "On",
+            title: String(localized: "Microphone"),
+            subtitle: muted ? String(localized: "Muted") : String(localized: "On"),
             symbol: muted ? "mic.slash.fill" : "mic.fill",
             duration: IslandNotificationSource.volume.defaultDuration,
             coalesceKey: "mixer-mic",
@@ -934,7 +934,7 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
         return IslandNotification(
             id: UUID(),
             source: .brightness,
-            title: "Brightness",
+            title: String(localized: "Brightness"),
             subtitle: "\(Int((clamped * 100).rounded()))%",
             symbol: clamped < 0.34 ? "sun.min.fill" : "sun.max.fill",
             duration: IslandNotificationSource.brightness.defaultDuration,
@@ -956,7 +956,7 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
             id: UUID(),
             source: .bluetooth,
             title: name,
-            subtitle: connected ? "Connected" : "Disconnected",
+            subtitle: connected ? String(localized: "Connected") : String(localized: "Disconnected"),
             symbol: category.symbol,
             duration: IslandNotificationSource.bluetooth.defaultDuration,
             coalesceKey: "bluetooth:\(address)",
@@ -970,7 +970,7 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
         IslandNotification(
             id: UUID(),
             source: .battery,
-            title: "Battery",
+            title: String(localized: "Battery"),
             subtitle: "\(snapshot.percentage)%",
             symbol: snapshot.hudSymbol,
             duration: IslandNotificationSource.battery.defaultDuration,
@@ -997,7 +997,7 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
         return IslandNotification(
             id: UUID(),
             source: .timer,
-            title: mode == .rest ? "Break's over" : "Focus complete",
+            title: mode == .rest ? String(localized: "Break's over") : String(localized: "Focus complete"),
             subtitle: subtitle,
             symbol: IslandNotificationSource.timer.symbol,
             duration: IslandNotificationSource.timer.defaultDuration,
@@ -1011,13 +1011,13 @@ struct IslandNotification: Identifiable, Equatable, Sendable {
         let totalSeconds = max(Int(duration.rounded()), 0)
         if totalSeconds % 3_600 == 0, totalSeconds >= 3_600 {
             let hours = totalSeconds / 3_600
-            return hours == 1 ? "1 hour" : "\(hours) hours"
+            return hours == 1 ? String(localized: "1 hour") : String(localized: "\(hours) hours")
         }
         if totalSeconds % 60 == 0, totalSeconds >= 60 {
             let minutes = totalSeconds / 60
-            return minutes == 1 ? "1 minute" : "\(minutes) minutes"
+            return minutes == 1 ? String(localized: "1 minute") : String(localized: "\(minutes) minutes")
         }
-        return totalSeconds == 1 ? "1 second" : "\(totalSeconds) seconds"
+        return totalSeconds == 1 ? String(localized: "1 second") : String(localized: "\(totalSeconds) seconds")
     }
 
     static func system(

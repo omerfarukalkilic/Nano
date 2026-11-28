@@ -283,7 +283,7 @@ struct SettingsToggleRow: View {
         // the children left the switch itself without a name or a value.
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
-        .accessibilityValue(isOn ? "On" : "Off")
+        .accessibilityValue(isOn ? String(localized: "On") : String(localized: "Off"))
         .accessibilityHint(subtitle ?? "")
         .accessibilityAddTraits(.isToggle)
         .accessibilityAction { isOn.toggle() }
@@ -341,6 +341,12 @@ struct SettingsChipToggle: View {
     @Binding var isOn: Bool
     var isEnabled = true
 
+    init(title: LocalizedStringResource, isOn: Binding<Bool>, isEnabled: Bool = true) {
+        self.title = String(localized: title)
+        _isOn = isOn
+        self.isEnabled = isEnabled
+    }
+
     var body: some View {
         Button {
             isOn.toggle()
@@ -364,7 +370,7 @@ struct SettingsChipToggle: View {
         .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : 0.45)
         .accessibilityLabel(title)
-        .accessibilityValue(isOn ? "On" : "Off")
+        .accessibilityValue(isOn ? String(localized: "On") : String(localized: "Off"))
         .accessibilityAddTraits(.isToggle)
     }
 }
@@ -388,6 +394,18 @@ struct SettingsCard<Content: View>: View {
 struct SettingsGroupTitle: View {
     let title: String
     let detail: String
+
+    /// Literal titles and details are localized (String Catalog).
+    init(title: LocalizedStringResource, detail: LocalizedStringResource = "") {
+        self.title = String(localized: title)
+        self.detail = String(localized: detail)
+    }
+
+    /// For a detail that is already localized (module descriptions).
+    init<S: StringProtocol>(title: LocalizedStringResource, detail: S) {
+        self.title = String(localized: title)
+        self.detail = String(detail)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
@@ -485,55 +503,65 @@ struct SettingsSearchItem: Identifiable, Hashable {
         id = "\(destination.rawValue):\(anchor ?? title)"
     }
 
+    /// Literal titles and details are localized (String Catalog).
+    static func localized(
+        _ title: LocalizedStringResource,
+        _ detail: LocalizedStringResource,
+        _ destination: SettingsDestination,
+        anchor: String? = nil
+    ) -> SettingsSearchItem {
+        SettingsSearchItem(String(localized: title), String(localized: detail), destination, anchor: anchor)
+    }
+
     @MainActor
     static func index(settings: NanoSettings) -> [SettingsSearchItem] {
         var items: [SettingsSearchItem] = [
-            .init("Require a click to open", "Hovering opens the island; a click keeps it open", .general, anchor: "open.click"),
-            .init("Follow the active display", "Move the island to the display you're using", .general, anchor: "open.display"),
-            .init("Hide in full screen", "Hide the island while a video or app is full screen", .general, anchor: "open.fullScreen"),
-            .init("Automatically hide the island", "Hide the island while nothing is happening", .general, anchor: "open.autoHide"),
-            .init("Open at login", "Start Nano when you log in", .general, anchor: "open.login"),
-            .init("Check for updates", "Update checks and the latest version", .privacy, anchor: "updates.check"),
-            .init("Report a bug", "Send feedback or request a feature on GitHub", .privacy, anchor: "feedback.bug"),
-            .init("Replay setup", "Walk through features and add-ons again", .general, anchor: "setup.replay"),
-            .init("Shape", "Notch or Floating", .island, anchor: "island.shape"),
-            .init("Surface", "Solid Black, Liquid Glass, or Hybrid", .island, anchor: "island.surface"),
-            .init("Surface color", "The island's base color", .island, anchor: "island.surfaceColor"),
-            .init("Glass tint", "Colors the glass and the lower edge of Hybrid", .island, anchor: "island.tint"),
-            .init("Lower gradient tint", "Colors the lower edge of Hybrid", .island, anchor: "island.tint"),
-            .init("Surface opacity", "Lower lets more of the wallpaper through", .island, anchor: "island.opacity"),
-            .init("Glass intensity", "How strongly the glass blurs what's behind it", .island, anchor: "island.glass"),
-            .init("Gradient midpoint", "Where Hybrid's black gives way to glass", .island, anchor: "island.midpoint"),
-            .init("Reset appearance", "Back to the default surface", .island, anchor: "island.reset"),
-            .init("Size", "Regular or Mini, which keeps the icons and drops the words", .island, anchor: "island.size"),
-            .init("Width", "How wide the closed island is", .island, anchor: "island.width"),
-            .init("Distance from top", "How far a floating island sits below the top edge", .island, anchor: "island.topOffset"),
-            .init("Reset size and position", "Back to the default width and gap", .island, anchor: "island.resetSize"),
-            .init("Dashboard layout", "Drag features into slots, widgets, sizes", .dashboard, anchor: "dashboard.editor"),
-            .init("Restore default dashboard", "Put the original layout back", .dashboard),
-            .init("Replace the macOS HUD", "Media keys, volume and brightness keys go to Nano", .notifications, anchor: "notif.mediaKeys"),
-            .init("Show quota as", "Used or remaining", .agents, anchor: "agents.quota"),
-            .init("Live hooks", "Connect agents for approvals and questions", .agents, anchor: "agents.hooks"),
-            .init("Codex approvals", "Answer them in Nano or leave them to Codex", .agents, anchor: "agents.codexApprovals"),
-            .init("Open sessions in cmux", "Jump to the exact cmux tab running a session", .agents, anchor: "agents.cmux"),
-            .init("Agent sounds", "A sound when an agent needs approval, asks, or finishes", .agents, anchor: "agents.alerts.sounds"),
-            .init("Quiet hours", "Mute agent sounds at night, when locked, or in a call", .agents, anchor: "agents.alerts.quiet"),
-            .init("Reminders", "Repeat unanswered approvals and questions", .agents, anchor: "agents.alerts.reminders"),
-            .init("Usage alerts", "A card when a usage limit runs low or resets", .agents, anchor: "agents.alerts.usage"),
-            .init("Claude usage", "Local status data for the 5h and 7d windows", .agents, anchor: "agents.claudeUsage"),
-            .init("Sessions and usage", "Which agents Nano tracks", .agents, anchor: "agents.providers"),
-            .init("Quill insights", "Speed, time saved, words, streak", .voiceDictation),
-            .init("Quill shortcut", "Hold to talk, release to paste", .voiceDictation),
-            .init("Quill engine", "Parakeet, Cohere or Whisper, on this Mac", .voiceDictation),
-            .init("Dictionary", "Words and snippets for dictation", .voiceDictation),
-            .init("Cue folders", "Projects and stash folders", .cue),
-            .init("Cue capture shortcut", "A keyboard shortcut from any app", .cue),
-            .init("Open Mixer", "Give every app its own volume", .mixer),
-            .init("Mute microphone shortcut", "Mute the microphone from any app", .mixer),
-            .init("Audio access", "Lets the Mixer change each app's volume", .mixer),
-            .init("Version", "About Nano", .privacy, anchor: "privacy.about"),
-            .init("Donate", "Tip on Ko-fi, optional", .support, anchor: "support.tip"),
-            .init("Other projects", "More public repos on GitHub", .support, anchor: "support.projects"),
+            .localized("Require a click to open", "Hovering opens the island; a click keeps it open", .general, anchor: "open.click"),
+            .localized("Follow the active display", "Move the island to the display you're using", .general, anchor: "open.display"),
+            .localized("Hide in full screen", "Hide the island while a video or app is full screen", .general, anchor: "open.fullScreen"),
+            .localized("Automatically hide the island", "Hide the island while nothing is happening", .general, anchor: "open.autoHide"),
+            .localized("Open at login", "Start Nano when you log in", .general, anchor: "open.login"),
+            .localized("Check for updates", "Update checks and the latest version", .privacy, anchor: "updates.check"),
+            .localized("Report a bug", "Send feedback or request a feature on GitHub", .privacy, anchor: "feedback.bug"),
+            .localized("Replay setup", "Walk through features and add-ons again", .general, anchor: "setup.replay"),
+            .localized("Shape", "Notch or Floating", .island, anchor: "island.shape"),
+            .localized("Surface", "Solid Black, Liquid Glass, or Hybrid", .island, anchor: "island.surface"),
+            .localized("Surface color", "The island's base color", .island, anchor: "island.surfaceColor"),
+            .localized("Glass tint", "Colors the glass and the lower edge of Hybrid", .island, anchor: "island.tint"),
+            .localized("Lower gradient tint", "Colors the lower edge of Hybrid", .island, anchor: "island.tint"),
+            .localized("Surface opacity", "Lower lets more of the wallpaper through", .island, anchor: "island.opacity"),
+            .localized("Glass intensity", "How strongly the glass blurs what's behind it", .island, anchor: "island.glass"),
+            .localized("Gradient midpoint", "Where Hybrid's black gives way to glass", .island, anchor: "island.midpoint"),
+            .localized("Reset appearance", "Back to the default surface", .island, anchor: "island.reset"),
+            .localized("Size", "Regular or Mini, which keeps the icons and drops the words", .island, anchor: "island.size"),
+            .localized("Width", "How wide the closed island is", .island, anchor: "island.width"),
+            .localized("Distance from top", "How far a floating island sits below the top edge", .island, anchor: "island.topOffset"),
+            .localized("Reset size and position", "Back to the default width and gap", .island, anchor: "island.resetSize"),
+            .localized("Dashboard layout", "Drag features into slots, widgets, sizes", .dashboard, anchor: "dashboard.editor"),
+            .localized("Restore default dashboard", "Put the original layout back", .dashboard),
+            .localized("Replace the macOS HUD", "Media keys, volume and brightness keys go to Nano", .notifications, anchor: "notif.mediaKeys"),
+            .localized("Show quota as", "Used or remaining", .agents, anchor: "agents.quota"),
+            .localized("Live hooks", "Connect agents for approvals and questions", .agents, anchor: "agents.hooks"),
+            .localized("Codex approvals", "Answer them in Nano or leave them to Codex", .agents, anchor: "agents.codexApprovals"),
+            .localized("Open sessions in cmux", "Jump to the exact cmux tab running a session", .agents, anchor: "agents.cmux"),
+            .localized("Agent sounds", "A sound when an agent needs approval, asks, or finishes", .agents, anchor: "agents.alerts.sounds"),
+            .localized("Quiet hours", "Mute agent sounds at night, when locked, or in a call", .agents, anchor: "agents.alerts.quiet"),
+            .localized("Reminders", "Repeat unanswered approvals and questions", .agents, anchor: "agents.alerts.reminders"),
+            .localized("Usage alerts", "A card when a usage limit runs low or resets", .agents, anchor: "agents.alerts.usage"),
+            .localized("Claude usage", "Local status data for the 5h and 7d windows", .agents, anchor: "agents.claudeUsage"),
+            .localized("Sessions and usage", "Which agents Nano tracks", .agents, anchor: "agents.providers"),
+            .localized("Quill insights", "Speed, time saved, words, streak", .voiceDictation),
+            .localized("Quill shortcut", "Hold to talk, release to paste", .voiceDictation),
+            .localized("Quill engine", "Parakeet, Cohere or Whisper, on this Mac", .voiceDictation),
+            .localized("Dictionary", "Words and snippets for dictation", .voiceDictation),
+            .localized("Cue folders", "Projects and stash folders", .cue),
+            .localized("Cue capture shortcut", "A keyboard shortcut from any app", .cue),
+            .localized("Open Mixer", "Give every app its own volume", .mixer),
+            .localized("Mute microphone shortcut", "Mute the microphone from any app", .mixer),
+            .localized("Audio access", "Lets the Mixer change each app's volume", .mixer),
+            .localized("Version", "About Nano", .privacy, anchor: "privacy.about"),
+            .localized("Donate", "Tip on Ko-fi, optional", .support, anchor: "support.tip"),
+            .localized("Other projects", "More public repos on GitHub", .support, anchor: "support.projects"),
         ]
         for module in [NanoModuleID.music, .calendar, .weather, .timer, .camera, .tray] {
             items.append(.init(module.title, module.featureDescription, .general, anchor: "feature.\(module.rawValue)"))
@@ -547,7 +575,7 @@ struct SettingsSearchItem: Identifiable, Hashable {
             case "island.tint":
                 // One row with two names. Keep the name the surface shows.
                 return settings.appearance == .solidBlack
-                    || (item.title == "Lower gradient tint") != (settings.appearance == .hybrid)
+                    || (item.title == String(localized: "Lower gradient tint")) != (settings.appearance == .hybrid)
             case "island.glass":
                 return settings.appearance == .solidBlack
             case "island.midpoint":
@@ -561,7 +589,7 @@ struct SettingsSearchItem: Identifiable, Hashable {
             }
         }
         for module in [NanoModuleID.agents, .voiceDictation, .cue, .mixer] {
-            items.append(.init(module.title, "Add-on: " + module.featureDescription, .general, anchor: "addon.\(module.rawValue)"))
+            items.append(.init(module.title, String(localized: "Add-on: \(module.featureDescription)"), .general, anchor: "addon.\(module.rawValue)"))
         }
         for source in IslandNotificationSource.allCases where settings.isNotificationSourceAvailable(source) {
             // The macOS source is already called Notifications, and "Agents
@@ -569,13 +597,13 @@ struct SettingsSearchItem: Identifiable, Hashable {
             let title: String
             switch source {
             case .system: title = source.title
-            case .agent: title = "Agent notifications"
-            default: title = "\(source.title) notifications"
+            case .agent: title = String(localized: "Agent notifications")
+            default: title = String(localized: "\(source.title) notifications")
             }
             items.append(.init(title, source.subtitle, .notifications, anchor: "notif.\(source.rawValue)"))
         }
         for kind in NanoPermissionKind.allCases {
-            items.append(.init("\(kind.title) permission", kind.detail, .permissions, anchor: "perm.\(kind.rawValue)"))
+            items.append(.init(String(localized: "\(kind.title) permission"), kind.detail, .permissions, anchor: "perm.\(kind.rawValue)"))
         }
         let available = SettingsDestination.available(settings: settings)
         return items.filter { available.contains($0.destination) }

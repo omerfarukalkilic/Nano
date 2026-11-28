@@ -11,8 +11,8 @@ enum FocusTimerMode: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .focus: "Focus"
-        case .rest: "Break"
+        case .focus: String(localized: "Focus")
+        case .rest: String(localized: "Break")
         }
     }
 }

@@ -294,7 +294,7 @@ struct IslandNotificationView: View {
         case let .level(value, muted):
             HStack(spacing: 8) {
                 ThinMeter(value: muted ? 0 : value, width: 80)
-                Text(muted ? "Off" : "\(Int((value * 100).rounded()))")
+                Text(muted ? String(localized: "Off") : "\(Int((value * 100).rounded()))")
                     .font(.system(size: 13, weight: .medium))
                     .monospacedDigit()
                     .contentTransition(.numericText())
@@ -788,7 +788,7 @@ private struct AgentNotificationCard: View {
                 }
             }
             Spacer(minLength: 12)
-            actionButton("Review", symbol: "arrow.up.right") { viewModel.openAgentSession(attention) }
+            actionButton(String(localized: "Review"), symbol: "arrow.up.right") { viewModel.openAgentSession(attention) }
         }
         .frame(maxHeight: .infinity)
     }
@@ -797,7 +797,7 @@ private struct AgentNotificationCard: View {
     /// otherwise finish with identical cards.
     private var completionSummary: String {
         let detail = attention.detail?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let title: String? = sessionName == attention.projectName || sessionName == "Agent session"
+        let title: String? = sessionName == attention.projectName || sessionName == String(localized: "Agent session")
             ? nil : sessionName
         return [title, attention.projectName, detail].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · ")
     }
@@ -990,7 +990,7 @@ private struct AgentNotificationCard: View {
     private var footer: some View {
         HStack(spacing: 7) {
             if attention.kind == .permission && attention.respondsThroughBridge {
-                actionButton("Open session", symbol: "arrow.up.right") { viewModel.openAgentSession(attention) }
+                actionButton(String(localized: "Open session"), symbol: "arrow.up.right") { viewModel.openAgentSession(attention) }
             }
             waitingCount
 
@@ -1015,7 +1015,7 @@ private struct AgentNotificationCard: View {
                 }
 
             case .question where attention.respondsThroughBridge:
-                actionButton("Send", prominent: true, symbol: "arrow.right") {
+                actionButton(String(localized: "Send"), prominent: true, symbol: "arrow.right") {
                     guard let selectedOptionID else { return }
                     viewModel.hookBridge.respond(
                         to: attention.requestID,
@@ -1027,20 +1027,20 @@ private struct AgentNotificationCard: View {
 
             case .permission, .question:
                 actionButton(
-                    "Open \(attention.providerName)",
+                    String(localized: "Open \(attention.providerName)"),
                     symbol: "arrow.up.right"
                 ) {
                     viewModel.openAgentSession(attention)
                 }
 
             case .completion:
-                actionButton(attention.isFailure ? "View output" : "Review", symbol: "arrow.up.right") {
+                actionButton(attention.isFailure ? String(localized: "View output") : String(localized: "Review"), symbol: "arrow.up.right") {
                     viewModel.openAgentSession(attention)
                 }
 
             case .notification:
                 if attention.isFailure {
-                    actionButton("View output", symbol: "arrow.up.right") { viewModel.openAgentSession(attention) }
+                    actionButton(String(localized: "View output"), symbol: "arrow.up.right") { viewModel.openAgentSession(attention) }
                 }
             }
         }
@@ -1093,7 +1093,7 @@ private struct AgentNotificationCard: View {
     private var sessionName: String {
         guard let sessionID = attention.sessionID,
               let session = viewModel.sessionStore.sessions.first(where: { $0.id == sessionID })
-        else { return attention.projectName ?? "Agent session" }
+        else { return attention.projectName ?? String(localized: "Agent session") }
         return session.displayName
     }
 
@@ -1143,7 +1143,7 @@ private struct AgentNotificationCard: View {
 
     private var planFooter: some View {
         HStack(spacing: 7) {
-            actionButton("Open", symbol: "arrow.up.right") { viewModel.openAgentSession(attention) }
+            actionButton(String(localized: "Open"), symbol: "arrow.up.right") { viewModel.openAgentSession(attention) }
             waitingCount
             Spacer(minLength: 8)
             if let outcome, attention.respondsThroughBridge {
@@ -1151,13 +1151,13 @@ private struct AgentNotificationCard: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
             } else if attention.respondsThroughBridge {
                 if let deny = attention.options.first(where: { $0.id == 0 }) {
-                    actionButton("Keep planning") {
+                    actionButton(String(localized: "Keep planning")) {
                         viewModel.hookBridge.respond(to: attention.requestID, choice: deny.id)
                     }
-                    .help("Send the plan back to \(attention.providerName)")
+                    .help(String(localized: "Send the plan back to \(attention.providerName)"))
                 }
                 if let allow = attention.options.first(where: { $0.id == 1 }) ?? attention.options.last {
-                    actionButton("Approve plan", prominent: true) {
+                    actionButton(String(localized: "Approve plan"), prominent: true) {
                         viewModel.hookBridge.respond(to: attention.requestID, choice: allow.id)
                     }
                     .keyboardShortcut(.defaultAction)
@@ -1172,7 +1172,7 @@ private struct AgentNotificationCard: View {
     }
 
     private func openButton() -> some View {
-        actionButton("Open", symbol: "arrow.up.right") {
+        actionButton(String(localized: "Open"), symbol: "arrow.up.right") {
             viewModel.openAgentSession(attention)
         }
     }
@@ -1528,7 +1528,7 @@ private struct UpdateNoticeCard: View {
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .first { !$0.isEmpty && !$0.hasPrefix("#") }
             .map { String($0.drop { $0 == "-" || $0 == "*" || $0 == " " }) }
-        return line ?? "You have \(NanoAppInfo.version). Your settings and permissions carry over."
+        return line ?? String(localized: "You have \(NanoAppInfo.version). Your settings and permissions carry over.")
     }
 
     var body: some View {
@@ -1550,11 +1550,11 @@ private struct UpdateNoticeCard: View {
             }
             HStack(spacing: 8) {
                 Spacer()
-                noticeButton("Later") { viewModel.dismissUpdateNotice() }
+                noticeButton(String(localized: "Later")) { viewModel.dismissUpdateNotice() }
                 if update.pageURL != update.downloadURL {
-                    noticeButton("What's New") { viewModel.openUpdateNotes(update) }
+                    noticeButton(String(localized: "What's New")) { viewModel.openUpdateNotes(update) }
                 }
-                noticeButton("Download", prominent: true) { viewModel.downloadUpdate() }
+                noticeButton(String(localized: "Download"), prominent: true) { viewModel.downloadUpdate() }
                     .keyboardShortcut(.defaultAction)
             }
         }
@@ -1585,14 +1585,21 @@ private struct QuillSuggestionCard: View {
     @ObservedObject var viewModel: IslandViewModel
 
     private var question: Text {
-        let times = correction.count == 2 ? "twice" : "\(correction.count) times"
+        let twice = correction.count == 2
+        let count = correction.count
         switch correction.kind {
         case .word:
-            return Text("You changed “\(correction.spoken)” to “\(correction.written)” \(times). Write it that way from now on?")
+            return twice
+                ? Text("You changed “\(correction.spoken)” to “\(correction.written)” twice. Write it that way from now on?")
+                : Text("You changed “\(correction.spoken)” to “\(correction.written)” \(count) times. Write it that way from now on?")
         case .leaveOut:
-            return Text("You deleted “\(correction.spoken)” \(times). Leave it out from now on?")
+            return twice
+                ? Text("You deleted “\(correction.spoken)” twice. Leave it out from now on?")
+                : Text("You deleted “\(correction.spoken)” \(count) times. Leave it out from now on?")
         case .changeOfMind:
-            return Text("You said “\(correction.spoken)” and deleted what came before it \(times). Treat it as changing your mind?")
+            return twice
+                ? Text("You said “\(correction.spoken)” and deleted what came before it twice. Treat it as changing your mind?")
+                : Text("You said “\(correction.spoken)” and deleted what came before it \(count) times. Treat it as changing your mind?")
         }
     }
 
@@ -1616,9 +1623,9 @@ private struct QuillSuggestionCard: View {
             }
             HStack(spacing: 8) {
                 Spacer()
-                cardButton("Ignore") { viewModel.ignoreQuillSuggestion(correction) }
-                cardButton("Not now") { viewModel.dismissQuillSuggestion() }
-                cardButton("Remember", prominent: true) { viewModel.rememberQuillSuggestion(correction) }
+                cardButton(String(localized: "Ignore")) { viewModel.ignoreQuillSuggestion(correction) }
+                cardButton(String(localized: "Not now")) { viewModel.dismissQuillSuggestion() }
+                cardButton(String(localized: "Remember"), prominent: true) { viewModel.rememberQuillSuggestion(correction) }
                     .keyboardShortcut(.defaultAction)
             }
         }
@@ -1656,19 +1663,19 @@ private struct AgentUsageAlertCard: View {
         switch alert.kind {
         case .threshold:
             return settings.usageDisplayMode == .used
-                ? "\(window): \(Int(used.rounded()))% used"
-                : "\(window): \(Int(alert.window.remainingPercent.rounded()))% left"
+                ? String(localized: "\(window): \(Int(used.rounded()))% used")
+                : String(localized: "\(window): \(Int(alert.window.remainingPercent.rounded()))% left")
         case .reset:
-            return "\(window) limit reset"
+            return String(localized: "\(window) limit reset")
         }
     }
 
     private var detail: String {
         switch alert.kind {
         case .threshold:
-            return alert.window.resetCountdown.map { "Resets in \($0)" } ?? "Close to the limit"
+            return alert.window.resetCountdown.map { String(localized: "Resets in \($0)") } ?? String(localized: "Close to the limit")
         case .reset:
-            return "\(Int(alert.window.remainingPercent.rounded()))% available again"
+            return String(localized: "\(Int(alert.window.remainingPercent.rounded()))% available again")
         }
     }
 
@@ -1742,9 +1749,9 @@ private struct AgentSetupCard: View {
             }
             HStack(spacing: 8) {
                 Spacer()
-                setupButton("Not now") { viewModel.dismissAgentSetup(provider) }
-                setupButton("Review…") { viewModel.reviewAgentSetup(provider) }
-                setupButton("Connect", prominent: true) { viewModel.connectAgent(provider) }
+                setupButton(String(localized: "Not now")) { viewModel.dismissAgentSetup(provider) }
+                setupButton(String(localized: "Review…")) { viewModel.reviewAgentSetup(provider) }
+                setupButton(String(localized: "Connect"), prominent: true) { viewModel.connectAgent(provider) }
                     .keyboardShortcut(.defaultAction)
             }
         }

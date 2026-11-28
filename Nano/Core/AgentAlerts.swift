@@ -53,7 +53,7 @@ enum AgentAlertSound: Hashable, Sendable, Codable {
 
     var title: String {
         switch self {
-        case .none: "None"
+        case .none: String(localized: "None")
         case let .system(name): name
         case let .file(path): URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent
         }

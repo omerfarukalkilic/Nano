@@ -54,7 +54,7 @@ final class OnboardingStage {
         window.backgroundColor = .clear
         window.hasShadow = false
         window.isMovable = false
-        window.title = "Set Up Nano"
+        window.title = String(localized: "Set Up Nano")
         window.collectionBehavior.insert(.fullScreenNone)
         window.contentView = NSHostingView(rootView: OnboardingExperienceView(flow: flow))
 
@@ -165,8 +165,8 @@ private struct OnboardingDimView: View {
                         .font(.system(size: 14))
                         .foregroundStyle(.white.opacity(0.62))
                     HStack(spacing: 22) {
-                        keyHint("Return", "Start")
-                        keyHint("Esc", "Set up later")
+                        keyHint(String(localized: "Return"), String(localized: "Start"))
+                        keyHint("Esc", String(localized: "Set up later"))
                     }
                     .padding(.top, 12)
                 }

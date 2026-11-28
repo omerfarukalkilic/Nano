@@ -1199,8 +1199,8 @@ final class IslandViewModel: ObservableObject {
             id: "completion:\(sessionID ?? UUID().uuidString):\(Date().timeIntervalSince1970)",
             source: provider.rawValue,
             kind: .completion,
-            title: session?.displayName ?? "\(provider.title) session",
-            detail: "Ready for review",
+            title: session?.displayName ?? String(localized: "\(provider.title) session"),
+            detail: String(localized: "Ready for review"),
             options: [],
             sessionID: sessionID,
             receivedAt: Date(),
@@ -1556,7 +1556,7 @@ final class IslandViewModel: ObservableObject {
             appName: banner.kind.appName,
             title: banner.caller,
             subtitle: nil,
-            body: "Incoming \(banner.kind.label)",
+            body: String(localized: "Incoming \(banner.kind.label)"),
             deliveredAt: Date()
         )
         routeNotification(.system(content, coalesceKey: Self.callCoalesceKey(banner)))
@@ -1591,7 +1591,7 @@ final class IslandViewModel: ObservableObject {
                 return (bundleID, name)
             }
         }
-        return ("ax.unknown", texts.first ?? "Notification")
+        return ("ax.unknown", texts.first ?? String(localized: "Notification"))
     }
 
     /// Incoming macOS notification. Applies the quiet rules that need live
@@ -1735,10 +1735,13 @@ final class IslandViewModel: ObservableObject {
         latest.summary = SystemNotificationSummary(kind: .catchUp, count: items.count)
         latest.actions = []
         latest.tint = nil
-        let plural = items.count == 1 ? "notification" : "notifications"
-        let title = apps > 1
-            ? "\(items.count) \(plural) from \(apps) apps"
-            : "\(items.count) \(plural) from \(latest.appName)"
+        let title: String
+        switch (items.count == 1, apps > 1) {
+        case (true, true): title = String(localized: "1 notification from \(apps) apps")
+        case (true, false): title = String(localized: "1 notification from \(latest.appName)")
+        case (false, true): title = String(localized: "\(items.count) notifications from \(apps) apps")
+        case (false, false): title = String(localized: "\(items.count) notifications from \(latest.appName)")
+        }
         // Everything becomes history so the Notifications module lists it all.
         for item in items where item.uuid != latest.uuid {
             notificationCenter.rememberQuietly(.system(item))
@@ -1752,11 +1755,11 @@ final class IslandViewModel: ObservableObject {
             recordID: latest.recordID,
             uuid: "summary:\(latest.uuid)",
             bundleID: latest.summary?.kind == .catchUp ? "com.nanoapp.Nano.catchup" : latest.bundleID,
-            appName: latest.summary?.kind == .catchUp ? "While you were away" : latest.appName,
+            appName: latest.summary?.kind == .catchUp ? String(localized: "While you were away") : latest.appName,
             title: title,
             subtitle: nil,
             body: latest.summary?.kind == .catchUp
-                ? "Latest: \(latest.appName) · \(latest.headline)"
+                ? String(localized: "Latest: \(latest.appName) · \(latest.headline)")
                 : latest.detail ?? latest.headline,
             deliveredAt: latest.deliveredAt
         )
@@ -1854,7 +1857,7 @@ final class IslandViewModel: ObservableObject {
                 if let failure = error as? MessagesReplySender.Failure, case let .scriptError(message) = failure {
                     self.systemReplyError = message
                 } else {
-                    self.systemReplyError = "Reply could not be sent."
+                    self.systemReplyError = String(localized: "Reply could not be sent.")
                 }
             }
         }
@@ -2075,9 +2078,9 @@ final class IslandViewModel: ObservableObject {
     nonisolated static func jumpNotice(for result: AgentSessionJump.OpenResult, hostTitle: String) -> String? {
         switch result {
         case .opened: nil
-        case .hostActivated: "Opened \(hostTitle). Couldn't find this session there, so pick it from the list."
-        case .accessibilityRequired: "Nano needs Accessibility access to open the session in \(hostTitle)."
-        case .unavailable: "Couldn't open \(hostTitle)."
+        case .hostActivated: String(localized: "Opened \(hostTitle). Couldn't find this session there, so pick it from the list.")
+        case .accessibilityRequired: String(localized: "Nano needs Accessibility access to open the session in \(hostTitle).")
+        case .unavailable: String(localized: "Couldn't open \(hostTitle).")
         }
     }
 

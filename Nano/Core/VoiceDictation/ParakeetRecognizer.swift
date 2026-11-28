@@ -38,7 +38,7 @@ actor ParakeetRecognizer: VoiceDictationRecognizer {
             self.manager = manager
         } catch {
             throw VoiceDictationError.modelLoadFailed(
-                "Parakeet failed to load: \(error.localizedDescription)"
+                String(localized: "Parakeet failed to load: \(error.localizedDescription)")
             )
         }
         // Optional: a booster that fails to load only costs the boost.
@@ -57,7 +57,7 @@ actor ParakeetRecognizer: VoiceDictationRecognizer {
     func transcribe(_ samples: [Float], request: VoiceDictationRecognitionRequest) async throws -> VoiceDictationRecognition {
         try await load()
         guard let manager else {
-            throw VoiceDictationError.modelLoadFailed("Parakeet is not loaded.")
+            throw VoiceDictationError.modelLoadFailed(String(localized: "Parakeet is not loaded."))
         }
         let audio = VoiceDictationEngineFactory.padded(samples, minimumSeconds: 1.0)
         let booster = await booster(for: request.vocabulary)
@@ -70,7 +70,7 @@ actor ParakeetRecognizer: VoiceDictationRecognizer {
         } catch {
             _ = await spotted
             throw VoiceDictationError.recognitionFailed(
-                "Parakeet failed: \(error.localizedDescription)"
+                String(localized: "Parakeet failed: \(error.localizedDescription)")
             )
         }
         var recognition = VoiceDictationRecognition(

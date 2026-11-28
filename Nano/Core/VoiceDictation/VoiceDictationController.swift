@@ -28,11 +28,11 @@ enum VoiceDictationPasteOutcome: Equatable {
 
     var detail: String {
         switch self {
-        case .requested: "Copied and paste sent to the focused field"
-        case .accessibilityRequired: "Copied. Enable Nano in System Settings → Privacy & Security → Accessibility to paste automatically."
-        case .noEditableTarget: "Copied. Focus a text field before starting dictation to paste automatically."
-        case .focusChanged: "Copied. Paste skipped because keyboard focus changed."
-        case .eventFailed: "Copied. Could not send the paste shortcut."
+        case .requested: String(localized: "Copied and paste sent to the focused field")
+        case .accessibilityRequired: String(localized: "Copied. Enable Nano in System Settings → Privacy & Security → Accessibility to paste automatically.")
+        case .noEditableTarget: String(localized: "Copied. Focus a text field before starting dictation to paste automatically.")
+        case .focusChanged: String(localized: "Copied. Paste skipped because keyboard focus changed.")
+        case .eventFailed: String(localized: "Copied. Could not send the paste shortcut.")
         }
     }
 }
@@ -621,13 +621,13 @@ enum VoiceDictationPhase: Equatable, Sendable {
 
     var title: String {
         switch self {
-        case .idle: "Ready"
-        case .recording: "Listening"
-        case .transcribing: "Transcribing"
-        case .cleaning: "Cleaning up"
-        case .completed: "Copied"
-        case .failed: "Failed"
-        case .cancelled: "Cancelled"
+        case .idle: String(localized: "Ready")
+        case .recording: String(localized: "Listening")
+        case .transcribing: String(localized: "Transcribing")
+        case .cleaning: String(localized: "Cleaning up")
+        case .completed: String(localized: "Copied")
+        case .failed: String(localized: "Failed")
+        case .cancelled: String(localized: "Cancelled")
         }
     }
 }
@@ -716,7 +716,7 @@ final class VoiceDictationController: ObservableObject {
 
     var deliveryTitle: String {
         guard phase == .completed else { return phase.title }
-        return lastPasteOutcome == .requested ? "Paste sent" : "Copied only"
+        return lastPasteOutcome == .requested ? String(localized: "Paste sent") : String(localized: "Copied only")
     }
     @Published private(set) var lastError: VoiceDictationError?
     @Published private(set) var loadedEngine: VoiceDictationEngine?
@@ -938,7 +938,7 @@ final class VoiceDictationController: ObservableObject {
             let sketchKey = settings.voiceDictationSketchHotkey
             if sketchKey == hotkey {
                 sketchHotkey.unregister()
-                sketchHotkeyProblem = "Sketch needs a different shortcut from dictation."
+                sketchHotkeyProblem = String(localized: "Sketch needs a different shortcut from dictation.")
             } else if sketchKey != sketchHotkey.registeredHotkey || sketchHotkeyProblem != nil {
                 sketchHotkey.register(sketchKey)
                 sketchHotkeyProblem = sketchHotkey.registrationError
@@ -1038,7 +1038,7 @@ final class VoiceDictationController: ObservableObject {
         do {
             try modelStore.remove(engine)
         } catch {
-            modelManagementError = "Nano could not remove \(engine.title): \(error.localizedDescription)"
+            modelManagementError = String(localized: "Nano could not remove \(engine.title): \(error.localizedDescription)")
             modelStore.refresh()
         }
     }
@@ -1051,7 +1051,7 @@ final class VoiceDictationController: ObservableObject {
             try modelStore.remove(id)
         } catch {
             let title = VoiceDictationModelManifest.descriptor(for: id).title
-            modelManagementError = "Nano could not remove \(title): \(error.localizedDescription)"
+            modelManagementError = String(localized: "Nano could not remove \(title): \(error.localizedDescription)")
             modelStore.refresh()
         }
     }
@@ -1327,7 +1327,7 @@ final class VoiceDictationController: ObservableObject {
             generation: sessionGeneration
         )
         if let lastError { return .failure(lastError) }
-        guard let lastResult else { return .failure(.recognitionFailed("No result was produced.")) }
+        guard let lastResult else { return .failure(.recognitionFailed(String(localized: "No result was produced."))) }
         return .success(lastResult)
     }
 
@@ -2211,7 +2211,7 @@ final class VoiceDictationController: ObservableObject {
     /// copies the result. Needs S1-mini for every style but Verbatim.
     func redo(_ entry: VoiceDictationHistoryEntry, as level: VoiceDictationCleanupLevel) async throws -> String {
         guard let raw = entry.raw, !raw.isEmpty else {
-            throw VoiceDictationError.recognitionFailed("This entry was saved before Quill kept what it heard.")
+            throw VoiceDictationError.recognitionFailed(String(localized: "This entry was saved before Quill kept what it heard."))
         }
         return try await redo(raw: raw, context: entry.context ?? .general, bundleID: entry.bundleID, as: level)
     }
@@ -2238,7 +2238,7 @@ final class VoiceDictationController: ObservableObject {
         guard !phase.isBusy else { throw VoiceDictationError.busy }
         let engine = settings.voiceDictationEngine
         if level != .verbatim, !engine.appliesCleanup {
-            throw VoiceDictationError.cleanupFailed("Redoing in \(level.title) needs Parakeet + S1-mini.")
+            throw VoiceDictationError.cleanupFailed(String(localized: "Redoing in \(level.title) needs Parakeet + S1-mini."))
         }
         let recipe = makeRecipe(engine: engine, appContext: context, bundleID: bundleID, level: level)
         defer { scheduleIdleUnload() }

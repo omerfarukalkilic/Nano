@@ -150,10 +150,7 @@ struct OnboardingExperienceView: View {
         let steps = resumeSteps
         let targetIndex = steps.firstIndex { $0.step == target } ?? 0
         return room(spacing: 18) {
-            heading(
-                "Pick up where you left off?",
-                "You stopped during \(flow.resumeTitle)\(savedWhen). Everything you set is saved."
-            )
+            heading(String(localized: "Pick up where you left off?"), resumeLine)
             panel {
                 VStack(spacing: 0) {
                     ForEach(Array(steps.enumerated()), id: \.offset) { index, item in
@@ -191,37 +188,43 @@ struct OnboardingExperienceView: View {
                     .font(.system(size: 12.5))
                     .foregroundStyle(OnboardingChrome.secondary)
                 Spacer()
-                secondaryButton("Start over", action: flow.startOver)
-                primaryButton("Continue with \(flow.resumeTitle)", action: flow.continueSetup)
+                secondaryButton(String(localized: "Start over"), action: flow.startOver)
+                primaryButton(String(localized: "Continue with \(flow.resumeTitle)"), action: flow.continueSetup)
                     .keyboardShortcut(.defaultAction)
             }
         }
     }
 
-    private var savedWhen: String {
-        guard let date = flow.savedProgress?.savedAt else { return "" }
-        let calendar = Calendar.current
-        if calendar.isDateInToday(date) { return " earlier today" }
-        if calendar.isDateInYesterday(date) { return " yesterday" }
-        return ""
+    private var resumeLine: String {
+        let title = flow.resumeTitle
+        if let date = flow.savedProgress?.savedAt {
+            let calendar = Calendar.current
+            if calendar.isDateInToday(date) {
+                return String(localized: "You stopped during \(title) earlier today. Everything you set is saved.")
+            }
+            if calendar.isDateInYesterday(date) {
+                return String(localized: "You stopped during \(title) yesterday. Everything you set is saved.")
+            }
+        }
+        return String(localized: "You stopped during \(title). Everything you set is saved.")
     }
 
     private var resumeSteps: [(step: OnboardingFlow.Step, title: String, detail: String?)] {
         var steps: [(OnboardingFlow.Step, String, String?)] = [
-            (.welcome, "Welcome", "\(settings.placement.title), \(settings.appearance.title)"),
-            (.pick, "Pick", "\(flow.picks.count) added"),
+            (.welcome, String(localized: "Welcome"), "\(settings.placement.title), \(settings.appearance.title)"),
+            (.pick, String(localized: "Pick"), String(localized: "\(flow.picks.count) added")),
         ]
         for (index, room) in flow.rooms.enumerated() {
             steps.append((.room(index), room.title, resumeDetail(room)))
         }
-        steps.append((.summary, "Summary", nil))
+        steps.append((.summary, String(localized: "Summary"), nil))
         return steps
     }
 
     private func resumeDetail(_ room: OnboardingRoom) -> String? {
         switch room {
-        case .notifications: settings.hudReplacesSystemHUD ? "Volume cards on" : nil
-        case .agents: flow.connectedCount > 0 ? "\(flow.connectedCount) connected" : nil
+        case .notifications: settings.hudReplacesSystemHUD ? String(localized: "Volume cards on") : nil
+        case .agents: flow.connectedCount > 0 ? String(localized: "\(flow.connectedCount) connected") : nil
         case .voice: quillStatus(settings.voiceDictationEngine)
         default: nil
         }
@@ -233,8 +236,8 @@ struct OnboardingExperienceView: View {
                 .font(.system(size: 22, weight: .bold))
                 .tracking(-0.3)
             HStack(spacing: 10) {
-                placementCard(.attached, "Notch", attachedDetail)
-                placementCard(.floating, "Floating", "Hangs under the menu bar")
+                placementCard(.attached, String(localized: "Notch"), attachedDetail)
+                placementCard(.floating, String(localized: "Floating"), String(localized: "Hangs under the menu bar"))
             }
             ZStack(alignment: .bottomLeading) {
                 OnboardingVideo(name: dashboardClip)
@@ -252,9 +255,9 @@ struct OnboardingExperienceView: View {
             .animation(.easeInOut(duration: 0.3), value: dashboardClip)
             VStack(spacing: 0) {
                 switchRow(
-                    title: "Open Nano at login",
+                    title: String(localized: "Open Nano at login"),
                     detail: viewModel.loginItem.needsApproval
-                        ? "Blocked in System Settings › General › Login Items."
+                        ? String(localized: "Blocked in System Settings › General › Login Items.")
                         : nil,
                     isOn: Binding(
                         get: { viewModel.loginItem.isEnabled || viewModel.loginItem.needsApproval },
@@ -263,8 +266,8 @@ struct OnboardingExperienceView: View {
                 )
                 divider
                 switchRow(
-                    title: "Tell me about new versions",
-                    detail: "Checks GitHub once a day. You choose when to update.",
+                    title: String(localized: "Tell me about new versions"),
+                    detail: String(localized: "Checks GitHub once a day. You choose when to update."),
                     isOn: Binding(get: { settings.checksForUpdates }, set: { settings.checksForUpdates = $0 })
                 )
             }
@@ -274,7 +277,7 @@ struct OnboardingExperienceView: View {
                     .font(.system(size: 12))
                     .foregroundStyle(OnboardingChrome.secondary)
                 Spacer()
-                primaryButton("Next", action: flow.next)
+                primaryButton(String(localized: "Next"), action: flow.next)
                     .keyboardShortcut(.defaultAction)
             }
             .padding(.top, 4)
@@ -287,9 +290,9 @@ struct OnboardingExperienceView: View {
 
     private var attachedDetail: String {
         let housings = NSScreen.screens.map { NanoDisplayObstruction.measure(screen: $0).housing }
-        if housings.contains(.dynamicIsland) { return "Wraps the camera on this Mac" }
-        if housings.contains(.notch) { return "Wraps the notch on this Mac" }
-        return "For Macs with a notch"
+        if housings.contains(.dynamicIsland) { return String(localized: "Wraps the camera on this Mac") }
+        if housings.contains(.notch) { return String(localized: "Wraps the notch on this Mac") }
+        return String(localized: "For Macs with a notch")
     }
 
     private var dashboardClip: String {
@@ -302,9 +305,9 @@ struct OnboardingExperienceView: View {
 
     private func appearanceTitle(_ appearance: IslandAppearance) -> String {
         switch appearance {
-        case .solidBlack: "Solid"
-        case .glass: "Glass"
-        case .hybrid: "Hybrid"
+        case .solidBlack: String(localized: "Solid")
+        case .glass: String(localized: "Glass")
+        case .hybrid: String(localized: "Hybrid")
         }
     }
 
@@ -341,7 +344,7 @@ struct OnboardingExperienceView: View {
         let current = features[min(flow.showcaseIndex, features.count - 1)]
         let picked = flow.isPicked(current)
         return room(spacing: 0) {
-            heading("What do you want Nano for?", "Watch each one and add what you'll use. Nothing is on until you add it.")
+            heading(String(localized: "What do you want Nano for?"), String(localized: "Watch each one and add what you'll use. Nothing is on until you add it."))
 
             ScrollViewReader { proxy in
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -383,7 +386,7 @@ struct OnboardingExperienceView: View {
                     }
                     Spacer(minLength: 8)
                     Button { flow.toggle(current) } label: {
-                        Label(picked ? "Added" : "Add", systemImage: picked ? "checkmark" : "plus")
+                        Label(picked ? String(localized: "Added") : String(localized: "Add"), systemImage: picked ? "checkmark" : "plus")
                             .font(.system(size: 12.5, weight: .semibold))
                             .padding(.horizontal, 12)
                             .frame(height: 28)
@@ -394,7 +397,7 @@ struct OnboardingExperienceView: View {
                             )
                     }
                     .buttonStyle(OnboardingPress())
-                    .accessibilityLabel(picked ? "Remove \(current.title)" : "Add \(current.title)")
+                    .accessibilityLabel(picked ? String(localized: "Remove \(current.title)") : String(localized: "Add \(current.title)"))
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
@@ -414,8 +417,8 @@ struct OnboardingExperienceView: View {
                     .font(.system(size: 12).monospacedDigit())
                     .foregroundStyle(OnboardingChrome.secondary)
                 Spacer()
-                secondaryButton("Just the island", action: flow.justTheIsland)
-                primaryButton("Continue", enabled: !flow.picks.isEmpty, action: flow.startRooms)
+                secondaryButton(String(localized: "Just the island"), action: flow.justTheIsland)
+                primaryButton(String(localized: "Continue"), enabled: !flow.picks.isEmpty, action: flow.startRooms)
                     .keyboardShortcut(.defaultAction)
             }
             .padding(.top, 18)
@@ -461,9 +464,9 @@ struct OnboardingExperienceView: View {
 
         var title: String {
             switch self {
-            case .volume: "Volume"
+            case .volume: String(localized: "Volume")
             case .airpods: "AirPods"
-            case .battery: "Battery"
+            case .battery: String(localized: "Battery")
             }
         }
 
@@ -476,7 +479,7 @@ struct OnboardingExperienceView: View {
         let kinds = AlertKind.allCases.filter { $0 != .battery || SystemStatusService.hasBattery }
         let systemOn = settings.isNotificationEnabled(.system)
         return room(spacing: 16) {
-            heading("Notifications", "Choose what shows up in the \(flow.word).")
+            heading(String(localized: "Notifications"), String(localized: "Choose what shows up in the \(flow.word)."))
             ZStack(alignment: .bottomLeading) {
                 OnboardingVideo(name: alertKind.clip).id(alertKind)
                 segmented(kinds, selection: alertKind, title: \.title) { alertKind = $0 }
@@ -489,48 +492,48 @@ struct OnboardingExperienceView: View {
             VStack(spacing: 0) {
                 row(
                     "speaker.wave.2",
-                    "Use Nano's volume and brightness cards",
-                    detail: "They replace the macOS ones. Press a volume key to try."
+                    String(localized: "Use Nano's volume and brightness cards"),
+                    detail: String(localized: "They replace the macOS ones. Press a volume key to try.")
                 ) {
-                    toggle("Use Nano's volume and brightness cards", isOn: Binding(
+                    toggle(String(localized: "Use Nano's volume and brightness cards"), isOn: Binding(
                         get: { settings.hudReplacesSystemHUD },
                         set: { flow.setSystemCards($0) }
                     ))
                 }
                 if settings.hudReplacesSystemHUD, !flow.accessibilityTrusted {
                     divider
-                    row("accessibility", "Accessibility", detail: "Lets Nano catch the volume and brightness keys. Nano never records what you type.") {
-                        allowButton("Allow", action: flow.requestAccessibility)
+                    row("accessibility", String(localized: "Accessibility"), detail: String(localized: "Lets Nano catch the volume and brightness keys. Nano never records what you type.")) {
+                        allowButton(String(localized: "Allow"), action: flow.requestAccessibility)
                     }
                 }
                 divider
                 row(
                     "wave.3.right",
-                    "AirPods and Bluetooth",
-                    detail: "Shows battery when your AirPods or other devices connect. macOS asks for Bluetooth to do this."
+                    String(localized: "AirPods and Bluetooth"),
+                    detail: String(localized: "Shows battery when your AirPods or other devices connect. macOS asks for Bluetooth to do this.")
                 ) {
                     if flow.bluetoothAuthorization == .allowedAlways {
                         allowedLabel
                     } else {
-                        allowButton(flow.bluetoothDenied ? "Open Settings" : "Allow", action: flow.requestBluetooth)
+                        allowButton(flow.bluetoothDenied ? String(localized: "Open Settings") : String(localized: "Allow"), action: flow.requestBluetooth)
                     }
                 }
                 divider
                 row(
                     "bell",
-                    "Notifications from other apps",
-                    tag: "Optional",
-                    detail: "Messages, Mail and the rest appear in the \(flow.word). Needs Full Disk Access to read them."
+                    String(localized: "Notifications from other apps"),
+                    tag: String(localized: "Optional"),
+                    detail: String(localized: "Messages, Mail and the rest appear in the \(flow.word). Needs Full Disk Access to read them.")
                 ) {
-                    toggle("Notifications from other apps", isOn: Binding(
+                    toggle(String(localized: "Notifications from other apps"), isOn: Binding(
                         get: { settings.isNotificationEnabled(.system) },
                         set: { settings.setNotificationEnabled($0, for: .system) }
                     ))
                 }
                 if systemOn, !flow.fullDiskAccess {
                     divider
-                    row("externaldrive", "Full Disk Access", detail: "macOS doesn't list Nano on its own. Drag Nano from the small window into the list, then turn it on.") {
-                        allowButton("Open Settings") { NanoFullDiskAccess.request() }
+                    row("externaldrive", String(localized: "Full Disk Access"), detail: String(localized: "macOS doesn't list Nano on its own. Drag Nano from the small window into the list, then turn it on.")) {
+                        allowButton(String(localized: "Open Settings")) { NanoFullDiskAccess.request() }
                     }
                 }
             }
@@ -556,11 +559,11 @@ struct OnboardingExperienceView: View {
         return VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top, spacing: 18) {
                 heading(
-                    "Agents",
-                    "Nano adds a small hook to each agent so its requests and limits show in the \(flow.word). Your own settings stay as they are."
+                    String(localized: "Agents"),
+                    String(localized: "Nano adds a small hook to each agent so its requests and limits show in the \(flow.word). Your own settings stay as they are.")
                 )
                 Spacer(minLength: 0)
-                miniVideo("agent-approval", label: "Approvals")
+                miniVideo("agent-approval", label: String(localized: "Approvals"))
             }
             if flow.offeredAgents.isEmpty {
                 Text("No supported agents found on this Mac yet. Connect one later from Settings › Agents.")
@@ -571,7 +574,7 @@ struct OnboardingExperienceView: View {
                     .background(OnboardingChrome.card, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 navigation()
             } else {
-                sectionLabel("Found on this Mac")
+                sectionLabel(String(localized: "Found on this Mac"))
                 panel {
                     ScrollView {
                         VStack(spacing: 0) {
@@ -612,11 +615,12 @@ struct OnboardingExperienceView: View {
                 .font(.system(size: 11.5))
                 .foregroundStyle(OnboardingChrome.secondary)
                 HStack(spacing: 8) {
-                    secondaryButton("Back", action: flow.back)
+                    secondaryButton(String(localized: "Back"), action: flow.back)
                     Spacer()
-                    secondaryButton("Not now", action: flow.next)
+                    secondaryButton(String(localized: "Not now"), action: flow.next)
                     primaryButton(
-                        connecting ? "Connecting…" : count == 0 ? "Pick an agent" : "Connect \(count) agent\(count == 1 ? "" : "s")",
+                        connecting ? String(localized: "Connecting…") : count == 0 ? String(localized: "Pick an agent")
+                            : count == 1 ? String(localized: "Connect 1 agent") : String(localized: "Connect \(count) agents"),
                         enabled: count > 0 && !connecting,
                         action: flow.connectAgents
                     )
@@ -676,9 +680,9 @@ struct OnboardingExperienceView: View {
             }
             .padding(.top, 4)
             HStack {
-                secondaryButton("Back", action: flow.back)
+                secondaryButton(String(localized: "Back"), action: flow.back)
                 Spacer()
-                secondaryButton("Skip the test", action: flow.skipAgentTest)
+                secondaryButton(String(localized: "Skip the test"), action: flow.skipAgentTest)
             }
             .padding(.top, 14)
         }
@@ -741,10 +745,10 @@ struct OnboardingExperienceView: View {
                 }
             }
             Spacer()
-            Text(connected ? "Connected" : "Not added")
+            Text(connected ? String(localized: "Connected") : String(localized: "Not added"))
                 .font(.system(size: 11.5))
                 .foregroundStyle(connected ? OnboardingChrome.positive : OnboardingChrome.tertiary)
-            smallButton(connected ? "Disconnect" : "Connect") { flow.setConnected(provider, !connected) }
+            smallButton(connected ? String(localized: "Disconnect") : String(localized: "Connect")) { flow.setConnected(provider, !connected) }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 9)
@@ -756,11 +760,11 @@ struct OnboardingExperienceView: View {
         let engine = settings.voiceDictationEngine
         return room(spacing: 14) {
             HStack(alignment: .top, spacing: 18) {
-                heading("Quill", "Speak and Quill types it where your cursor is. It runs on this Mac and never keeps audio.")
+                heading("Quill", String(localized: "Speak and Quill types it where your cursor is. It runs on this Mac and never keeps audio."))
                 Spacer(minLength: 0)
                 miniVideo("voice-dictation", label: nil)
             }
-            sectionLabel("Engine")
+            sectionLabel(String(localized: "Engine"))
             panel {
                 VStack(spacing: 0) {
                     ForEach(Array(VoiceDictationEngine.offered.enumerated()), id: \.element) { index, option in
@@ -778,33 +782,33 @@ struct OnboardingExperienceView: View {
             if mic == .denied || mic == .restricted {
                 deniedCard(
                     symbol: "mic.slash",
-                    title: "Microphone is off for Nano",
-                    detail: "You said no, so macOS won't ask again. Quill can't hear you until you turn Nano on in System Settings.",
-                    path: "Privacy & Security › Microphone",
+                    title: String(localized: "Microphone is off for Nano"),
+                    detail: String(localized: "You said no, so macOS won't ask again. Quill can't hear you until you turn Nano on in System Settings."),
+                    path: String(localized: "Privacy & Security › Microphone"),
                     anchor: NanoPermissionKind.microphone.settingsAnchor
                 )
             }
             VStack(spacing: 0) {
                 if mic != .denied, mic != .restricted {
-                    row("mic", "Microphone", detail: "So Quill can hear you. Only while you dictate.") {
-                        if mic == .authorized { allowedLabel } else { allowButton("Allow", action: flow.requestMicrophone) }
+                    row("mic", String(localized: "Microphone"), detail: String(localized: "So Quill can hear you. Only while you dictate.")) {
+                        if mic == .authorized { allowedLabel } else { allowButton(String(localized: "Allow"), action: flow.requestMicrophone) }
                     }
                     divider
                 }
                 row(
                     "accessibility",
-                    "Accessibility",
-                    tag: "Optional",
-                    detail: "Lets Quill type the text for you. Without it, you paste with ⌘V."
+                    String(localized: "Accessibility"),
+                    tag: String(localized: "Optional"),
+                    detail: String(localized: "Lets Quill type the text for you. Without it, you paste with ⌘V.")
                 ) {
-                    if flow.accessibilityTrusted { allowedLabel } else { allowButton("Allow", action: flow.requestAccessibility) }
+                    if flow.accessibilityTrusted { allowedLabel } else { allowButton(String(localized: "Allow"), action: flow.requestAccessibility) }
                 }
             }
             if mic == .authorized, dictation.modelStore.isReady(engine) {
                 QuillTryField(hotkey: settings.voiceDictationHotkey.displayString, holds: settings.voiceDictationActivationMode != .toggle)
             }
         } footer: {
-            navigation(trailingNote: mic == .denied ? "It stays on the summary list" : nil)
+            navigation(trailingNote: mic == .denied ? String(localized: "It stays on the summary list") : nil)
         }
     }
 
@@ -838,7 +842,7 @@ struct OnboardingExperienceView: View {
                             .font(.system(size: 11.5).monospacedDigit())
                             .foregroundStyle(OnboardingChrome.secondary)
                         if failure == nil {
-                            smallButton("Download") { viewModel.voiceDictation.downloadForFirstUse(engine) }
+                            smallButton(String(localized: "Download")) { viewModel.voiceDictation.downloadForFirstUse(engine) }
                         }
                     }
                 } else {
@@ -871,7 +875,7 @@ struct OnboardingExperienceView: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer(minLength: 8)
-                    allowButton("Retry") { viewModel.voiceDictation.downloadModels(for: engine) }
+                    allowButton(String(localized: "Retry")) { viewModel.voiceDictation.downloadModels(for: engine) }
                 }
                 .padding(10)
                 .background(OnboardingChrome.danger.opacity(0.1), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
@@ -890,9 +894,9 @@ struct OnboardingExperienceView: View {
 
     private static func engineLine(_ engine: VoiceDictationEngine) -> String {
         switch engine {
-        case .parakeetS1: "English, best quality. Removes fillers and false starts."
-        case .whisperTurbo, .cohereTranscribe: "Many languages. Hears which one you speak."
-        case .whisperBase, .whisperTiny: "Small download. Good for clear speech."
+        case .parakeetS1: String(localized: "English, best quality. Removes fillers and false starts.")
+        case .whisperTurbo, .cohereTranscribe: String(localized: "Many languages. Hears which one you speak.")
+        case .whisperBase, .whisperTiny: String(localized: "Small download. Good for clear speech.")
         }
     }
 
@@ -933,9 +937,9 @@ struct OnboardingExperienceView: View {
     }
 
     private func quillStatus(_ engine: VoiceDictationEngine) -> String? {
-        if viewModel.voiceDictation.modelStore.isReady(engine) { return "\(engine.title) ready" }
-        if let progress = downloadProgress(engine) { return "Downloading \(Int(progress.fraction * 100))%" }
-        if downloadFailure(engine) != nil { return "Download stopped" }
+        if viewModel.voiceDictation.modelStore.isReady(engine) { return String(localized: "\(engine.title) ready") }
+        if let progress = downloadProgress(engine) { return String(localized: "Downloading \(Int(progress.fraction * 100))%") }
+        if downloadFailure(engine) != nil { return String(localized: "Download stopped") }
         return nil
     }
 
@@ -945,38 +949,38 @@ struct OnboardingExperienceView: View {
         let waiting = VoiceDictationEngine.offered.first { $0 != starter && (downloadProgress($0) != nil || downloadFailure($0) != nil) }
         guard let waiting else { return nil }
         if downloadFailure(waiting) != nil, store.isReady(starter) {
-            return "Whisper Base is ready, so Quill works now. You can also retry later from Settings › Quill."
+            return String(localized: "Whisper Base is ready, so Quill works now. You can also retry later from Settings › Quill.")
         }
         guard settings.voiceDictationEngine == starter else { return nil }
-        return "Whisper Base (\(Self.bytes(engineSize(starter)))) downloads too, so you can dictate now. Quill switches to \(waiting.title) when it's ready."
+        return String(localized: "Whisper Base (\(Self.bytes(engineSize(starter)))) downloads too, so you can dictate now. Quill switches to \(waiting.title) when it's ready.")
     }
 
     private var sketch: some View {
         room(spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Quill, optional").font(.system(size: 11.5)).foregroundStyle(OnboardingChrome.secondary)
-                heading("Sketch", "Talk while you draw on the screen. Good for showing an agent or a teammate exactly what you mean.")
+                heading("Sketch", String(localized: "Talk while you draw on the screen. Good for showing an agent or a teammate exactly what you mean."))
             }
             SketchArt()
                 .aspectRatio(16 / 9, contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             VStack(spacing: 0) {
-                row("display", "Screen Recording", detail: "So Sketch can capture what you marked. macOS may ask you to reopen Nano.") {
-                    if flow.screenRecordingGranted { allowedLabel } else { allowButton("Allow", action: flow.requestScreenRecording) }
+                row("display", String(localized: "Screen Recording"), detail: String(localized: "So Sketch can capture what you marked. macOS may ask you to reopen Nano.")) {
+                    if flow.screenRecordingGranted { allowedLabel } else { allowButton(String(localized: "Allow"), action: flow.requestScreenRecording) }
                 }
                 divider
                 row(
                     "keyboard",
-                    "Start and finish with \(settings.voiceDictationSketchHotkey.displayString)",
-                    detail: "Hold \(settings.voiceDictationSketchDrawKey.symbol) to draw. Change both in Settings › Quill."
+                    String(localized: "Start and finish with \(settings.voiceDictationSketchHotkey.displayString)"),
+                    detail: String(localized: "Hold \(settings.voiceDictationSketchDrawKey.symbol) to draw. Change both in Settings › Quill.")
                 ) { EmptyView() }
             }
         } footer: {
             HStack(spacing: 8) {
-                secondaryButton("Back", action: flow.back)
+                secondaryButton(String(localized: "Back"), action: flow.back)
                 Spacer()
-                secondaryButton("Skip Sketch", action: flow.turnOffSketchAndContinue)
-                primaryButton("Next") {
+                secondaryButton(String(localized: "Skip Sketch"), action: flow.turnOffSketchAndContinue)
+                primaryButton(String(localized: "Next")) {
                     settings.voiceDictationSketchEnabled = true
                     flow.next()
                 }
@@ -988,32 +992,32 @@ struct OnboardingExperienceView: View {
     private var cue: some View {
         let hotkey = settings.cueQuickCaptureHotkey.displayString
         return room(spacing: 16) {
-            heading("Cue", "A to-do list for each project, one hover away.")
+            heading("Cue", String(localized: "A to-do list for each project, one hover away."))
             CueArt(hotkey: hotkey)
                 .aspectRatio(16 / 9, contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             VStack(alignment: .leading, spacing: 8) {
-                numbered(1, "Press \(hotkey) anywhere and type the to-do. Text you have selected comes with it.")
-                numbered(2, "Keep a list for each project in its own folder.")
-                numbered(3, "Hover the \(flow.word) to see what's next and tick it off.")
+                numbered(1, String(localized: "Press \(hotkey) anywhere and type the to-do. Text you have selected comes with it."))
+                numbered(2, String(localized: "Keep a list for each project in its own folder."))
+                numbered(3, String(localized: "Hover the \(flow.word) to see what's next and tick it off."))
             }
             VStack(spacing: 0) {
                 row(
                     "list.bullet",
-                    "Sync with Reminders",
-                    tag: "Optional",
-                    detail: "Lets Cue sync a Reminders list, so your to-dos reach your iPhone. Pick the list in Settings › Cue."
+                    String(localized: "Sync with Reminders"),
+                    tag: String(localized: "Optional"),
+                    detail: String(localized: "Lets Cue sync a Reminders list, so your to-dos reach your iPhone. Pick the list in Settings › Cue.")
                 ) {
-                    if flow.remindersGranted { allowedLabel } else { allowButton("Allow", action: flow.requestReminders) }
+                    if flow.remindersGranted { allowedLabel } else { allowButton(String(localized: "Allow"), action: flow.requestReminders) }
                 }
                 divider
                 row(
                     "accessibility",
-                    "Accessibility",
-                    tag: "Optional",
-                    detail: "Lets a new to-do start with the text you have selected. The shortcut works without it."
+                    String(localized: "Accessibility"),
+                    tag: String(localized: "Optional"),
+                    detail: String(localized: "Lets a new to-do start with the text you have selected. The shortcut works without it.")
                 ) {
-                    if flow.accessibilityTrusted { allowedLabel } else { allowButton("Allow", action: flow.requestAccessibility) }
+                    if flow.accessibilityTrusted { allowedLabel } else { allowButton(String(localized: "Allow"), action: flow.requestAccessibility) }
                 }
             }
         } footer: {
@@ -1031,28 +1035,28 @@ struct OnboardingExperienceView: View {
     private var mixer: some View {
         let store = viewModel.mixerStore
         return room(spacing: 16) {
-            heading("Mixer", "Turn one app down without touching the rest. Quiet a call, keep your music.")
+            heading("Mixer", String(localized: "Turn one app down without touching the rest. Quiet a call, keep your music."))
             MixerArt()
                 .aspectRatio(16 / 9, contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             VStack(spacing: 0) {
                 row(
                     "speaker.wave.2",
-                    "System audio",
-                    detail: store.error ?? "Mixer needs it to change each app's volume. macOS calls it audio recording. Nano never saves any sound."
+                    String(localized: "System audio"),
+                    detail: store.error ?? String(localized: "Mixer needs it to change each app's volume. macOS calls it audio recording. Nano never saves any sound.")
                 ) {
                     if store.isConfigured {
                         allowedLabel
                     } else {
-                        allowButton(store.error == nil ? "Allow" : "Try again", action: flow.connectMixer)
+                        allowButton(store.error == nil ? String(localized: "Allow") : String(localized: "Try again"), action: flow.connectMixer)
                     }
                 }
                 if settings.mixerMicMuteHotkeyEnabled {
                     divider
                     row(
                         "mic.slash",
-                        "Mute your mic with \(settings.mixerMicMuteHotkey.displayString)",
-                        detail: "Works in any app. The \(flow.word) shows when you're muted."
+                        String(localized: "Mute your mic with \(settings.mixerMicMuteHotkey.displayString)"),
+                        detail: String(localized: "Works in any app. The \(flow.word) shows when you're muted.")
                     ) { EmptyView() }
                 }
             }
@@ -1064,7 +1068,7 @@ struct OnboardingExperienceView: View {
     private var dashboard: some View {
         room(spacing: 16) {
             HStack(alignment: .top, spacing: 18) {
-                heading("Dashboard", "This is what opens when you hover the \(flow.word). Drag to put what you use most first.")
+                heading(String(localized: "Dashboard"), String(localized: "This is what opens when you hover the \(flow.word). Drag to put what you use most first."))
                 Spacer(minLength: 0)
                 miniVideo("dashboard", label: nil)
             }
@@ -1086,7 +1090,7 @@ struct OnboardingExperienceView: View {
         let position = (pending.firstIndex { $0.kind == current.kind } ?? 0) + 1
         return VStack(alignment: .leading, spacing: 12) {
             HStack {
-                sectionLabel("Access, one at a time")
+                sectionLabel(String(localized: "Access, one at a time"))
                 Spacer()
                 Text("\(position) of \(pending.count)")
                     .font(.system(size: 11.5).monospacedDigit())
@@ -1102,8 +1106,8 @@ struct OnboardingExperienceView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: 8)
-                smallButton("Not now") { flow.deferPermission(current.kind) }
-                allowButton("Allow") { flow.requestPermission(current.kind) }
+                smallButton(String(localized: "Not now")) { flow.deferPermission(current.kind) }
+                allowButton(String(localized: "Allow")) { flow.requestPermission(current.kind) }
             }
             divider
             HStack(spacing: 6) {
@@ -1125,10 +1129,10 @@ struct OnboardingExperienceView: View {
 
     private func permissionWhy(_ kind: NanoPermissionKind) -> String {
         switch kind {
-        case .calendar: "Shows your next events. Nano reads them on this Mac only."
-        case .location: "So Weather shows where you are. Or pick a city in Settings."
-        case .camera: "The camera turns on only while you look at it. Nothing is recorded."
-        case .automation: "To play, pause and skip, Nano needs to control Music and Spotify."
+        case .calendar: String(localized: "Shows your next events. Nano reads them on this Mac only.")
+        case .location: String(localized: "So Weather shows where you are. Or pick a city in Settings.")
+        case .camera: String(localized: "The camera turns on only while you look at it. Nothing is recorded.")
+        case .automation: String(localized: "To play, pause and skip, Nano needs to control Music and Spotify.")
         default: kind.detail
         }
     }
@@ -1138,9 +1142,9 @@ struct OnboardingExperienceView: View {
         let quillEngine = settings.voiceDictationEngine
         let quillDownload = flow.picks.contains(.quill) ? downloadProgress(quillEngine) : nil
         return room(spacing: 18) {
-            heading("You're set.", "Here's what's on. Hover the \(flow.word) anytime, and change anything in Settings.")
+            heading(String(localized: "You're set."), String(localized: "Here's what's on. Hover the \(flow.word) anytime, and change anything in Settings."))
             VStack(alignment: .leading, spacing: 8) {
-                sectionLabel("On")
+                sectionLabel(String(localized: "On"))
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), alignment: .leading), count: 3), alignment: .leading, spacing: 8) {
                     ForEach(flow.enabledSummary, id: \.self) { item in
                         Label(item, systemImage: "checkmark")
@@ -1151,12 +1155,12 @@ struct OnboardingExperienceView: View {
             }
             if !missing.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
-                    sectionLabel("Still needs access")
+                    sectionLabel(String(localized: "Still needs access"))
                     VStack(spacing: 0) {
                         ForEach(Array(missing.enumerated()), id: \.element) { index, kind in
                             if index > 0 { divider }
                             row(kind.symbol, kind.title, detail: kind.detail) {
-                                allowButton("Allow") { flow.allow(kind) }
+                                allowButton(String(localized: "Allow")) { flow.allow(kind) }
                             }
                         }
                     }
@@ -1185,12 +1189,12 @@ struct OnboardingExperienceView: View {
                     HStack {
                         Text("Open at login").font(.system(size: 12.5, weight: .semibold))
                         Spacer()
-                        toggle("Open at login", isOn: Binding(
+                        toggle(String(localized: "Open at login"), isOn: Binding(
                             get: { viewModel.loginItem.isEnabled || viewModel.loginItem.needsApproval },
                             set: { viewModel.loginItem.setEnabled($0) }
                         ))
                     }
-                    Text(viewModel.loginItem.isEnabled ? "Nano starts with your Mac." : "You open Nano yourself after a restart.")
+                    Text(viewModel.loginItem.isEnabled ? String(localized: "Nano starts with your Mac.") : String(localized: "You open Nano yourself after a restart."))
                         .font(.system(size: 11))
                         .foregroundStyle(OnboardingChrome.secondary)
                 }
@@ -1200,10 +1204,10 @@ struct OnboardingExperienceView: View {
             }
         } footer: {
             HStack(spacing: 8) {
-                secondaryButton("Back", action: flow.back)
+                secondaryButton(String(localized: "Back"), action: flow.back)
                 Spacer()
-                secondaryButton("Open Settings") { flow.finish(openingSettings: true) }
-                primaryButton("Start using Nano") { flow.finish() }
+                secondaryButton(String(localized: "Open Settings")) { flow.finish(openingSettings: true) }
+                primaryButton(String(localized: "Start using Nano")) { flow.finish() }
                     .keyboardShortcut(.defaultAction)
             }
             Text(Self.supportLine)
@@ -1371,7 +1375,7 @@ struct OnboardingExperienceView: View {
                 .padding(10)
                 .background(Color.black.opacity(0.25), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
                 HStack(spacing: 10) {
-                    allowButton("Open System Settings") { NanoPrivacySettings.open(anchor) }
+                    allowButton(String(localized: "Open System Settings")) { NanoPrivacySettings.open(anchor) }
                     Text("Nano notices the change by itself.")
                         .font(.system(size: 11.5))
                         .foregroundStyle(OnboardingChrome.secondary)
@@ -1417,12 +1421,12 @@ struct OnboardingExperienceView: View {
 
     private func navigation(trailingNote: String? = nil) -> some View {
         HStack(spacing: 10) {
-            secondaryButton("Back", action: flow.back)
+            secondaryButton(String(localized: "Back"), action: flow.back)
             Spacer()
             if let trailingNote {
                 Text(trailingNote).font(.system(size: 11.5)).foregroundStyle(OnboardingChrome.secondary)
             }
-            primaryButton("Next", action: flow.next)
+            primaryButton(String(localized: "Next"), action: flow.next)
                 .keyboardShortcut(.defaultAction)
         }
         .padding(.top, 2)
@@ -1483,8 +1487,8 @@ struct OnboardingExperienceView: View {
     }
 
     private static var supportLine: AttributedString {
-        var line = AttributedString("Nano is free and open source. If it helps you, ")
-        var link = AttributedString("buy me a coffee")
+        var line = AttributedString(localized: "Nano is free and open source. If it helps you, ")
+        var link = AttributedString(localized: "buy me a coffee")
         link.link = NanoLinks.tip
         link.underlineStyle = .single
         line.append(link)
@@ -1520,7 +1524,7 @@ private struct QuillTryField: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            TextField(holds ? "Hold the shortcut, speak, let go. Your words land here." : "Press the shortcut, speak, press it again. Your words land here.", text: $text)
+            TextField(holds ? String(localized: "Hold the shortcut, speak, let go. Your words land here.") : String(localized: "Press the shortcut, speak, press it again. Your words land here."), text: $text)
                 .textFieldStyle(.plain)
                 .font(.system(size: 13))
             Text(hotkey)
@@ -1599,10 +1603,10 @@ private struct CueArt: View {
                     Spacer()
                     Text("3 left").font(.system(size: 10.5)).foregroundStyle(OnboardingChrome.secondary)
                 }
-                item("Write the release notes", done: false)
-                item("Record the Mixer clip", done: false)
-                item("Answer the GitHub issue about AirPods", done: false)
-                item("Fix the floating island gap", done: true)
+                item(String(localized: "Write the release notes"), done: false)
+                item(String(localized: "Record the Mixer clip"), done: false)
+                item(String(localized: "Answer the GitHub issue about AirPods"), done: false)
+                item(String(localized: "Fix the floating island gap"), done: true)
             }
             .padding(14)
             .frame(width: 270)
@@ -1636,7 +1640,7 @@ private struct CueArt: View {
 }
 
 private struct MixerArt: View {
-    private let apps: [(String, Double?)] = [("Music", 0.78), ("Zoom", 0.35), ("Safari", 0.6), ("Slack", nil)]
+    private let apps: [(String, Double?)] = [(String(localized: "Music"), 0.78), ("Zoom", 0.35), ("Safari", 0.6), ("Slack", nil)]
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -1652,7 +1656,7 @@ private struct MixerArt: View {
                             }
                         }
                         .frame(height: 4)
-                        Text(app.1.map { "\(Int($0 * 100))" } ?? "Off")
+                        Text(app.1.map { "\(Int($0 * 100))" } ?? String(localized: "Off"))
                             .font(.system(size: 10.5).monospacedDigit())
                             .foregroundStyle(OnboardingChrome.secondary)
                             .frame(width: 24, alignment: .trailing)
@@ -1766,7 +1770,7 @@ struct OnboardingVideo: View {
         .contentShape(Rectangle())
         .onTapGesture { paused = !isPaused }
         .accessibilityElement()
-        .accessibilityLabel(isPaused ? "Play the clip" : "Pause the clip")
+        .accessibilityLabel(isPaused ? String(localized: "Play the clip") : String(localized: "Pause the clip"))
         .accessibilityAddTraits(.isButton)
         .animation(.easeOut(duration: 0.15), value: isPaused)
     }

@@ -46,93 +46,93 @@ enum VoiceDictationModelManifest {
             id: .parakeetTDT06BV3,
             title: "Parakeet TDT 0.6B v3",
             publisher: "NVIDIA, Core ML conversion by Fluid Inference",
-            role: "Speech recognition",
+            role: String(localized: "Speech recognition"),
             repository: "FluidInference/parakeet-tdt-0.6b-v3-coreml",
             revision: "7dd20fe6b1797d35f5e3307e8b1732d9a178edfe",
             // Must equal FluidAudio's `Repo.parakeetV3.folderName`: it resolves
             // the cache as `<parent>/<folderName>` from the URL we hand it.
             directoryName: "parakeet-tdt-0.6b-v3",
             license: "CC BY 4.0",
-            licenseNote: "Attribution to NVIDIA is required. Verify commercial distribution terms before bundling or redistributing the weights.",
-            runtime: "Core ML via FluidAudio (Neural Engine)",
+            licenseNote: String(localized: "Attribution to NVIDIA is required. Verify commercial distribution terms before bundling or redistributing the weights."),
+            runtime: String(localized: "Core ML via FluidAudio (Neural Engine)"),
             sourceURL: URL(string: "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3")!
         ),
         VoiceDictationModelDescriptor(
             id: .parakeetVocabularyBooster,
-            title: "Vocabulary booster",
+            title: String(localized: "Vocabulary booster"),
             publisher: "NVIDIA Parakeet CTC 110M, Core ML conversion by Fluid Inference",
-            role: "Listens for your dictionary terms",
+            role: String(localized: "Listens for your dictionary terms"),
             repository: "FluidInference/parakeet-ctc-110m-coreml",
             revision: "accdafd8cf8a2ff1cabe3c11e54416b405d409aa",
             directoryName: "parakeet-ctc-110m",
             license: "CC BY 4.0",
-            licenseNote: "Attribution to NVIDIA is required. Optional: Parakeet runs without it, and uses it to hear your dictionary terms.",
-            runtime: "Core ML via FluidAudio (Neural Engine)",
+            licenseNote: String(localized: "Attribution to NVIDIA is required. Optional: Parakeet runs without it, and uses it to hear your dictionary terms."),
+            runtime: String(localized: "Core ML via FluidAudio (Neural Engine)"),
             sourceURL: URL(string: "https://huggingface.co/nvidia/parakeet-tdt_ctc-110m")!
         ),
         VoiceDictationModelDescriptor(
             id: .s1Mini,
             title: "S1-mini",
             publisher: "Superwhisper",
-            role: "Text cleanup",
+            role: String(localized: "Text cleanup"),
             repository: "superwhisper/s1-mini-GGUF",
             revision: "34add00a48a2e5d24e5a4ee5405a99620a3a240c",
             directoryName: "s1-mini",
-            license: "Apache 2.0 with naming clause",
-            licenseNote: "The model must keep its name, “S1-mini” by “Superwhisper”, with that exact capitalization wherever it is used. LICENSE and NOTICE are downloaded alongside the weights and must be retained.",
-            runtime: "GGUF Q4_K_M via llama.cpp (Metal)",
+            license: String(localized: "Apache 2.0 with naming clause"),
+            licenseNote: String(localized: "The model must keep its name, “S1-mini” by “Superwhisper”, with that exact capitalization wherever it is used. LICENSE and NOTICE are downloaded alongside the weights and must be retained."),
+            runtime: String(localized: "GGUF Q4_K_M via llama.cpp (Metal)"),
             sourceURL: URL(string: "https://huggingface.co/superwhisper/s1-mini")!
         ),
         VoiceDictationModelDescriptor(
             id: .cohereTranscribe,
             title: "Cohere Transcribe 03-2026",
             publisher: "Cohere Labs, Core ML conversion by Fluid Inference",
-            role: "Speech recognition in 14 languages",
+            role: String(localized: "Speech recognition in 14 languages"),
             repository: "FluidInference/cohere-transcribe-03-2026-coreml",
             revision: "fccec19ecf93b40969d4888f27e10d714daeb3cf",
             directoryName: "cohere-transcribe-03-2026",
             license: "Apache 2.0",
-            licenseNote: "Cohere Transcribe and its Core ML conversion are Apache 2.0 licensed. The README is kept with the weights.",
-            runtime: "Core ML via FluidAudio (Neural Engine)",
+            licenseNote: String(localized: "Cohere Transcribe and its Core ML conversion are Apache 2.0 licensed. The README is kept with the weights."),
+            runtime: String(localized: "Core ML via FluidAudio (Neural Engine)"),
             sourceURL: URL(string: "https://huggingface.co/CohereLabs/cohere-transcribe-03-2026")!
         ),
         VoiceDictationModelDescriptor(
             id: .whisperLargeV3Turbo,
             title: "Whisper Large v3 Turbo",
             publisher: "OpenAI, ggml conversion by Georgi Gerganov",
-            role: "Speech recognition in 99 languages",
+            role: String(localized: "Speech recognition in 99 languages"),
             repository: "ggerganov/whisper.cpp",
             revision: "5359861c739e955e79d9a303bcbc70fb988958b1",
             directoryName: "whisper-large-v3-turbo",
             license: "MIT",
-            licenseNote: "OpenAI Whisper weights and the ggml conversion are MIT licensed. Quantized to 5 bits.",
-            runtime: "ggml Q5_0 via whisper.cpp (Metal)",
+            licenseNote: String(localized: "OpenAI Whisper weights and the ggml conversion are MIT licensed. Quantized to 5 bits."),
+            runtime: String(localized: "ggml Q5_0 via whisper.cpp (Metal)"),
             sourceURL: URL(string: "https://github.com/openai/whisper")!
         ),
         VoiceDictationModelDescriptor(
             id: .whisperBaseEnglish,
             title: "Whisper Base (English)",
             publisher: "OpenAI, ggml conversion by Georgi Gerganov",
-            role: "Speech recognition",
+            role: String(localized: "Speech recognition"),
             repository: "ggerganov/whisper.cpp",
             revision: "5359861c739e955e79d9a303bcbc70fb988958b1",
             directoryName: "whisper-base.en",
             license: "MIT",
-            licenseNote: "OpenAI Whisper weights and the ggml conversion are MIT licensed.",
-            runtime: "ggml via whisper.cpp (Metal)",
+            licenseNote: String(localized: "OpenAI Whisper weights and the ggml conversion are MIT licensed."),
+            runtime: String(localized: "ggml via whisper.cpp (Metal)"),
             sourceURL: URL(string: "https://github.com/openai/whisper")!
         ),
         VoiceDictationModelDescriptor(
             id: .whisperTinyEnglish,
             title: "Whisper Tiny (English)",
             publisher: "OpenAI, ggml conversion by Georgi Gerganov",
-            role: "Speech recognition",
+            role: String(localized: "Speech recognition"),
             repository: "ggerganov/whisper.cpp",
             revision: "5359861c739e955e79d9a303bcbc70fb988958b1",
             directoryName: "whisper-tiny.en",
             license: "MIT",
-            licenseNote: "OpenAI Whisper weights and the ggml conversion are MIT licensed.",
-            runtime: "ggml via whisper.cpp (Metal)",
+            licenseNote: String(localized: "OpenAI Whisper weights and the ggml conversion are MIT licensed."),
+            runtime: String(localized: "ggml via whisper.cpp (Metal)"),
             sourceURL: URL(string: "https://github.com/openai/whisper")!
         ),
     ]
@@ -369,7 +369,7 @@ final class VoiceDictationModelStore: ObservableObject {
         let staging = stagingDirectory(for: id)
         let destination = directory(for: id)
         if let shortfall = Self.spaceShortfall(needing: descriptor.files.reduce(0) { $0 + $1.size }, at: rootDirectory) {
-            states[id] = .failed("Not enough space. Free up \(Self.byteString(shortfall)) and retry.")
+            states[id] = .failed(String(localized: "Not enough space. Free up \(Self.byteString(shortfall)) and retry."))
             return
         }
         let session = self.session
@@ -473,18 +473,18 @@ final class VoiceDictationModelStore: ObservableObject {
         case let storeError as VoiceDictationModelStoreError:
             switch storeError {
             case .checksumMismatch, .sizeMismatch:
-                return "The download didn't check out. Retry gets a fresh copy."
+                return String(localized: "The download didn't check out. Retry gets a fresh copy.")
             case let .httpStatus(code, path):
-                return "The server returned \(code) for \(path). Check the connection and retry."
+                return String(localized: "The server returned \(code) for \(path). Check the connection and retry.")
             case .cancelled:
-                return "Cancelled."
+                return String(localized: "Cancelled.")
             }
         case let urlError as URLError:
             switch urlError.code {
             case .notConnectedToInternet, .dataNotAllowed:
-                return "You're offline. Retry once you're back."
+                return String(localized: "You're offline. Retry once you're back.")
             case .networkConnectionLost, .timedOut:
-                return "The connection dropped before it finished."
+                return String(localized: "The connection dropped before it finished.")
             default:
                 return urlError.localizedDescription
             }

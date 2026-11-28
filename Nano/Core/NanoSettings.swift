@@ -46,15 +46,15 @@ enum IslandPlacement: String, CaseIterable, Identifiable, Codable, Sendable {
 
     var title: String {
         switch self {
-        case .attached: "Notch"
-        case .floating: "Floating"
+        case .attached: String(localized: "Notch")
+        case .floating: String(localized: "Floating")
         }
     }
 
     var subtitle: String {
         switch self {
-        case .attached: "Attached to the top edge"
-        case .floating: "Floats below the top edge"
+        case .attached: String(localized: "Attached to the top edge")
+        case .floating: String(localized: "Floats below the top edge")
         }
     }
 }
@@ -68,9 +68,9 @@ enum IslandAppearance: String, CaseIterable, Identifiable, Codable, Sendable {
 
     var title: String {
         switch self {
-        case .solidBlack: "Solid Black"
-        case .glass: "Liquid Glass"
-        case .hybrid: "Hybrid"
+        case .solidBlack: String(localized: "Solid Black")
+        case .glass: String(localized: "Liquid Glass")
+        case .hybrid: String(localized: "Hybrid")
         }
     }
 }
@@ -84,8 +84,8 @@ enum IslandSize: String, CaseIterable, Identifiable, Codable, Sendable {
 
     var title: String {
         switch self {
-        case .regular: "Regular"
-        case .mini: "Mini"
+        case .regular: String(localized: "Regular")
+        case .mini: String(localized: "Mini")
         }
     }
 }
@@ -234,15 +234,15 @@ enum DashboardArea: String, CaseIterable, Identifiable, Codable, Sendable {
     }
 
     var title: String {
-        "Area \(number)"
+        String(localized: "Area \(number)")
     }
 
     var role: String {
         switch self {
-        case .area1: "Primary feature"
-        case .area2: "Secondary feature"
-        case .area3, .area4: "Status strip"
-        case .area5, .area6: "Quick action"
+        case .area1: String(localized: "Primary feature")
+        case .area2: String(localized: "Secondary feature")
+        case .area3, .area4: String(localized: "Status strip")
+        case .area5, .area6: String(localized: "Quick action")
         }
     }
 
@@ -271,10 +271,10 @@ enum DashboardSlot: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .wide: "Wide"
-        case .medium: "Medium"
-        case .strip: "Status strip"
-        case .quick: "Quick action"
+        case .wide: String(localized: "Wide")
+        case .medium: String(localized: "Medium")
+        case .strip: String(localized: "Status strip")
+        case .quick: String(localized: "Quick action")
         }
     }
 
@@ -293,7 +293,7 @@ enum UsageDisplayMode: String, CaseIterable, Identifiable, Sendable {
     case remaining
 
     var id: String { rawValue }
-    var title: String { self == .used ? "Used" : "Remaining" }
+    var title: String { self == .used ? String(localized: "Used") : String(localized: "Remaining") }
 
     func percent(for window: NanoUsageWindow) -> Double {
         self == .used ? window.usedPercent : window.remainingPercent
@@ -301,7 +301,9 @@ enum UsageDisplayMode: String, CaseIterable, Identifiable, Sendable {
 
     func accessibilityDescription(for window: NanoUsageWindow) -> String {
         let amount = Int(percent(for: window).rounded())
-        return "\(window.label) \(amount) percent \(self == .used ? "used" : "remaining")"
+        return self == .used
+            ? String(localized: "\(window.label) \(amount) percent used")
+            : String(localized: "\(window.label) \(amount) percent remaining")
     }
 }
 
@@ -311,8 +313,8 @@ enum CalendarLayout: String, CaseIterable, Sendable {
 
     var title: String {
         switch self {
-        case .month: "Month"
-        case .week: "Week"
+        case .month: String(localized: "Month")
+        case .week: String(localized: "Week")
         }
     }
 }

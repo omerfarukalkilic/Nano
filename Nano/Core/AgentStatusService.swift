@@ -210,13 +210,13 @@ enum AgentProviderID: String, CaseIterable, Identifiable, Codable, Sendable {
     var usageUnavailableHelp: String {
         switch self {
         case .pi:
-            "Pi runs on your own provider keys — their quota shows under that provider."
+            String(localized: "Pi runs on your own provider keys — their quota shows under that provider.")
         case .goose:
-            "Goose runs on your own provider keys — their quota shows under that provider."
+            String(localized: "Goose runs on your own provider keys — their quota shows under that provider.")
         case .qwen:
-            "Qwen Code does not publish a quota Nano can read."
+            String(localized: "Qwen Code does not publish a quota Nano can read.")
         default:
-            "\(title) does not publish a quota Nano can read"
+            String(localized: "\(title) does not publish a quota Nano can read")
         }
     }
 
@@ -736,8 +736,8 @@ final class AgentStatusService: ObservableObject {
                     lastActivityAt: evidence.lastActivityAt,
                     usage: [],
                     usageMessage: usageCapableProviders.contains(provider)
-                        ? "Usage not refreshed yet"
-                        : "Usage adapter not configured",
+                        ? String(localized: "Usage not refreshed yet")
+                        : String(localized: "Usage adapter not configured"),
                     activityDetail: evidence.activityDetail
                 ),
                 activityFileURL: evidence.activityFileURL
@@ -1457,7 +1457,7 @@ final class AgentStatusService: ObservableObject {
             case .gemini: return try await GeminiUsageAdapter.fetch()
             case .cline: return try await ClineUsageAdapter.fetch()
             case .opencode: return try await OpenCodeUsageAdapter.fetch()
-            default: return .unavailable("Usage adapter not configured")
+            default: return .unavailable(String(localized: "Usage adapter not configured"))
             }
         } catch {
             return .unavailable(error.localizedDescription)

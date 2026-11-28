@@ -16,10 +16,10 @@ enum CueKind: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .todo: "To-do"
-        case .prompt: "Prompt"
-        case .idea: "Idea"
-        case .link: "Link"
+        case .todo: String(localized: "To-do")
+        case .prompt: String(localized: "Prompt")
+        case .idea: String(localized: "Idea")
+        case .link: String(localized: "Link")
         }
     }
 
@@ -76,7 +76,7 @@ struct CueItem: Identifiable, Codable, Equatable, Sendable {
     var headline: String {
         let line = text.split(separator: "\n", omittingEmptySubsequences: true).first.map(String.init) ?? ""
         let trimmed = line.trimmingCharacters(in: .whitespaces)
-        if trimmed.isEmpty { return images.isEmpty ? "Empty cue" : "Image" }
+        if trimmed.isEmpty { return images.isEmpty ? String(localized: "Empty cue") : String(localized: "Image") }
         return trimmed
     }
 }
@@ -247,8 +247,8 @@ final class CueStore: ObservableObject {
 
     func title(for scope: CueScope) -> String {
         switch scope {
-        case .inbox: "Inbox"
-        case let .folder(id): folder(id)?.name ?? "Inbox"
+        case .inbox: String(localized: "Inbox")
+        case let .folder(id): folder(id)?.name ?? String(localized: "Inbox")
         }
     }
 
@@ -302,7 +302,7 @@ final class CueStore: ObservableObject {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let folder = CueFolder(
             id: UUID(),
-            name: trimmed.isEmpty ? "Untitled" : trimmed,
+            name: trimmed.isEmpty ? String(localized: "Untitled") : trimmed,
             section: section,
             colorIndex: folders.count % CueFolder.palette.count,
             linkedPath: linkedPath.map(Self.normalized)
@@ -342,7 +342,7 @@ final class CueStore: ObservableObject {
         if scope == .folder(id) { scope = .inbox }
         save()
         removedFolder = (index, folder, Set(members))
-        present(CueToast(message: "Folder \u{201C}\(folder.name)\u{201D} deleted", restoresFolder: true), seconds: 5)
+        present(CueToast(message: String(localized: "Folder \u{201C}\(folder.name)\u{201D} deleted"), restoresFolder: true), seconds: 5)
     }
 
     private func restoreRemovedFolder() {
@@ -422,7 +422,7 @@ final class CueStore: ObservableObject {
         items[index].updatedAt = Date()
         save()
         if announce, done {
-            showToast("Marked done", reopens: id)
+            showToast(String(localized: "Marked done"), reopens: id)
         }
     }
 
@@ -460,7 +460,7 @@ final class CueStore: ObservableObject {
     func delete(_ id: UUID, undoable: Bool = false) {
         guard let index = items.firstIndex(where: { $0.id == id }) else { return }
         if editingItemID == id { editingItemID = nil }
-        remove(at: [index], message: "Cue deleted", undoable: undoable)
+        remove(at: [index], message: String(localized: "Cue deleted"), undoable: undoable)
     }
 
     func removeImage(_ name: String, from id: UUID) {
@@ -477,7 +477,7 @@ final class CueStore: ObservableObject {
         guard !doomed.isEmpty else { return }
         remove(
             at: doomed,
-            message: doomed.count == 1 ? "Cleared 1 done cue" : "Cleared \(doomed.count) done cues",
+            message: doomed.count == 1 ? String(localized: "Cleared 1 done cue") : String(localized: "Cleared \(doomed.count) done cues"),
             undoable: undoable
         )
     }
@@ -586,9 +586,9 @@ final class CueStore: ObservableObject {
 
         if markDone {
             setDone(id, true)
-            showToast(item.kind == .prompt ? "Prompt copied and marked done" : "Copied and marked done", reopens: id)
+            showToast(item.kind == .prompt ? String(localized: "Prompt copied and marked done") : String(localized: "Copied and marked done"), reopens: id)
         } else {
-            showToast(item.kind == .prompt ? "Prompt copied" : "Copied")
+            showToast(item.kind == .prompt ? String(localized: "Prompt copied") : String(localized: "Copied"))
         }
     }
 
@@ -596,7 +596,7 @@ final class CueStore: ObservableObject {
         guard let image = image(named: name) else { return }
         NSPasteboard.general.clearContents()
         NSPasteboard.general.writeObjects([image])
-        showToast("Image copied")
+        showToast(String(localized: "Image copied"))
     }
 
     func undoToast() {
@@ -683,7 +683,7 @@ final class CueStore: ObservableObject {
             draft = nil
         }
         if item != nil {
-            showToast("Saved to \(title(for: current.scope))")
+            showToast(String(localized: "Saved to \(title(for: current.scope))"))
         }
         return item
     }
@@ -730,7 +730,7 @@ final class CueStore: ObservableObject {
             try data.write(to: imageURL(named: name), options: .atomic)
             return name
         } catch {
-            errorMessage = "Couldn't save an image: \(error.localizedDescription)"
+            errorMessage = String(localized: "Couldn't save an image: \(error.localizedDescription)")
             return nil
         }
     }
@@ -764,7 +764,7 @@ final class CueStore: ObservableObject {
         } catch {
             libraryIsUnreadable = true
             setAsideUnreadableLibrary()
-            errorMessage = "Cue couldn't read its library, so changes are not being saved: \(error.localizedDescription)"
+            errorMessage = String(localized: "Cue couldn't read its library, so changes are not being saved: \(error.localizedDescription)")
         }
     }
 
@@ -794,7 +794,7 @@ final class CueStore: ObservableObject {
             try data.write(to: fileURL, options: .atomic)
             errorMessage = nil
         } catch {
-            errorMessage = "Cue couldn't save: \(error.localizedDescription)"
+            errorMessage = String(localized: "Cue couldn't save: \(error.localizedDescription)")
         }
         if !applyingSync { onChange?() }
     }

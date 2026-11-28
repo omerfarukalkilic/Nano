@@ -163,11 +163,11 @@ struct VoiceDictationSettingsPane: View {
 
     private var readinessTitle: String {
         switch controller.readiness {
-        case .ready: "Ready · \(settings.voiceDictationHotkey.displayString)"
-        case .missingModels: "\(settings.voiceDictationEngine.title) is not downloaded"
-        case .microphoneUndetermined: "Microphone access has not been requested"
-        case .microphoneDenied: "Microphone access is off for Nano"
-        case .disabled: "Off"
+        case .ready: String(localized: "Ready · \(settings.voiceDictationHotkey.displayString)")
+        case .missingModels: String(localized: "\(settings.voiceDictationEngine.title) is not downloaded")
+        case .microphoneUndetermined: String(localized: "Microphone access has not been requested")
+        case .microphoneDenied: String(localized: "Microphone access is off for Nano")
+        case .disabled: String(localized: "Off")
         }
     }
 
@@ -220,9 +220,9 @@ struct VoiceDictationSettingsPane: View {
 
     private var automaticLanguageTitle: String {
         let engine = settings.voiceDictationEngine
-        if engine.detectsLanguage { return "Automatic" }
+        if engine.detectsLanguage { return String(localized: "Automatic") }
         let code = engine.recognitionLanguage(for: VoiceDictationLanguage.automatic) ?? "en"
-        return "Automatic (\(VoiceDictationLanguage.name(for: code)))"
+        return String(localized: "Automatic (\(VoiceDictationLanguage.name(for: code)))")
     }
 
     private func engineRow(_ engine: VoiceDictationEngine) -> some View {
@@ -266,7 +266,7 @@ struct VoiceDictationSettingsPane: View {
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                     if !isDownloading {
-                        Button(engineDetails.contains(engine) ? "Hide details" : "Details") {
+                        Button(engineDetails.contains(engine) ? String(localized: "Hide details") : String(localized: "Details")) {
                             withAnimation(.easeOut(duration: 0.15)) {
                                 if engineDetails.contains(engine) { engineDetails.remove(engine) } else { engineDetails.insert(engine) }
                             }
@@ -289,7 +289,7 @@ struct VoiceDictationSettingsPane: View {
                     .disabled(controller.phase.isBusy)
                 } else {
                     HStack(spacing: 6) {
-                        Button(hasUpdate ? "Update" : "Download") {
+                        Button(hasUpdate ? String(localized: "Update") : String(localized: "Download")) {
                             controller.downloadModels(for: engine)
                         }
                         if hasLocalData {
@@ -424,12 +424,12 @@ struct VoiceDictationSettingsPane: View {
 
     private func modelStateText(_ state: VoiceDictationModelState, descriptor: VoiceDictationModelDescriptor) -> String {
         switch state {
-        case .notDownloaded: "Not downloaded · \(descriptor.license) · \(descriptor.runtime)"
-        case .updateAvailable: "Update available · \(descriptor.license) · \(descriptor.runtime)"
+        case .notDownloaded: String(localized: "Not downloaded · \(descriptor.license) · \(descriptor.runtime)")
+        case .updateAvailable: String(localized: "Update available · \(descriptor.license) · \(descriptor.runtime)")
         case .downloading(let fraction, let received):
-            "Downloading \(Self.bytes(received)) of \(Self.bytes(descriptor.totalBytes)) (\(Int(fraction * 100))%)"
-        case .verifying: "Verifying checksums…"
-        case .downloaded: "Ready · \(descriptor.license) · \(descriptor.runtime)"
+            String(localized: "Downloading \(Self.bytes(received)) of \(Self.bytes(descriptor.totalBytes)) (\(Int(fraction * 100))%)")
+        case .verifying: String(localized: "Verifying checksums…")
+        case .downloaded: String(localized: "Ready · \(descriptor.license) · \(descriptor.runtime)")
         case .failed(let message): message
         }
     }
@@ -451,11 +451,11 @@ struct VoiceDictationSettingsPane: View {
     ]
 
     private func redo(_ entry: VoiceDictationHistoryEntry, as level: VoiceDictationCleanupLevel) {
-        redoStatus = (entry.id, "Redoing in \(level.title)…")
+        redoStatus = (entry.id, String(localized: "Redoing in \(level.title)…"))
         Task {
             do {
                 let text = try await controller.redo(entry, as: level)
-                redoStatus = (entry.id, "Copied in \(level.title): \(text)")
+                redoStatus = (entry.id, String(localized: "Copied in \(level.title): \(text)"))
             } catch let error as VoiceDictationError {
                 redoStatus = (entry.id, error.detail)
             } catch {
@@ -514,8 +514,8 @@ struct VoiceDictationSettingsPane: View {
         return SettingsSection(
             "Style",
             footer: available
-                ? "S1-mini cleans English. If cleanup would drop a “not” or invent a number, Quill keeps your words."
-                : "\(settings.voiceDictationEngine.title) writes text as heard. Styles need Parakeet + S1-mini."
+                ? LocalizedStringResource("S1-mini cleans English. If cleanup would drop a “not” or invent a number, Quill keeps your words.")
+                : LocalizedStringResource("\(settings.voiceDictationEngine.title) writes text as heard. Styles need Parakeet + S1-mini.")
         ) {
             SettingsRow("Cleanup", symbol: "wand.and.stars", subtitle: "\(settings.voiceDictationCleanupLevel.shortDetail)") {
                 Picker("Cleanup", selection: $settings.voiceDictationCleanupLevel) {
@@ -534,7 +534,7 @@ struct VoiceDictationSettingsPane: View {
             )
             .disabled(settings.voiceDictationCleanupLevel != .full)
             ForEach(settings.voiceDictationAppStyles) { style in
-                appRow(style.bundleID, title: style.appName, subtitle: "Uses its own style") {
+                appRow(style.bundleID, title: style.appName, subtitle: String(localized: "Uses its own style")) {
                     Picker("Style in \(style.appName)", selection: Binding(
                         get: { style.level },
                         set: { level in
@@ -549,7 +549,7 @@ struct VoiceDictationSettingsPane: View {
                     }
                     .labelsHidden()
                     .frame(width: 128)
-                    removeButton("Use the default style in \(style.appName)") {
+                    removeButton(String(localized: "Use the default style in \(style.appName)")) {
                         settings.voiceDictationAppStyles.removeAll { $0.bundleID == style.bundleID }
                     }
                 }
@@ -611,9 +611,9 @@ struct VoiceDictationSettingsPane: View {
         var id: String { rawValue }
         var title: String {
             switch self {
-            case .all: "All entries"
-            case .vocabulary: "Vocabulary"
-            case .snippets: "Snippets"
+            case .all: String(localized: "All entries")
+            case .vocabulary: String(localized: "Vocabulary")
+            case .snippets: String(localized: "Snippets")
             }
         }
     }
@@ -779,9 +779,9 @@ struct VoiceDictationSettingsPane: View {
 
     private func vocabularyDetail(_ entry: VoiceDictationVocabularyEntry) -> String {
         var parts = [entry.kind.title]
-        if entry.bundleID != nil { parts.append("Only in \(entry.appName ?? "one app")") }
+        if entry.bundleID != nil { parts.append(String(localized: "Only in \(entry.appName ?? String(localized: "one app"))")) }
         let hits = controller.stats.hits(for: entry.id)
-        if hits > 0 { parts.append("Used \(hits)×") }
+        if hits > 0 { parts.append(String(localized: "Used \(hits)×")) }
         return parts.joined(separator: ", ")
     }
 
@@ -796,8 +796,8 @@ struct VoiceDictationSettingsPane: View {
                 "Vocabulary booster",
                 symbol: "ear.badge.waveform",
                 subtitle: state.isDownloading
-                    ? "Downloading…"
-                    : "Helps Parakeet hear these words, \(Self.bytes(VoiceDictationModelManifest.descriptor(for: booster).totalBytes))"
+                    ? LocalizedStringResource("Downloading…")
+                    : LocalizedStringResource("Helps Parakeet hear these words, \(Self.bytes(VoiceDictationModelManifest.descriptor(for: booster).totalBytes))")
             ) {
                 if state.isDownloading {
                     ProgressView().controlSize(.small)
@@ -818,8 +818,8 @@ struct VoiceDictationSettingsPane: View {
                 "Learn from my fixes",
                 symbol: "pencil.and.list.clipboard",
                 subtitle: settings.voiceDictationLearnsCorrections && !controller.canPasteAutomatically
-                    ? "Needs Accessibility, like automatic paste"
-                    : "Fix or delete the same words twice and Quill learns from it",
+                    ? LocalizedStringResource("Needs Accessibility, like automatic paste")
+                    : LocalizedStringResource("Fix or delete the same words twice and Quill learns from it"),
                 subtitleIsWarning: settings.voiceDictationLearnsCorrections && !controller.canPasteAutomatically,
                 isOn: $settings.voiceDictationLearnsCorrections
             )
@@ -827,8 +827,8 @@ struct VoiceDictationSettingsPane: View {
                 "Apply what Quill learns automatically",
                 symbol: "wand.and.stars",
                 subtitle: settings.voiceDictationAppliesLearnedAutomatically
-                    ? "Added without asking. Remove anything below."
-                    : "Nano asks on the island, at most once a day",
+                    ? LocalizedStringResource("Added without asking. Remove anything below.")
+                    : LocalizedStringResource("Nano asks on the island, at most once a day"),
                 isOn: Binding(
                     get: { settings.voiceDictationAppliesLearnedAutomatically },
                     set: { on in
@@ -861,7 +861,7 @@ struct VoiceDictationSettingsPane: View {
                             }
                         }
                         .font(.system(size: 13))
-                        Text((correction.kind == .word ? "Fixed" : "Deleted") + " \(correction.count)×" + (correction.appName.map { " in \($0)" } ?? ""))
+                        Text(Self.correctionDetail(correction))
                             .font(.system(size: 11.5))
                             .foregroundStyle(.secondary)
                     }
@@ -903,7 +903,7 @@ struct VoiceDictationSettingsPane: View {
                 }
             }
             if seen > 0 {
-                SettingsRow("\(seen) correction\(seen == 1 ? "" : "s") seen") {
+                SettingsRow(seen == 1 ? LocalizedStringResource("1 correction seen") : LocalizedStringResource("\(seen) corrections seen")) {
                     Button("Forget all", role: .destructive) { controller.corrections.clear() }
                         .controlSize(.small)
                 }
@@ -927,9 +927,9 @@ struct VoiceDictationSettingsPane: View {
                     ForEach(entries.prefix(isHistoryExpanded ? 20 : 3)) { entry in
                         historyRow(entry)
                     }
-                    SettingsRow(entries.count > 3 && !isHistoryExpanded ? "\(entries.count - 3) more" : "\(entries.count) kept") {
+                    SettingsRow(entries.count > 3 && !isHistoryExpanded ? LocalizedStringResource("\(entries.count - 3) more") : LocalizedStringResource("\(entries.count) kept")) {
                         if entries.count > 3 {
-                            Button(isHistoryExpanded ? "Show less" : "Show all") {
+                            Button(isHistoryExpanded ? String(localized: "Show less") : String(localized: "Show all")) {
                                 withAnimation(.easeOut(duration: 0.18)) { isHistoryExpanded.toggle() }
                             }
                             .controlSize(.small)
@@ -1035,14 +1035,14 @@ struct VoiceDictationSettingsPane: View {
                         .frame(width: 128)
                     }
                     SettingsRow("Undo the last mark", symbol: "arrow.uturn.backward") { keycap("⌘Z") }
-                    SettingsRow("Cancel", symbol: "xmark.circle") { keycap("Esc twice") }
+                    SettingsRow("Cancel", symbol: "xmark.circle") { keycap(String(localized: "Esc twice")) }
                 }
 
                 SettingsSection("Permission") {
                     SettingsRow(
                         "Screen Recording",
                         symbol: "rectangle.dashed.badge.record",
-                        subtitle: screenRecordingAllowed ? "Allowed. Nano's own windows are left out" : "Needed to record the screen",
+                        subtitle: screenRecordingAllowed ? LocalizedStringResource("Allowed. Nano's own windows are left out") : LocalizedStringResource("Needed to record the screen"),
                         subtitleIsWarning: !screenRecordingAllowed
                     ) {
                         if screenRecordingAllowed {
@@ -1114,7 +1114,7 @@ struct VoiceDictationSettingsPane: View {
                 }
             }
         } label: {
-            Text(capture.isCapturing ? "Recording…" : value.displayString)
+            Text(capture.isCapturing ? String(localized: "Recording…") : value.displayString)
                 .font(.system(size: 12, weight: .medium, design: .rounded))
                 .frame(minWidth: 64)
         }
@@ -1127,10 +1127,10 @@ struct VoiceDictationSettingsPane: View {
                 "Dictate",
                 symbol: "mic",
                 subtitle: hotkeyCapture.isCapturing
-                    ? "Press the new shortcut. It needs ⌃, ⌥ or ⌘"
+                    ? LocalizedStringResource("Press the new shortcut. It needs ⌃, ⌥ or ⌘")
                     : VoiceDictationHotkey.isCommonSystemShortcut(settings.voiceDictationHotkey)
-                        ? "Replaces \(settings.voiceDictationHotkey.displayString) in every app while Quill is on"
-                        : "Works in every app",
+                        ? LocalizedStringResource("Replaces \(settings.voiceDictationHotkey.displayString) in every app while Quill is on")
+                        : LocalizedStringResource("Works in every app"),
                 subtitleIsWarning: VoiceDictationHotkey.isCommonSystemShortcut(settings.voiceDictationHotkey)
             ) {
                 shortcutButton(hotkeyCapture, value: settings.voiceDictationHotkey, defaultValue: .default) {
@@ -1166,7 +1166,7 @@ struct VoiceDictationSettingsPane: View {
                 if controller.isLoadingEngine {
                     ProgressView().controlSize(.small)
                 }
-                Button(isEngineExpanded ? "Done" : "Change…") {
+                Button(isEngineExpanded ? String(localized: "Done") : String(localized: "Change…")) {
                     withAnimation(.easeOut(duration: 0.18)) { engineExpandedChoice = !isEngineExpanded }
                 }
                 .controlSize(.small)
@@ -1186,11 +1186,11 @@ struct VoiceDictationSettingsPane: View {
 
     private var engineStatus: String {
         let engine = settings.voiceDictationEngine
-        if engine.requiredModels.contains(where: { controller.modelStore.state(of: $0).isDownloading }) { return "Downloading" }
-        guard controller.modelStore.isReady(engine) else { return "Not downloaded" }
-        if controller.modelStore.hasUpdate(for: engine) { return "Update available" }
-        if controller.isLoadingEngine { return "Loading. The first load can take a while" }
-        return controller.loadedEngine == engine ? "Ready and loaded" : "Ready"
+        if engine.requiredModels.contains(where: { controller.modelStore.state(of: $0).isDownloading }) { return String(localized: "Downloading") }
+        guard controller.modelStore.isReady(engine) else { return String(localized: "Not downloaded") }
+        if controller.modelStore.hasUpdate(for: engine) { return String(localized: "Update available") }
+        if controller.isLoadingEngine { return String(localized: "Loading. The first load can take a while") }
+        return controller.loadedEngine == engine ? String(localized: "Ready and loaded") : String(localized: "Ready")
     }
 
     private var typingSection: some View {
@@ -1200,7 +1200,7 @@ struct VoiceDictationSettingsPane: View {
                 symbol: "macwindow",
                 subtitle: "Agent prompts cleaned, shell commands as typed, no full stop in chat, mail greetings on their own line"
             ) {
-                Button(showsDeveloperExamples ? "Hide examples" : "Examples") {
+                Button(showsDeveloperExamples ? String(localized: "Hide examples") : String(localized: "Examples")) {
                     withAnimation(.easeOut(duration: 0.18)) { showsDeveloperExamples.toggle() }
                 }
                 .controlSize(.small)
@@ -1268,9 +1268,9 @@ struct VoiceDictationSettingsPane: View {
             SettingsRow("Audio stays in memory", symbol: "waveform.slash", subtitle: "Discarded as soon as the text is ready")
             SettingsRow("Nothing leaves this Mac", symbol: "lock.shield", subtitle: "Recognition and cleanup run locally")
             SettingsRow(
-                controller.canPasteAutomatically ? "Pastes into the focused field" : "Copies only",
+                controller.canPasteAutomatically ? LocalizedStringResource("Pastes into the focused field") : LocalizedStringResource("Copies only"),
                 symbol: "doc.on.clipboard",
-                subtitle: controller.canPasteAutomatically ? "Uses Accessibility" : "Allow Accessibility in General to paste too",
+                subtitle: controller.canPasteAutomatically ? LocalizedStringResource("Uses Accessibility") : LocalizedStringResource("Allow Accessibility in General to paste too"),
                 subtitleIsWarning: !controller.canPasteAutomatically
             )
         }
@@ -1279,10 +1279,26 @@ struct VoiceDictationSettingsPane: View {
     private static func historyDetail(_ entry: VoiceDictationHistoryEntry) -> String {
         var parts = [entry.createdAt.formatted(date: .omitted, time: .shortened)]
         if let app = entry.appName { parts.append(app) }
-        if let seconds = entry.audioSeconds { parts.append(String(format: "%.0f s spoken", seconds.rounded(.up))) }
-        if let latency = entry.latency { parts.append(String(format: "ready in %.2f s", latency)) }
+        if let seconds = entry.audioSeconds {
+            let spoken = String(format: "%.0f", seconds.rounded(.up))
+            parts.append(String(localized: "\(spoken) s spoken"))
+        }
+        if let latency = entry.latency {
+            let ready = String(format: "%.2f", latency)
+            parts.append(String(localized: "ready in \(ready) s"))
+        }
         parts.append(entry.engine.title)
         return parts.joined(separator: " · ")
+    }
+
+    private static func correctionDetail(_ correction: VoiceDictationCorrection) -> String {
+        let count = correction.count
+        switch (correction.kind == .word, correction.appName) {
+        case (true, let app?): return String(localized: "Fixed \(count)× in \(app)")
+        case (true, nil): return String(localized: "Fixed \(count)×")
+        case (false, let app?): return String(localized: "Deleted \(count)× in \(app)")
+        case (false, nil): return String(localized: "Deleted \(count)×")
+        }
     }
 
     private static func bytes(_ count: Int64) -> String {
@@ -1321,7 +1337,7 @@ private struct VoiceDictationEntryEditor: View {
         // "also heard as" field starts empty.
         _phrase = State(initialValue: entry.map { $0.kind == .vocabulary && $0.phrase == $0.replacement ? "" : $0.phrase } ?? "")
         _replacement = State(initialValue: entry?.replacement ?? "")
-        _sample = State(initialValue: entry.map { "So I said \($0.phrase) yesterday." } ?? "")
+        _sample = State(initialValue: entry.map { String(localized: "So I said \($0.phrase) yesterday.") } ?? "")
     }
 
     private var draft: VoiceDictationVocabularyEntry {
@@ -1340,7 +1356,7 @@ private struct VoiceDictationEntryEditor: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text(original == nil ? "New entry" : "Edit entry")
+            Text(original == nil ? String(localized: "New entry") : String(localized: "Edit entry"))
                 .font(.system(size: 17, weight: .semibold))
 
             Picker("Kind", selection: $kind) {
@@ -1352,8 +1368,8 @@ private struct VoiceDictationEntryEditor: View {
             .labelsHidden()
 
             Text(kind == .vocabulary
-                ? "A name or word Quill should hear and spell your way. Add what it mishears it as, if you know."
-                : "When you say the trigger phrase, Quill types the snippet text instead.")
+                ? String(localized: "A name or word Quill should hear and spell your way. Add what it mishears it as, if you know.")
+                : String(localized: "When you say the trigger phrase, Quill types the snippet text instead."))
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -1398,7 +1414,7 @@ private struct VoiceDictationEntryEditor: View {
                 Text("Applies in")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                VoiceDictationAppPickerButton(candidates: apps, allAppsTitle: "All apps") { picked in
+                VoiceDictationAppPickerButton(candidates: apps, allAppsTitle: String(localized: "All apps")) { picked in
                     app = picked
                 } label: {
                     HStack(spacing: 5) {
@@ -1406,7 +1422,7 @@ private struct VoiceDictationEntryEditor: View {
                             VoiceDictationAppIconView(bundleID: app.bundleID)
                                 .frame(width: 13, height: 13)
                         }
-                        Text(app?.name ?? "All apps")
+                        Text(app?.name ?? String(localized: "All apps"))
                         Image(systemName: "chevron.down")
                             .font(.system(size: 8, weight: .semibold))
                     }
@@ -1450,10 +1466,10 @@ private struct VoiceDictationEntryEditor: View {
     }
 
     private var testOutput: String {
-        guard draft.isValid else { return "Fill in both fields to test." }
-        guard !sample.isEmpty else { return "Type a test sentence above." }
+        guard draft.isValid else { return String(localized: "Fill in both fields to test.") }
+        guard !sample.isEmpty else { return String(localized: "Type a test sentence above.") }
         let result = VoiceDictationController.preview(entry: draft, sample: sample)
-        return result == sample ? "No match in that sentence." : result
+        return result == sample ? String(localized: "No match in that sentence.") : result
     }
 
     private var testMatched: Bool {
@@ -1502,7 +1518,7 @@ private struct VoiceDictationListImporter: View {
                 Spacer()
                 Button("Cancel") { dismiss() }
                     .keyboardShortcut(.cancelAction)
-                Button(entries.isEmpty ? "Add" : "Add \(entries.count)") {
+                Button(entries.isEmpty ? String(localized: "Add") : String(localized: "Add \(entries.count)")) {
                     onImport(entries)
                     dismiss()
                 }
@@ -1528,11 +1544,11 @@ enum VoiceDictationTab: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .setup: "Setup"
-        case .writing: "Writing"
-        case .vocabulary: "Vocabulary"
-        case .sketch: "Sketch"
-        case .insights: "Insights"
+        case .setup: String(localized: "Setup")
+        case .writing: String(localized: "Writing")
+        case .vocabulary: String(localized: "Vocabulary")
+        case .sketch: String(localized: "Sketch")
+        case .insights: String(localized: "Insights")
         }
     }
 }
@@ -1595,8 +1611,8 @@ extension VoiceStatCard where Extra == EmptyView {
 private enum VoiceFormat {
     static func duration(_ seconds: TimeInterval) -> String {
         let minutes = Int(seconds / 60)
-        if minutes < 60 { return "\(minutes)m" }
-        return "\(minutes / 60)h \(minutes % 60)m"
+        if minutes < 60 { return String(localized: "\(minutes)m") }
+        return String(localized: "\(minutes / 60)h \(minutes % 60)m")
     }
 
     static func compact(_ value: Int) -> String {
@@ -1631,14 +1647,14 @@ struct VoiceDictationInsightsTab: View {
                 HStack(alignment: .top, spacing: 8) {
                     speedCard
                     VoiceStatCard(
-                        label: "Time saved",
+                        label: String(localized: "Time saved"),
                         value: VoiceFormat.duration(stats.timeSaved(from: VoiceFormat.startOfMonth)),
-                        detail: "This month, against \(Int(VoiceDictationStatsStore.typingWordsPerMinute)) wpm typing"
+                        detail: String(localized: "This month, against \(Int(VoiceDictationStatsStore.typingWordsPerMinute)) wpm typing")
                     )
                     VoiceStatCard(
-                        label: "Words dictated",
+                        label: String(localized: "Words dictated"),
                         value: stats.totalWords.formatted(),
-                        detail: stats.stats.since.map { "Since \($0.formatted(.dateTime.month(.wide).day()))" } ?? ""
+                        detail: stats.stats.since.map { String(localized: "Since \($0.formatted(.dateTime.month(.wide).day()))") } ?? ""
                     )
                 }
                 .fixedSize(horizontal: false, vertical: true)
@@ -1680,11 +1696,9 @@ struct VoiceDictationInsightsTab: View {
     private var weekLine: some View {
         let words = stats.words(from: VoiceFormat.lastSevenDays)
         if words > 0 {
-            (Text("In the last 7 days you spoke ")
-                + Text("\(words.formatted()) words").foregroundColor(SettingsChrome.accent)
-                + Text(" and saved ")
-                + Text(VoiceFormat.duration(stats.timeSaved(from: VoiceFormat.lastSevenDays))).foregroundColor(SettingsChrome.accent)
-                + Text(" of typing."))
+            let spoken = Text("\(words.formatted()) words").foregroundColor(SettingsChrome.accent)
+            let saved = Text(VoiceFormat.duration(stats.timeSaved(from: VoiceFormat.lastSevenDays))).foregroundColor(SettingsChrome.accent)
+            Text("In the last 7 days you spoke \(spoken) and saved \(saved) of typing.")
                 .font(.system(size: 15, weight: .semibold))
         } else {
             Text("Nothing dictated in the last 7 days.")
@@ -1697,12 +1711,13 @@ struct VoiceDictationInsightsTab: View {
     private var speedCard: some View {
         let speed = stats.speed()
         VoiceStatCard(
-            label: "Speaking speed",
+            label: String(localized: "Speaking speed"),
             value: speed.map { "\(Int($0.rounded()))" } ?? "--",
-            unit: "wpm",
+            unit: String(localized: "wpm"),
             detail: speed.map {
-                String(format: "%.1fx your typing speed", $0 / VoiceDictationStatsStore.typingWordsPerMinute)
-            } ?? "Needs a few more dictations",
+                let ratio = String(format: "%.1f", $0 / VoiceDictationStatsStore.typingWordsPerMinute)
+                return String(localized: "\(ratio)x your typing speed")
+            } ?? String(localized: "Needs a few more dictations"),
             isHero: true
         ) {
             let points = stats.dailySpeeds()
@@ -1764,7 +1779,7 @@ struct VoiceDictationInsightsTab: View {
         let peak = max(weeks.flatMap { $0 }.compactMap { $0?.words }.max() ?? 1, 1)
         return VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline) {
-                Text(stats.currentStreak == 1 ? "1 day streak" : "\(stats.currentStreak) day streak")
+                Text(stats.currentStreak == 1 ? String(localized: "1 day streak") : String(localized: "\(stats.currentStreak) day streak"))
                     .font(.system(size: 13, weight: .semibold))
                 Spacer()
                 Text("Longest \(stats.longestStreak)")

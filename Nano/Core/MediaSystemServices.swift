@@ -170,18 +170,28 @@ final class MediaController: ObservableObject {
     /// Set while macOS refuses Nano's Apple events to a player, which reads
     /// as "nothing playing" until Automation is allowed.
     var automationNote: String? {
-        guard let errorMessage, errorMessage.hasPrefix(Self.automationPrefix) else { return nil }
+        guard let errorMessage, Self.automationMessages.contains(errorMessage) else { return nil }
         return errorMessage
     }
 
-    private nonisolated static let automationPrefix = "Allow Nano to control"
+    private nonisolated static func automationMessage(for player: MediaPlayerKind) -> String {
+        String(localized: "Allow Nano to control \(player.title) in System Settings")
+    }
+
+    private nonisolated static var genericAutomationMessage: String {
+        String(localized: "Allow Nano to control the selected media player in System Settings.")
+    }
+
+    private nonisolated static var automationMessages: [String] {
+        MediaPlayerKind.allCases.map(automationMessage(for:)) + [genericAutomationMessage]
+    }
 
     private nonisolated static func message(
         for error: MediaControlError,
         player: MediaPlayerKind
     ) -> String {
         if case .notAuthorized = error {
-            return "\(automationPrefix) \(player.title) in System Settings"
+            return automationMessage(for: player)
         }
         return error.localizedDescription
     }
@@ -644,7 +654,7 @@ final class MediaController: ObservableObject {
 
     private func send(_ command: String) {
         guard let player = commandTarget else {
-            setError("Open Apple Music or Spotify first.")
+            setError(String(localized: "Open Apple Music or Spotify first."))
             return
         }
         // Any Apple event launches its target, so a player quit a moment ago
@@ -701,7 +711,7 @@ final class MediaController: ObservableObject {
         let rawDuration = number(parts[4])
         return MediaNowPlaying(
             player: player,
-            title: parts[0].nilIfEmpty ?? "Untitled",
+            title: parts[0].nilIfEmpty ?? String(localized: "Untitled"),
             artist: parts[1],
             isPlaying: parts[2] == "playing",
             position: number(parts[3]),
@@ -773,7 +783,7 @@ final class MediaController: ObservableObject {
                 return .failure(.notAuthorized)
             }
             let message = details[NSAppleScript.errorMessage] as? String
-                ?? "\(automationPrefix) the selected media player in System Settings."
+                ?? genericAutomationMessage
             return .failure(.execution(message))
         }
         return .success(result.stringValue ?? "")
@@ -796,8 +806,8 @@ private enum MediaControlError: LocalizedError, Sendable {
 
     var errorDescription: String? {
         switch self {
-        case .invalidScript: "Nano could not prepare the media command."
-        case .notAuthorized: "Allow Nano to control the selected media player in System Settings."
+        case .invalidScript: String(localized: "Nano could not prepare the media command.")
+        case .notAuthorized: String(localized: "Allow Nano to control the selected media player in System Settings.")
         case let .execution(message): message
         }
     }

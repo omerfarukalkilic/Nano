@@ -78,14 +78,14 @@ struct SystemNotificationContent: Equatable, Hashable, Sendable {
         let trimmed = title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let base = trimmed.isEmpty ? appName : trimmed
         if let group = groupName, !base.isEmpty, base.caseInsensitiveCompare(group) != .orderedSame {
-            return "\(base) in \(group)"
+            return String(localized: "\(base) in \(group)")
         }
         return base
     }
 
     /// Everything below the headline, flattened to one string.
     var detail: String? {
-        if previewHidden { return "New notification" }
+        if previewHidden { return String(localized: "New notification") }
         var parts = [subtitle, body]
             .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
@@ -277,7 +277,7 @@ enum SystemNotificationRecordDecoder {
             .split(separator: " ", omittingEmptySubsequences: true)
             .joined(separator: " ")
         if hadAttachment {
-            collapsed = collapsed.isEmpty ? "Sent an attachment" : "Attachment · \(collapsed)"
+            collapsed = collapsed.isEmpty ? String(localized: "Sent an attachment") : String(localized: "Attachment · \(collapsed)")
         }
         guard !collapsed.isEmpty else { return nil }
         if collapsed.count > limit {
@@ -468,8 +468,8 @@ enum SystemNotificationAppInfo {
         if lowered.contains("sharingd") { return "AirDrop" }
         if lowered.contains("tmhelper") { return "Time Machine" }
         if lowered.contains("appstore") { return "App Store" }
-        if lowered.contains("followup") { return "System" }
-        return "System"
+        if lowered.contains("followup") { return String(localized: "System") }
+        return String(localized: "System")
     }
 
     nonisolated static func fallbackName(_ bundleID: String) -> String {

@@ -82,7 +82,7 @@ struct IslandModuleView: View {
                     .foregroundStyle(.white.opacity(0.64))
             }
             if module != .agents {
-                Text(module == .cue && viewModel.cueStore.draft != nil ? "New cue" : module.title)
+                Text(module == .cue && viewModel.cueStore.draft != nil ? String(localized: "New cue") : module.title)
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
             }
 
@@ -133,9 +133,9 @@ struct IslandModuleView: View {
                         .nanoHoverCapsule()
                 }
                 .buttonStyle(.nanoPress)
-                .help(viewModel.showsAgentUsageDetail ? "Back to agent activity" : "Open usage breakdown")
+                .help(viewModel.showsAgentUsageDetail ? String(localized: "Back to agent activity") : String(localized: "Open usage breakdown"))
                 .accessibilityLabel(
-                    viewModel.showsAgentUsageDetail ? "Close usage breakdown" : "Open usage breakdown"
+                    viewModel.showsAgentUsageDetail ? String(localized: "Close usage breakdown") : String(localized: "Open usage breakdown")
                 )
             }
 
@@ -150,20 +150,21 @@ struct IslandModuleView: View {
 
     private var moduleContext: String {
         switch module {
-        case .calendar: "\(settings.calendarLayout.title) · Right-click to change"
-        case .agents: "Local status"
-        case .tray: "Kept until you clear them"
-        case .voiceDictation: "On-device · Copies to clipboard"
-        case .cue: viewModel.cueStore.draft == nil ? "\(viewModel.cueStore.totalOpenCount) open · Local" : "Saved on this Mac"
-        case .timer: viewModel.timerStore.state == .idle ? "Set up a session" : viewModel.timerStore.mode.title
+        case .calendar: String(localized: "\(settings.calendarLayout.title) · Right-click to change")
+        case .agents: String(localized: "Local status")
+        case .tray: String(localized: "Kept until you clear them")
+        case .voiceDictation: String(localized: "On-device · Copies to clipboard")
+        case .cue: viewModel.cueStore.draft == nil ? String(localized: "\(viewModel.cueStore.totalOpenCount) open · Local") : String(localized: "Saved on this Mac")
+        case .timer: viewModel.timerStore.state == .idle ? String(localized: "Set up a session") : viewModel.timerStore.mode.title
         case .mixer: mixerContext
-        default: "Quick Access"
+        default: String(localized: "Quick Access")
         }
     }
 
     private var mixerContext: String {
         let adjusting = viewModel.mixerStore.apps.count { $0.isRunning && $0.preference.needsProcessing }
-        return adjusting == 0 ? "All apps at 100%" : "Adjusting \(adjusting) app\(adjusting == 1 ? "" : "s")"
+        if adjusting == 0 { return String(localized: "All apps at 100%") }
+        return adjusting == 1 ? String(localized: "Adjusting 1 app") : String(localized: "Adjusting \(adjusting) apps")
     }
 }
 
@@ -208,9 +209,9 @@ private struct TimerModuleView: View {
             TimerDurationRuler(minutes: selectedMinutes, isEnabled: true)
 
             HStack(alignment: .bottom, spacing: 8) {
-                primaryButton("Start Timer", action: store.startOrResume)
+                primaryButton(String(localized: "Start Timer"), action: store.startOrResume)
                 if store.canUndoReset {
-                    secondaryButton("Undo reset", action: store.undoReset)
+                    secondaryButton(String(localized: "Undo reset"), action: store.undoReset)
                         .transition(.opacity)
                 }
                 Spacer()
@@ -260,33 +261,33 @@ private struct TimerModuleView: View {
     private var controlColumn: some View {
         VStack(spacing: 7) {
             columnButton(
-                store.state == .running ? "Pause" : "Resume",
+                store.state == .running ? String(localized: "Pause") : String(localized: "Resume"),
                 symbol: store.state == .running ? "pause.fill" : "play.fill",
                 primary: true,
                 action: { store.state == .running ? store.pause() : store.startOrResume() }
             )
-            columnButton("5 min", symbol: "plus", primary: false) { store.addTime(5 * 60) }
+            columnButton(String(localized: "5 min"), symbol: "plus", primary: false) { store.addTime(5 * 60) }
                 .disabled(!store.canAddTime)
                 .help("Add five minutes")
             if isBreak {
-                columnButton("Back to it", symbol: "arrow.uturn.backward", primary: false, action: store.backToWork)
+                columnButton(String(localized: "Back to it"), symbol: "arrow.uturn.backward", primary: false, action: store.backToWork)
                     .help("End the break and start the session again")
             } else {
                 if store.nextTask != nil {
-                    columnButton("Goal done", symbol: "checkmark", primary: false, action: store.completeCurrentTask)
-                        .help("Cross off \(store.nextTask?.title ?? "the current goal")")
+                    columnButton(String(localized: "Goal done"), symbol: "checkmark", primary: false, action: store.completeCurrentTask)
+                        .help(store.nextTask.map { String(localized: "Cross off \($0.title)") } ?? String(localized: "Cross off the current goal"))
                 }
-                columnButton("Finish early", symbol: "flag.checkered", primary: false, action: store.finishEarly)
+                columnButton(String(localized: "Finish early"), symbol: "flag.checkered", primary: false, action: store.finishEarly)
                     .help("End the session now and see how it went")
             }
             Spacer(minLength: 0)
-            Button(isBreak ? "End break" : "Reset") {
+            Button(isBreak ? String(localized: "End break") : String(localized: "Reset")) {
                 if isBreak { store.clearSession() } else { store.reset() }
             }
             .buttonStyle(.nanoPress)
             .font(.system(size: 10.5, weight: .medium))
             .foregroundStyle(.white.opacity(0.4))
-            .help(isBreak ? "Stop the break and the session" : "Throw this session away")
+            .help(isBreak ? String(localized: "Stop the break and the session") : String(localized: "Throw this session away"))
         }
     }
 
@@ -328,8 +329,8 @@ private struct TimerModuleView: View {
             HStack {
                 Text("\(Int(store.elapsed / 60)) min in")
                 Spacer()
-                Text(store.endsAt.map { "ends \($0.formatted(date: .omitted, time: .shortened))" }
-                    ?? (store.state == .paused ? "Paused" : ""))
+                Text(store.endsAt.map { String(localized: "ends \($0.formatted(date: .omitted, time: .shortened))") }
+                    ?? (store.state == .paused ? String(localized: "Paused") : ""))
             }
             .font(.system(size: 10.5))
             .foregroundStyle(.white.opacity(0.36))
@@ -344,7 +345,7 @@ private struct TimerModuleView: View {
     private var goalLine: some View {
         if isBreak {
             Label(
-                store.nextTask.map { "Break · then back to \($0.title)" } ?? "Break · step away for a bit",
+                store.nextTask.map { String(localized: "Break · then back to \($0.title)") } ?? String(localized: "Break · step away for a bit"),
                 systemImage: "cup.and.saucer.fill"
             )
             .font(.system(size: 12.5, weight: .semibold))
@@ -359,7 +360,7 @@ private struct TimerModuleView: View {
                 Text(current.title)
                     .font(.system(size: 12.5, weight: .semibold))
                     .lineLimit(1)
-                Text([later.map { "then \($0.title)" }, "\(store.completedTaskCount) of \(store.tasks.count) done"]
+                Text([later.map { String(localized: "then \($0.title)") }, String(localized: "\(store.completedTaskCount) of \(store.tasks.count) done")]
                     .compactMap { $0 }.joined(separator: " · "))
                     .font(.system(size: 11.5))
                     .foregroundStyle(.white.opacity(0.36))
@@ -401,11 +402,11 @@ private struct TimerModuleView: View {
     private var completionLayout: some View {
         VStack(alignment: .leading, spacing: 9) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(isBreak ? "Break's over" : "Session complete")
+                Text(isBreak ? String(localized: "Break's over") : String(localized: "Session complete"))
                     .font(.system(size: 19, weight: .semibold))
 
                 Text(isBreak
-                    ? (store.nextTask.map { "Back to \($0.title)?" } ?? "Back to \(sessionTitle)?")
+                    ? (store.nextTask.map { String(localized: "Back to \($0.title)?") } ?? String(localized: "Back to \(sessionTitle)?"))
                     : sessionTitle)
                     .font(.system(size: 12))
                     .foregroundStyle(.white.opacity(0.5))
@@ -434,20 +435,20 @@ private struct TimerModuleView: View {
 
             HStack(alignment: .bottom, spacing: 8) {
                 if store.isAwaitingCueDecision {
-                    primaryButton("Complete Cue", action: completeCue)
-                    secondaryButton("Continue 15 Min", action: store.keepGoing)
-                    secondaryButton("Not Done Yet", action: leaveCue)
+                    primaryButton(String(localized: "Complete Cue"), action: completeCue)
+                    secondaryButton(String(localized: "Continue 15 Min"), action: store.keepGoing)
+                    secondaryButton(String(localized: "Not Done Yet"), action: leaveCue)
                 } else if isBreak {
-                    primaryButton("Back to It", action: store.backToWork)
-                    secondaryButton("Done for Now", action: store.clearSession)
+                    primaryButton(String(localized: "Back to It"), action: store.backToWork)
+                    secondaryButton(String(localized: "Done for Now"), action: store.clearSession)
                 } else {
                     primaryButton(
-                        "Take a \(Int(store.suggestedBreak / 60))-Min Break",
+                        String(localized: "Take a \(Int(store.suggestedBreak / 60))-Min Break"),
                         tint: Color(red: 0.25, green: 0.66, blue: 0.57),
                         action: store.startBreak
                     )
-                    secondaryButton("Keep Going +15", action: store.keepGoing)
-                    secondaryButton("Done", action: store.clearSession)
+                    secondaryButton(String(localized: "Keep Going +15"), action: store.keepGoing)
+                    secondaryButton(String(localized: "Done"), action: store.clearSession)
                 }
                 Spacer()
             }
@@ -458,9 +459,9 @@ private struct TimerModuleView: View {
         let done = store.completedTaskCount
         let total = store.tasks.count
         guard done < total else {
-            return total == 1 ? "Your goal is done" : "All \(total) goals done"
+            return total == 1 ? String(localized: "Your goal is done") : String(localized: "All \(total) goals done")
         }
-        return "\(done) of \(total) goals done"
+        return String(localized: "\(done) of \(total) goals done")
     }
 
     // MARK: - Shared pieces
@@ -677,7 +678,7 @@ private struct SessionGoalsList: View {
                     .contentTransition(.symbolEffect(.replace))
             }
             .buttonStyle(.nanoPress)
-            .help(task.isDone ? "Mark as not done" : "Cross off")
+            .help(task.isDone ? String(localized: "Mark as not done") : String(localized: "Cross off"))
 
             Text(task.title)
                 .font(.system(size: 12, weight: isActive ? .medium : .regular))
@@ -974,7 +975,7 @@ struct TrayModuleView: View {
         .animation(.snappy(duration: 0.24), value: isDropping)
         .animation(.snappy(duration: 0.24), value: store.items.count)
         .overlay(alignment: .bottom) {
-            if let message = store.isCompressing ? "Compressing…" : store.message {
+            if let message = store.isCompressing ? String(localized: "Compressing…") : store.message {
                 HStack(spacing: 8) {
                     Text(message)
                         .lineLimit(1)
@@ -1001,8 +1002,8 @@ struct TrayModuleView: View {
 
     private var targets: some View {
         HStack(spacing: 8) {
-            target(.holding, title: "Hold", hot: "Release to hold", symbol: "tray.and.arrow.down")
-            target(.airDrop, title: "AirDrop", hot: "Release to AirDrop", symbol: "dot.radiowaves.left.and.right")
+            target(.holding, title: String(localized: "Hold"), hot: String(localized: "Release to hold"), symbol: "tray.and.arrow.down")
+            target(.airDrop, title: "AirDrop", hot: String(localized: "Release to AirDrop"), symbol: "dot.radiowaves.left.and.right")
         }
         .animation(.snappy(duration: 0.2), value: targetedSide)
     }
@@ -1087,14 +1088,14 @@ struct TrayModuleView: View {
 
             VStack(spacing: 6) {
                 tool(allSelected ? "checkmark.circle.fill" : "checkmark.circle",
-                     help: allSelected ? "Deselect all" : "Select all") {
+                     help: allSelected ? String(localized: "Deselect all") : String(localized: "Select all")) {
                     store.selection = allSelected ? [] : Set(store.items.map(\.id))
                 }
                 tool("dot.radiowaves.left.and.right",
-                     help: store.selection.isEmpty ? "AirDrop everything" : "AirDrop the selected items") {
+                     help: store.selection.isEmpty ? String(localized: "AirDrop everything") : String(localized: "AirDrop the selected items")) {
                     store.sendViaAirDrop(store.selectedURLs)
                 }
-                tool("trash", help: store.selection.isEmpty ? "Clear the tray" : "Remove the selected items") {
+                tool("trash", help: store.selection.isEmpty ? String(localized: "Clear the tray") : String(localized: "Remove the selected items")) {
                     store.discardSelectionOrAll()
                 }
             }
@@ -1224,11 +1225,11 @@ struct TrayThumbnail: View {
 @MainActor
 enum TrayItemMenu {
     static func items(for item: TrayItem, store: TrayStore) -> [NSMenuItem] {
-        var items = [action("Open") { store.open(item) }]
+        var items = [action(String(localized: "Open")) { store.open(item) }]
 
         let applications = NSWorkspace.shared.urlsForApplications(toOpen: item.url)
         if !applications.isEmpty {
-            let openWith = NSMenuItem(title: "Open With", action: nil, keyEquivalent: "")
+            let openWith = NSMenuItem(title: String(localized: "Open With"), action: nil, keyEquivalent: "")
             let submenu = NSMenu()
             for application in applications.prefix(12) {
                 let entry = action(FileManager.default.displayName(atPath: application.path)) {
@@ -1243,10 +1244,10 @@ enum TrayItemMenu {
             items.append(openWith)
         }
 
-        items.append(action("Show in Finder") { store.reveal(item) })
-        items.append(action("Copy") { store.copy(item) })
+        items.append(action(String(localized: "Show in Finder")) { store.reveal(item) })
+        items.append(action(String(localized: "Copy")) { store.copy(item) })
         let targets = store.urls(actingOn: item)
-        items.append(action(targets.count > 1 ? "Compress \(targets.count) Items to ZIP" : "Compress to ZIP") {
+        items.append(action(targets.count > 1 ? String(localized: "Compress \(targets.count) Items to ZIP") : String(localized: "Compress to ZIP")) {
             store.compressToZip(targets)
         })
         // The system's Share… item shows nothing when picked from the island's
@@ -1255,7 +1256,7 @@ enum TrayItemMenu {
             .compactMap(NSSharingService.init(named:))
             .filter { $0.canPerform(withItems: [item.url]) }
         if !services.isEmpty {
-            let share = NSMenuItem(title: "Share", action: nil, keyEquivalent: "")
+            let share = NSMenuItem(title: String(localized: "Share"), action: nil, keyEquivalent: "")
             let submenu = NSMenu()
             for service in services {
                 let entry = action(service.menuItemTitle) {
@@ -1269,7 +1270,7 @@ enum TrayItemMenu {
             items.append(share)
         }
         items.append(.separator())
-        items.append(action("Remove from Tray") { store.remove(item) })
+        items.append(action(String(localized: "Remove from Tray")) { store.remove(item) })
         return items
     }
 
@@ -1443,13 +1444,13 @@ private struct AdjustmentUnavailableView: View {
     private var explanation: String {
         switch module {
         case .bluetooth:
-            "Connection alerts already appear on the island. Accessory battery percentages are not a public API, so this module will not guess."
+            String(localized: "Connection alerts already appear on the island. Accessory battery percentages are not a public API, so this module will not guess.")
         case .brightness:
-            "Brightness key changes already appear on the island. A slider for every display is still planned."
+            String(localized: "Brightness key changes already appear on the island. A slider for every display is still planned.")
         case .notificationLabs:
-            "Recent island alerts land here after they fire."
+            String(localized: "Recent island alerts land here after they fire.")
         default:
-            "This adjustment is unavailable on the current Mac."
+            String(localized: "This adjustment is unavailable on the current Mac.")
         }
     }
 }

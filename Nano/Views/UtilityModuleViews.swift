@@ -47,12 +47,12 @@ struct CalendarModuleView: View {
 
     private var calendarPermission: some View {
         NanoPermissionPrompt(
-            title: "Calendar access",
+            title: String(localized: "Calendar access"),
             message: calendarPermissionMessage,
             symbol: "calendar",
             buttonTitle: service.authorizationStatus == .notDetermined
-                ? "Allow Calendar"
-                : "Open System Settings",
+                ? String(localized: "Allow Calendar")
+                : String(localized: "Open System Settings"),
             isLoading: service.isLoading
         ) {
             if service.authorizationStatus == .notDetermined {
@@ -70,17 +70,17 @@ struct CalendarModuleView: View {
 
         return switch service.authorizationStatus {
         case .notDetermined:
-            "Nano reads event titles and times locally. Connected Google calendars appear through Apple Calendar."
+            String(localized: "Nano reads event titles and times locally. Connected Google calendars appear through Apple Calendar.")
         case .denied:
-            "Calendar access was denied. Enable Nano in Privacy & Security."
+            String(localized: "Calendar access was denied. Enable Nano in Privacy & Security.")
         case .restricted:
-            "Calendar access is restricted on this Mac. Check Privacy & Security."
+            String(localized: "Calendar access is restricted on this Mac. Check Privacy & Security.")
         case .writeOnly:
-            "Nano has write-only access, which cannot read events. Allow Full Access in Privacy & Security."
+            String(localized: "Nano has write-only access, which cannot read events. Allow Full Access in Privacy & Security.")
         case .fullAccess:
             ""
         @unknown default:
-            "Calendar access is unavailable. Check Privacy & Security."
+            String(localized: "Calendar access is unavailable. Check Privacy & Security.")
         }
     }
 }
@@ -89,7 +89,7 @@ struct CalendarModuleView: View {
 
 private enum CalendarText {
     static func timeRange(_ event: NanoCalendarEvent) -> String {
-        guard !event.isAllDay else { return "All day" }
+        guard !event.isAllDay else { return String(localized: "All day") }
         let start = event.startDate.formatted(date: .omitted, time: .shortened)
         let end = event.endDate.formatted(date: .omitted, time: .shortened)
         return "\(start) – \(end)"
@@ -98,7 +98,7 @@ private enum CalendarText {
     /// "Today · Mon, Sep 28", or just the date on other days.
     static func dayTitle(_ date: Date) -> String {
         let label = date.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
-        return Calendar.current.isDateInToday(date) ? "Today · \(label)" : label
+        return Calendar.current.isDateInToday(date) ? String(localized: "Today · \(label)") : label
     }
 }
 
@@ -205,8 +205,8 @@ private struct CalendarMonthLayout: View {
                         .foregroundStyle(nanoCalendarAccent)
                         .padding(.trailing, 4)
                 }
-                CalendarNavButton(symbol: "chevron.left", label: "Previous month") { move(by: -1) }
-                CalendarNavButton(symbol: "chevron.right", label: "Next month") { move(by: 1) }
+                CalendarNavButton(symbol: "chevron.left", label: String(localized: "Previous month")) { move(by: -1) }
+                CalendarNavButton(symbol: "chevron.right", label: String(localized: "Next month")) { move(by: 1) }
             }
 
             HStack(spacing: 0) {
@@ -362,7 +362,7 @@ private struct CalendarDayPane: View {
                     CalendarHolidayChips(events: holidays)
                 }
                 if dayEvents.isEmpty {
-                    Text(holidays.isEmpty ? "Nothing scheduled" : "No events")
+                    Text(holidays.isEmpty ? String(localized: "Nothing scheduled") : String(localized: "No events"))
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(.white.opacity(0.45))
                         .padding(.vertical, 4)
@@ -372,7 +372,7 @@ private struct CalendarDayPane: View {
                     }
                 }
                 if !nextEvents.isEmpty {
-                    sectionTitle("Next").padding(.top, 8)
+                    sectionTitle(String(localized: "Next")).padding(.top, 8)
                     ForEach(nextEvents) { event in
                         row(
                             event,
@@ -459,8 +459,8 @@ private struct CalendarWeekLayout: View {
                         .foregroundStyle(nanoCalendarAccent)
                         .padding(.trailing, 4)
                 }
-                CalendarNavButton(symbol: "chevron.left", label: "Previous week") { move(by: -1) }
-                CalendarNavButton(symbol: "chevron.right", label: "Next week") { move(by: 1) }
+                CalendarNavButton(symbol: "chevron.left", label: String(localized: "Previous week")) { move(by: -1) }
+                CalendarNavButton(symbol: "chevron.right", label: String(localized: "Next week")) { move(by: 1) }
             }
 
             HStack(spacing: 6) {
@@ -630,7 +630,7 @@ private struct CalendarDayTimeline: View {
                     }
 
                     if timed.isEmpty {
-                        Text(isToday ? "Nothing else today" : "Nothing scheduled")
+                        Text(isToday ? String(localized: "Nothing else today") : String(localized: "Nothing scheduled"))
                             .font(.system(size: 11.5, weight: .medium))
                             .foregroundStyle(.white.opacity(0.4))
                             .frame(width: width, height: geometry.size.height)
@@ -783,7 +783,7 @@ struct CameraModuleView: View {
     }
 
     private var selectedName: String {
-        service.devices.first { $0.id == service.selectedDeviceID }?.name ?? "Camera"
+        service.devices.first { $0.id == service.selectedDeviceID }?.name ?? String(localized: "Camera")
     }
 
     private func cameraFailure(_ message: String) -> some View {
@@ -825,19 +825,19 @@ struct CameraModuleView: View {
             .onAppear(perform: service.refreshDevices)
         case .notDetermined:
             NanoPermissionPrompt(
-                title: "Camera preview",
-                message: "Video stays in memory and is never recorded or uploaded.",
+                title: String(localized: "Camera preview"),
+                message: String(localized: "Video stays in memory and is never recorded or uploaded."),
                 symbol: "camera.fill",
-                buttonTitle: "Allow Camera",
+                buttonTitle: String(localized: "Allow Camera"),
                 isLoading: false,
                 action: service.requestAccess
             )
         case .denied, .restricted:
             NanoPermissionPrompt(
-                title: "Camera access is off",
-                message: "Enable Nano under Privacy & Security → Camera.",
+                title: String(localized: "Camera access is off"),
+                message: String(localized: "Enable Nano under Privacy & Security → Camera."),
                 symbol: "camera.fill",
-                buttonTitle: "Open System Settings",
+                buttonTitle: String(localized: "Open System Settings"),
                 isLoading: false
             ) {
                 openNanoPrivacyPane("Privacy_Camera")
@@ -847,7 +847,7 @@ struct CameraModuleView: View {
                 "No camera available",
                 systemImage: "video.slash.fill",
                 description: Text(
-                    service.errorMessage ?? "Connect a camera and reopen this module."
+                    service.errorMessage ?? String(localized: "Connect a camera and reopen this module.")
                 )
             )
         }
@@ -914,7 +914,7 @@ struct WeatherModuleView: View {
                 HStack(spacing: 0) {
                     ForEach(Array(snapshot.hours.enumerated()), id: \.element.id) { index, hour in
                         VStack(spacing: 7) {
-                            Text(index == 0 ? "Now" : hour.date.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated))))
+                            Text(index == 0 ? String(localized: "Now") : hour.date.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated))))
                                 .font(.system(size: 11, weight: index == 0 ? .semibold : .regular))
                                 .foregroundStyle(index == 0 ? .white : .white.opacity(0.55))
                             Image(systemName: hour.symbolName)
@@ -932,11 +932,11 @@ struct WeatherModuleView: View {
 
     private var placeholder: some View {
         VStack(alignment: .leading, spacing: 9) {
-            Text(service.isLoading ? (hasSavedCity ? "Loading the forecast…" : "Finding your location…") : "Weather")
+            Text(service.isLoading ? (hasSavedCity ? String(localized: "Loading the forecast…") : String(localized: "Finding your location…")) : String(localized: "Weather"))
                 .font(.system(size: 17, weight: .semibold))
             Text(service.errorMessage ?? (hasSavedCity
                 ? settings.weatherLocationName
-                : "Nano reads your current location for local conditions."))
+                : String(localized: "Nano reads your current location for local conditions.")))
                 .font(.system(size: 11))
                 .foregroundStyle(.white.opacity(0.5))
                 .lineLimit(2)
@@ -1004,7 +1004,7 @@ struct WeatherModuleView: View {
             }
 
             HStack(spacing: 10) {
-                Button(showsSearch ? "Use current location" : "Choose a location") {
+                Button(showsSearch ? String(localized: "Use current location") : String(localized: "Choose a location")) {
                     if showsSearch {
                         settings.weatherUsesCurrentLocation = true
                         service.refreshCurrentLocation(force: true)
@@ -1029,7 +1029,7 @@ struct WeatherModuleView: View {
                 }
 
                 Link(
-                    service.snapshot?.source.attribution ?? "Weather data from MET Norway",
+                    service.snapshot?.source.attribution ?? String(localized: "Weather data from MET Norway"),
                     destination: service.snapshot?.source.attributionURL
                         ?? URL(string: "https://api.met.no/doc/TermsOfService")!
                 )
@@ -1074,7 +1074,7 @@ struct WeatherModuleView: View {
 
         results = placemarks.prefix(3).compactMap { placemark in
             guard let coordinate = placemark.location?.coordinate else { return nil }
-            let name = placemark.locality ?? placemark.name ?? "Location"
+            let name = placemark.locality ?? placemark.name ?? String(localized: "Location")
             let detail = [placemark.administrativeArea, placemark.country]
                 .compactMap { $0 }
                 .joined(separator: ", ")
@@ -1087,7 +1087,7 @@ struct WeatherModuleView: View {
         }
 
         if results.isEmpty {
-            validationMessage = "No places matched that search."
+            validationMessage = String(localized: "No places matched that search.")
         }
     }
 

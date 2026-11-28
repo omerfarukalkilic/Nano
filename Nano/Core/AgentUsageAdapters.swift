@@ -35,8 +35,8 @@ enum AgentUsageError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case let .credentialsMissing(message), let .unauthorized(message): message
-        case .invalidResponse: "The provider returned an invalid response."
-        case let .http(status): "Provider usage request failed (HTTP \(status))."
+        case .invalidResponse: String(localized: "The provider returned an invalid response.")
+        case let .http(status): String(localized: "Provider usage request failed (HTTP \(status)).")
         }
     }
 }
@@ -98,7 +98,7 @@ enum CodexUsageAdapter {
               let accessToken = (tokens["access_token"] ?? tokens["accessToken"]) as? String,
               !accessToken.isEmpty
         else {
-            return .unavailable("Run Codex once to sign in.")
+            return .unavailable(String(localized: "Run Codex once to sign in."))
         }
 
         var request = URLRequest(url: URL(string: "https://chatgpt.com/backend-api/wham/usage")!)
@@ -112,7 +112,7 @@ enum CodexUsageAdapter {
 
         let responseData: Data
         do {
-            responseData = try await usageData(request, expiredMessage: "Codex sign-in expired.")
+            responseData = try await usageData(request, expiredMessage: String(localized: "Codex sign-in expired."))
         } catch {
             return .unavailable(error.localizedDescription)
         }
@@ -127,7 +127,7 @@ enum CodexUsageAdapter {
 
         return AgentUsageResult(
             windows: windows,
-            message: windows.isEmpty ? "No rate limits reported." : nil,
+            message: windows.isEmpty ? String(localized: "No rate limits reported.") : nil,
             hasQuota: !windows.isEmpty,
             planName: decoded.planType
         )
@@ -173,7 +173,7 @@ enum ClaudeUsageAdapter {
         if let cached = cachedResult() { return cached }
         if isOauthCoolingOff() {
             return lastGoodOAuthResult()
-                ?? .unavailable("Claude usage is rate-limited. Retrying shortly.")
+                ?? .unavailable(String(localized: "Claude usage is rate-limited. Retrying shortly."))
         }
 
         // Nano never refreshes Claude Code's token: spending its refresh token
@@ -197,7 +197,7 @@ enum ClaudeUsageAdapter {
                 // Say why: a signed-out CLI and a throttled endpoint need
                 // different actions, and one generic line hid both.
                 if isRateLimited(error) {
-                    return .unavailable("Claude usage is rate-limited. Retrying shortly.")
+                    return .unavailable(String(localized: "Claude usage is rate-limited. Retrying shortly."))
                 }
                 return .unavailable(error.localizedDescription)
             }
@@ -205,9 +205,9 @@ enum ClaudeUsageAdapter {
 
         if credentials != nil {
             return lastGoodOAuthResult()
-                ?? .unavailable("Claude sign-in expired. Open Claude Code to renew it.")
+                ?? .unavailable(String(localized: "Claude sign-in expired. Open Claude Code to renew it."))
         }
-        return .unavailable("Sign in to Claude Code to show usage.")
+        return .unavailable(String(localized: "Sign in to Claude Code to show usage."))
     }
 
     static func parse(_ data: Data) throws -> AgentUsageResult {
@@ -239,7 +239,7 @@ enum ClaudeUsageAdapter {
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
 
         do {
-            let data = try await usageData(request, expiredMessage: "Claude sign-in expired. Run /login in Claude Code.")
+            let data = try await usageData(request, expiredMessage: String(localized: "Claude sign-in expired. Run /login in Claude Code."))
             let result = try parse(data)
             storeLastGood(response: data, plan: plan)
             return .success(result)
@@ -628,9 +628,9 @@ enum CursorUsageAdapter {
     static func fetch() async throws -> AgentUsageResult {
         guard let cookie = sessionCookieHeader() else {
             if databaseURL() == nil {
-                return .unavailable("Cursor is not installed for this user.")
+                return .unavailable(String(localized: "Cursor is not installed for this user."))
             }
-            return .unavailable("Sign in to Cursor once to read usage.")
+            return .unavailable(String(localized: "Sign in to Cursor once to read usage."))
         }
 
         var request = URLRequest(url: URL(string: "https://cursor.com/api/usage-summary")!)
@@ -641,7 +641,7 @@ enum CursorUsageAdapter {
 
         let responseData: Data
         do {
-            responseData = try await usageData(request, expiredMessage: "Cursor sign-in expired.")
+            responseData = try await usageData(request, expiredMessage: String(localized: "Cursor sign-in expired."))
         } catch {
             return .unavailable(error.localizedDescription)
         }
@@ -649,7 +649,7 @@ enum CursorUsageAdapter {
         do {
             return try parse(responseData)
         } catch {
-            return .unavailable("The provider returned an invalid response.")
+            return .unavailable(String(localized: "The provider returned an invalid response."))
         }
     }
 
@@ -669,7 +669,7 @@ enum CursorUsageAdapter {
         if decoded.isUnlimited == true {
             return AgentUsageResult(
                 windows: [],
-                message: "Unlimited included usage.",
+                message: String(localized: "Unlimited included usage."),
                 hasQuota: false,
                 planName: decoded.membershipType
             )
@@ -719,7 +719,7 @@ enum CursorUsageAdapter {
 
         return AgentUsageResult(
             windows: windows,
-            message: hasQuota ? nil : "No included quota on this plan.",
+            message: hasQuota ? nil : String(localized: "No included quota on this plan."),
             hasQuota: hasQuota,
             planName: decoded.membershipType
         )
@@ -865,7 +865,7 @@ enum CursorUsageAdapter {
 
             let pageEvents: [TokenEvent]
             do {
-                let data = try await usageData(request, expiredMessage: "Cursor sign-in expired.")
+                let data = try await usageData(request, expiredMessage: String(localized: "Cursor sign-in expired."))
                 pageEvents = parseTokenEvents(data)
             } catch {
                 return EventFetch(events: events, truncated: true, failed: true)
@@ -1182,7 +1182,7 @@ enum KimiUsageAdapter {
     /// never copies it into Nano storage.
     static func fetch() async throws -> AgentUsageResult {
         guard let key = apiKey(), !key.isEmpty else {
-            return .unavailable("Sign in to Kimi for Coding to see usage.")
+            return .unavailable(String(localized: "Sign in to Kimi for Coding to see usage."))
         }
 
         var request = URLRequest(url: URL(string: "https://api.kimi.com/coding/v1/usages")!)
@@ -1193,7 +1193,7 @@ enum KimiUsageAdapter {
 
         let responseData: Data
         do {
-            responseData = try await usageData(request, expiredMessage: "Kimi sign-in expired.")
+            responseData = try await usageData(request, expiredMessage: String(localized: "Kimi sign-in expired."))
         } catch {
             return .unavailable(error.localizedDescription)
         }
@@ -1222,7 +1222,7 @@ enum KimiUsageAdapter {
 
         return AgentUsageResult(
             windows: windows,
-            message: windows.isEmpty ? "No rate limits reported." : nil,
+            message: windows.isEmpty ? String(localized: "No rate limits reported.") : nil,
             hasQuota: !windows.isEmpty,
             planName: Self.planName(decoded.user?.membership?.level)
         )
@@ -1406,7 +1406,7 @@ enum GrokUsageAdapter {
     /// on this.
     static func fetch() async throws -> AgentUsageResult {
         guard accessToken() != nil else {
-            return .unavailable("Sign in with grok login to see usage.")
+            return .unavailable(String(localized: "Sign in with grok login to see usage."))
         }
 
         do {
@@ -1417,7 +1417,7 @@ enum GrokUsageAdapter {
             }
             return result
         } catch AgentUsageError.invalidResponse {
-            return .unavailable("This Grok CLI build does not publish credits Nano can read.")
+            return .unavailable(String(localized: "This Grok CLI build does not publish credits Nano can read."))
         } catch {
             return .unavailable(error.localizedDescription)
         }
@@ -1426,7 +1426,7 @@ enum GrokUsageAdapter {
     static func parse(_ data: Data) throws -> AgentUsageResult {
         let decoded = try JSONDecoder().decode(GrokBillingEnvelope.self, from: data)
         if decoded.disabledByConfig == true {
-            return AgentUsageResult(message: "Grok billing is disabled in this configuration.")
+            return AgentUsageResult(message: String(localized: "Grok billing is disabled in this configuration."))
         }
 
         if let window = creditWindow(from: decoded) {
@@ -1434,7 +1434,7 @@ enum GrokUsageAdapter {
         }
 
         return AgentUsageResult(
-            message: "No included credits on this plan.",
+            message: String(localized: "No included credits on this plan."),
             planName: nil
         )
     }
@@ -1556,7 +1556,7 @@ enum GrokUsageAdapter {
 
     private static func billingResultJSON() async throws -> Data {
         guard let token = accessToken(), let url = billingURL() else {
-            throw AgentUsageError.credentialsMissing("Sign in with grok login to see usage.")
+            throw AgentUsageError.credentialsMissing(String(localized: "Sign in with grok login to see usage."))
         }
 
         var request = URLRequest(url: url)
@@ -1571,7 +1571,7 @@ enum GrokUsageAdapter {
         request.setValue("Nano", forHTTPHeaderField: "User-Agent")
         return try await usageData(
             request,
-            expiredMessage: "Grok sign-in expired. Run grok login."
+            expiredMessage: String(localized: "Grok sign-in expired. Run grok login.")
         )
     }
 
@@ -1683,7 +1683,7 @@ enum DevinUsageAdapter {
         guard let credentials = credentials(environment: environment, home: home),
               let organizationsURL = credentials.url("api/organizations")
         else {
-            return .unavailable("Sign in to the Devin CLI to see usage.")
+            return .unavailable(String(localized: "Sign in to the Devin CLI to see usage."))
         }
 
         do {
@@ -1692,7 +1692,7 @@ enum DevinUsageAdapter {
             guard let organizationID,
                   let quotaURL = credentials.url("api/\(organizationID)/billing/quota/usage")
             else {
-                return .unavailable("No Devin organization on this account.")
+                return .unavailable(String(localized: "No Devin organization on this account."))
             }
 
             var request = URLRequest(url: quotaURL)
@@ -1705,12 +1705,12 @@ enum DevinUsageAdapter {
             let (data, http) = try await usageHTTP(request, load: load)
             if http.statusCode == 401 || http.statusCode == 403 {
                 if isMissingOrganization(data) {
-                    return .unavailable("No Devin organization on this account.")
+                    return .unavailable(String(localized: "No Devin organization on this account."))
                 }
-                return .unavailable("Devin sign-in expired. Run devin login.")
+                return .unavailable(String(localized: "Devin sign-in expired. Run devin login."))
             }
             guard http.statusCode == 200 else {
-                return .unavailable("Provider usage request failed (HTTP \(http.statusCode)).")
+                return .unavailable(String(localized: "Provider usage request failed (HTTP \(http.statusCode))."))
             }
             return try parse(data)
         } catch {
@@ -1792,7 +1792,7 @@ enum DevinUsageAdapter {
         guard http.statusCode == 200 else {
             if http.statusCode == 401 || http.statusCode == 403 {
                 if isMissingOrganization(data) { return nil }
-                throw AgentUsageError.unauthorized("Devin sign-in expired. Run devin login.")
+                throw AgentUsageError.unauthorized(String(localized: "Devin sign-in expired. Run devin login."))
             }
             throw AgentUsageError.http(http.statusCode)
         }
@@ -1823,7 +1823,7 @@ enum DevinUsageAdapter {
         // Accounts without a quota plan are a valid state, not an error.
         if (root["is_quota_plan"] as? Bool) == false {
             return AgentUsageResult(
-                message: "No quota plan on this Devin account.",
+                message: String(localized: "No quota plan on this Devin account."),
                 planName: planName(in: root)
             )
         }
@@ -2011,7 +2011,7 @@ enum KiloUsageAdapter {
         guard let credential = credential(environment: environment, home: home),
               let url = batchURL()
         else {
-            return .unavailable("Sign in to Kilo Code to see usage.")
+            return .unavailable(String(localized: "Sign in to Kilo Code to see usage."))
         }
 
         var request = URLRequest(url: url)
@@ -2026,10 +2026,10 @@ enum KiloUsageAdapter {
         do {
             let (data, http) = try await usageHTTP(request, load: load)
             if http.statusCode == 401 || http.statusCode == 403 {
-                return .unavailable("Kilo Code sign-in expired. Run kilo auth login.")
+                return .unavailable(String(localized: "Kilo Code sign-in expired. Run kilo auth login."))
             }
             guard http.statusCode == 200 else {
-                return .unavailable("Provider usage request failed (HTTP \(http.statusCode)).")
+                return .unavailable(String(localized: "Provider usage request failed (HTTP \(http.statusCode))."))
             }
             return try parse(data)
         } catch {
@@ -2098,7 +2098,7 @@ enum KiloUsageAdapter {
                 let combined = [code, message].compactMap { $0?.lowercased() }.joined(separator: " ")
                 if combined.contains("unauthorized") || combined.contains("forbidden") {
                     throw AgentUsageError.unauthorized(
-                        "Kilo Code sign-in expired. Run kilo auth login.")
+                        String(localized: "Kilo Code sign-in expired. Run kilo auth login."))
                 }
                 throw AgentUsageError.invalidResponse
             }
@@ -2151,7 +2151,7 @@ enum KiloUsageAdapter {
 
         return AgentUsageResult(
             windows: windows,
-            message: windows.isEmpty ? "No Kilo credits or pass on this account." : nil,
+            message: windows.isEmpty ? String(localized: "No Kilo credits or pass on this account.") : nil,
             hasQuota: !windows.isEmpty,
             planName: planName
         )
@@ -2412,7 +2412,7 @@ enum GeminiUsageAdapter {
             ?? cachedCredentials(from: cacheFile),
             !credentials.accessToken.isEmpty || credentials.refreshToken != nil
         else {
-            return .unavailable("Sign in to Gemini CLI once to see usage.")
+            return .unavailable(String(localized: "Sign in to Gemini CLI once to see usage."))
         }
 
         if credentials.needsRefresh {
@@ -2421,13 +2421,13 @@ enum GeminiUsageAdapter {
             } else if let cached = cachedCredentials(from: cacheFile), !cached.needsRefresh {
                 credentials = cached
             } else {
-                return .unavailable("Gemini sign-in expired. Run gemini once.")
+                return .unavailable(String(localized: "Gemini sign-in expired. Run gemini once."))
             }
         }
 
         let token = credentials.accessToken
         guard !token.isEmpty else {
-            return .unavailable("Gemini sign-in expired. Run gemini once.")
+            return .unavailable(String(localized: "Gemini sign-in expired. Run gemini once."))
         }
 
         do {
@@ -2452,10 +2452,10 @@ enum GeminiUsageAdapter {
 
             let (data, http) = try await usageHTTP(request, load: load)
             if http.statusCode == 401 || http.statusCode == 403 {
-                return .unavailable("Gemini sign-in expired. Run gemini once.")
+                return .unavailable(String(localized: "Gemini sign-in expired. Run gemini once."))
             }
             guard http.statusCode == 200 else {
-                return .unavailable("Provider usage request failed (HTTP \(http.statusCode)).")
+                return .unavailable(String(localized: "Provider usage request failed (HTTP \(http.statusCode))."))
             }
 
             var result = try parse(data)
@@ -2509,7 +2509,7 @@ enum GeminiUsageAdapter {
 
         return AgentUsageResult(
             windows: windows,
-            message: windows.isEmpty ? "No quota buckets reported." : nil,
+            message: windows.isEmpty ? String(localized: "No quota buckets reported.") : nil,
             hasQuota: !windows.isEmpty
         )
     }
@@ -2557,9 +2557,9 @@ enum GeminiUsageAdapter {
     /// account even on the free tier (CodexBar's resolveAccountPlan).
     private static func planName(tierID: String?, hostedDomain: String?) -> String? {
         switch tierID {
-        case "standard-tier": "Paid"
-        case "free-tier": hostedDomain != nil ? "Workspace" : "Free"
-        case "legacy-tier": "Legacy"
+        case "standard-tier": String(localized: "Paid")
+        case "free-tier": hostedDomain != nil ? String(localized: "Workspace") : String(localized: "Free")
+        case "legacy-tier": String(localized: "Legacy")
         default: nil
         }
     }
@@ -2884,7 +2884,7 @@ enum ClineUsageAdapter {
         load: (URLRequest) async throws -> (Data, URLResponse)
     ) async -> AgentUsageResult {
         guard let token = apiKey(environment: environment, home: home) else {
-            return .unavailable("Sign in to Cline to see usage.")
+            return .unavailable(String(localized: "Sign in to Cline to see usage."))
         }
 
         var request = URLRequest(
@@ -2898,10 +2898,10 @@ enum ClineUsageAdapter {
         do {
             let (data, http) = try await usageHTTP(request, load: load)
             if http.statusCode == 401 || http.statusCode == 403 {
-                return .unavailable("Cline sign-in expired. Run cline auth.")
+                return .unavailable(String(localized: "Cline sign-in expired. Run cline auth."))
             }
             guard http.statusCode == 200 else {
-                return .unavailable("Provider usage request failed (HTTP \(http.statusCode)).")
+                return .unavailable(String(localized: "Provider usage request failed (HTTP \(http.statusCode))."))
             }
             return try parse(data)
         } catch {
@@ -2997,7 +2997,7 @@ enum ClineUsageAdapter {
 
         return AgentUsageResult(
             windows: windows,
-            message: windows.isEmpty ? "No quota plan on this Cline account." : nil,
+            message: windows.isEmpty ? String(localized: "No quota plan on this Cline account.") : nil,
             hasQuota: !windows.isEmpty
         )
     }
@@ -3020,7 +3020,7 @@ enum OpenCodeUsageAdapter {
         load: (URLRequest) async throws -> (Data, URLResponse)
     ) async -> AgentUsageResult {
         guard let key = apiKey(environment: environment, home: home) else {
-            return .unavailable("Sign in to OpenCode to see usage.")
+            return .unavailable(String(localized: "Sign in to OpenCode to see usage."))
         }
 
         var request = URLRequest(url: URL(string: "https://opencode.ai/zen/go/v1/usage")!)
@@ -3035,12 +3035,12 @@ enum OpenCodeUsageAdapter {
             case 200:
                 break
             case 401:
-                return .unavailable("OpenCode sign-in expired. Run opencode auth login.")
+                return .unavailable(String(localized: "OpenCode sign-in expired. Run opencode auth login."))
             case 403:
                 // A valid key on an account without Go gets 403, not 401.
-                return .unavailable("No OpenCode Go quota on this account.")
+                return .unavailable(String(localized: "No OpenCode Go quota on this account."))
             default:
-                return .unavailable("Provider usage request failed (HTTP \(http.statusCode)).")
+                return .unavailable(String(localized: "Provider usage request failed (HTTP \(http.statusCode))."))
             }
             return try parse(data)
         } catch {
@@ -3082,7 +3082,7 @@ enum OpenCodeUsageAdapter {
         else { throw AgentUsageError.invalidResponse }
         guard let usage = root["usage"] as? [String: Any] else {
             return AgentUsageResult(
-                message: "No OpenCode Go subscription on this account.",
+                message: String(localized: "No OpenCode Go subscription on this account."),
                 planName: nil
             )
         }

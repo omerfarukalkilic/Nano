@@ -68,15 +68,15 @@ enum NanoModuleRegistry {
     static func unfitReason(for module: NanoModuleID, in slot: DashboardSlot) -> String? {
         guard !slots(for: module).contains(slot) else { return nil }
         switch (module, slot) {
-        case (.music, .quick): return "Too small for playback controls. Media keys and the compact island cover this."
-        case (.calendar, .quick): return "A date alone isn't useful here. Use a Status strip for the next event."
-        case (.cue, .medium): return "The queue needs the width to keep to-dos readable."
-        case (.cue, _): return "One truncated line isn't a queue. Cue needs the Wide slot."
-        case (.tray, .medium): return "Needs the width for files plus the AirDrop target."
-        case (.tray, _): return "Too small to drop files onto. Tray needs the Wide slot."
-        case (.camera, _): return "Camera is a launcher. A live feed here would keep the camera on."
-        case (.battery, _): return "Battery is one number. It fits a Status strip."
-        default: return "\(descriptor(for: module).dashboardTitle) doesn't fit a \(slot.title) slot."
+        case (.music, .quick): return String(localized: "Too small for playback controls. Media keys and the compact island cover this.")
+        case (.calendar, .quick): return String(localized: "A date alone isn't useful here. Use a Status strip for the next event.")
+        case (.cue, .medium): return String(localized: "The queue needs the width to keep to-dos readable.")
+        case (.cue, _): return String(localized: "One truncated line isn't a queue. Cue needs the Wide slot.")
+        case (.tray, .medium): return String(localized: "Needs the width for files plus the AirDrop target.")
+        case (.tray, _): return String(localized: "Too small to drop files onto. Tray needs the Wide slot.")
+        case (.camera, _): return String(localized: "Camera is a launcher. A live feed here would keep the camera on.")
+        case (.battery, _): return String(localized: "Battery is one number. It fits a Status strip.")
+        default: return String(localized: "\(descriptor(for: module).dashboardTitle) doesn't fit a \(slot.title) slot.")
         }
     }
 
@@ -119,19 +119,19 @@ enum NanoModuleRegistry {
 
     private static func title(for id: NanoModuleID) -> String {
         switch id {
-        case .calendar: "Calendar"
-        case .timer: "Timer"
-        case .camera: "Camera"
-        case .weather: "Weather"
-        case .agents: "Agents"
-        case .music: "Music"
-        case .battery: "Battery"
-        case .bluetooth: "Bluetooth Devices"
-        case .volume: "Volume HUD"
-        case .brightness: "Brightness HUD"
-        case .tray: "Tray"
+        case .calendar: String(localized: "Calendar")
+        case .timer: String(localized: "Timer")
+        case .camera: String(localized: "Camera")
+        case .weather: String(localized: "Weather")
+        case .agents: String(localized: "Agents")
+        case .music: String(localized: "Music")
+        case .battery: String(localized: "Battery")
+        case .bluetooth: String(localized: "Bluetooth Devices")
+        case .volume: String(localized: "Volume HUD")
+        case .brightness: String(localized: "Brightness HUD")
+        case .tray: String(localized: "Tray")
         case .voiceDictation: "Quill"
-        case .notificationLabs: "Notifications"
+        case .notificationLabs: String(localized: "Notifications")
         case .cue: "Cue"
         case .mixer: "Mixer"
         }
@@ -159,21 +159,21 @@ enum NanoModuleRegistry {
 
     private static func description(for id: NanoModuleID) -> String {
         switch id {
-        case .music: "Control Apple Music or Spotify from Nano."
-        case .weather: "See current conditions and your local forecast."
-        case .agents: "See coding agents at work, and answer them from the island."
-        case .tray: "Hold files, links, and images until you drag them out, or AirDrop them."
-        case .calendar: "See upcoming events from Apple Calendar."
-        case .timer: "Run a focus timer with goals and breaks."
-        case .camera: "Open a private camera preview."
-        case .battery: "See the Mac's current battery status."
-        case .bluetooth: "See supported connected Bluetooth devices."
-        case .volume: "View and adjust the current output volume."
-        case .brightness: "See display brightness changes."
-        case .voiceDictation: "Hold a shortcut, speak, and your words land where you type."
-        case .notificationLabs: "Recent macOS and Nano alerts, with reply for iMessage."
-        case .cue: "Stash to-dos, prompts, and screenshots per project."
-        case .mixer: "Adjust volume and mute for each app on your Mac."
+        case .music: String(localized: "Control Apple Music or Spotify from Nano.")
+        case .weather: String(localized: "See current conditions and your local forecast.")
+        case .agents: String(localized: "See coding agents at work, and answer them from the island.")
+        case .tray: String(localized: "Hold files, links, and images until you drag them out, or AirDrop them.")
+        case .calendar: String(localized: "See upcoming events from Apple Calendar.")
+        case .timer: String(localized: "Run a focus timer with goals and breaks.")
+        case .camera: String(localized: "Open a private camera preview.")
+        case .battery: String(localized: "See the Mac's current battery status.")
+        case .bluetooth: String(localized: "See supported connected Bluetooth devices.")
+        case .volume: String(localized: "View and adjust the current output volume.")
+        case .brightness: String(localized: "See display brightness changes.")
+        case .voiceDictation: String(localized: "Hold a shortcut, speak, and your words land where you type.")
+        case .notificationLabs: String(localized: "Recent macOS and Nano alerts, with reply for iMessage.")
+        case .cue: String(localized: "Stash to-dos, prompts, and screenshots per project.")
+        case .mixer: String(localized: "Adjust volume and mute for each app on your Mac.")
         }
     }
 }

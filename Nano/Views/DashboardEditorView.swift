@@ -280,9 +280,9 @@ struct DashboardEditor: View {
         }
         .onAppear { currentScale = scale }
         .onChange(of: scale) { _, value in currentScale = value }
-        .help(module.map { "\($0.dashboardTitle) · drag to move, click to change" } ?? "Empty \(area.slot.title.lowercased()) slot · click to choose a feature")
+        .help(module.map { String(localized: "\($0.dashboardTitle) · drag to move, click to change") } ?? String(localized: "Empty \(area.slot.title.lowercased()) slot · click to choose a feature"))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(area.slot.title) slot, \(module?.dashboardTitle ?? "empty")")
+        .accessibilityLabel(module.map { String(localized: "\(area.slot.title) slot, \($0.dashboardTitle)") } ?? String(localized: "\(area.slot.title) slot, empty"))
         .accessibilityIdentifier("dashboard.slot.\(area.rawValue)")
         .accessibilityAddTraits(.isButton)
         .accessibilityAction { tap(area) }
@@ -299,7 +299,7 @@ struct DashboardEditor: View {
             VStack(spacing: 3) {
                 Image(systemName: "nosign")
                     .font(.system(size: 11, weight: .semibold))
-                Text(compact ? "Won't fit" : NanoModuleRegistry.unfitReason(for: module, in: area.slot) ?? "")
+                Text(compact ? String(localized: "Won't fit") : NanoModuleRegistry.unfitReason(for: module, in: area.slot) ?? "")
                     .font(.system(size: area.slot == .strip ? 9 : 10.5))
                     .multilineTextAlignment(.center)
                     .lineLimit(area.slot == .strip ? 2 : 4)
@@ -312,10 +312,10 @@ struct DashboardEditor: View {
     }
 
     private func dropLabel(_ module: NanoModuleID, onto current: NanoModuleID?, in area: DashboardArea) -> String {
-        guard let current, current != module else { return current == module ? "Here now" : "Place here" }
+        guard let current, current != module else { return current == module ? String(localized: "Here now") : String(localized: "Place here") }
         return displacedFeatureStays(current, from: area, carrying: module)
-            ? "Swap with \(current.dashboardTitle)"
-            : "Replace \(current.dashboardTitle)"
+            ? String(localized: "Swap with \(current.dashboardTitle)")
+            : String(localized: "Replace \(current.dashboardTitle)")
     }
 
     /// What `moveDashboardFeature` does with the feature already in the
@@ -397,7 +397,7 @@ struct DashboardEditor: View {
 
     private func refuse(_ module: NanoModuleID, in area: DashboardArea) {
         refusal = NanoModuleRegistry.unfitReason(for: module, in: area.slot)
-            .map { "\(module.dashboardTitle) can't go in a \(area.slot.title) slot. \($0)" }
+            .map { String(localized: "\(module.dashboardTitle) can't go in a \(area.slot.title) slot. \($0)") }
         NSHapticFeedbackManager.defaultPerformer.perform(.generic, performanceTime: .now)
         withAnimation(reduceMotion ? nil : .linear(duration: 0.36)) {
             shakes[area, default: 0] += 1
@@ -423,7 +423,7 @@ struct DashboardEditor: View {
                     .background(removing ? Color.red.opacity(0.8) : Color.white.opacity(0.14), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
                 Text(drag.module.dashboardTitle)
                     .font(.system(size: 12, weight: .semibold))
-                Text(removing ? "Release to remove" : slotLetters(drag.module))
+                Text(removing ? String(localized: "Release to remove") : slotLetters(drag.module))
                     .font(.system(size: 10, weight: .medium, design: .rounded))
                     .foregroundStyle(.secondary)
             }
@@ -546,7 +546,7 @@ struct DashboardEditor: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 16)
                         .background(Color.primary.opacity(fits ? 0.1 : 0.03), in: RoundedRectangle(cornerRadius: 5, style: .continuous))
-                        .help(fits ? "Fits \(slot.title)" : NanoModuleRegistry.unfitReason(for: module, in: slot) ?? "")
+                        .help(fits ? String(localized: "Fits \(slot.title)") : NanoModuleRegistry.unfitReason(for: module, in: slot) ?? "")
                 }
             }
         }
@@ -565,7 +565,7 @@ struct DashboardEditor: View {
         .gesture(dragGesture(for: module, from: nil))
         .help("Drag \(module.dashboardTitle) onto the dashboard, or click to pick it up")
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(module.dashboardTitle)\(placedArea == nil ? "" : ", on dashboard")")
+        .accessibilityLabel(placedArea == nil ? module.dashboardTitle : String(localized: "\(module.dashboardTitle), on dashboard"))
         .accessibilityIdentifier("dashboard.library.\(module.rawValue)")
         .testProbe("dashboard.library.\(module.rawValue)")
         .accessibilityHint("Fits \(DashboardSlot.allCases.filter(slots.contains).map(\.title).joined(separator: ", "))")
@@ -652,10 +652,10 @@ private struct DashboardSlotPicker: View {
 
     private var caption: String {
         switch area.slot {
-        case .wide: "The main stage"
-        case .medium: "The second focus"
-        case .strip: "One line of status"
-        case .quick: "A single tap target"
+        case .wide: String(localized: "The main stage")
+        case .medium: String(localized: "The second focus")
+        case .strip: String(localized: "One line of status")
+        case .quick: String(localized: "A single tap target")
         }
     }
 
@@ -678,7 +678,7 @@ private struct DashboardSlotPicker: View {
                 HStack {
                     Text(module.dashboardTitle).font(.system(size: 11.5, weight: .semibold))
                     Spacer()
-                    Text(isCurrent ? "Current" : placedArea.map { "Moves from \($0.slot.title)" } ?? "Add")
+                    Text(isCurrent ? String(localized: "Current") : placedArea.map { String(localized: "Moves from \($0.slot.title)") } ?? String(localized: "Add"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

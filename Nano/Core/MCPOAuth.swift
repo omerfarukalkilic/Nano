@@ -41,12 +41,12 @@ enum MCPOAuth {
 
         var errorDescription: String? {
             switch self {
-            case .notSupported: "The server asked for sign-in but doesn't describe how."
-            case let .registration(message): "The server didn't register Nano: \(message)"
-            case let .denied(message): "Sign-in didn't finish: \(message)"
-            case .stateMismatch: "The sign-in reply didn't match the request, so Nano ignored it."
-            case .timedOut: "Sign-in took too long. Try connecting again."
-            case let .token(message): "The server didn't issue a token: \(message)"
+            case .notSupported: String(localized: "The server asked for sign-in but doesn't describe how.")
+            case let .registration(message): String(localized: "The server didn't register Nano: \(message)")
+            case let .denied(message): String(localized: "Sign-in didn't finish: \(message)")
+            case .stateMismatch: String(localized: "The sign-in reply didn't match the request, so Nano ignored it.")
+            case .timedOut: String(localized: "Sign-in took too long. Try connecting again.")
+            case let .token(message): String(localized: "The server didn't issue a token: \(message)")
             }
         }
     }

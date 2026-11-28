@@ -557,7 +557,7 @@ final class AgentHookBridge: ObservableObject {
 
         switch name {
         case "PermissionRequest":
-            let tool = event["tool_name"] as? String ?? "an action"
+            let tool = event["tool_name"] as? String ?? String(localized: "an action")
             let input = event["tool_input"] as? [String: Any] ?? [:]
             let target = (input["file_path"] as? String)
                 ?? (input["path"] as? String)
@@ -583,10 +583,10 @@ final class AgentHookBridge: ObservableObject {
                 kind: .permission,
                 title: answerable
                     ? tool
-                    : "\(AgentProviderID(rawValue: source.lowercased())?.title ?? "The agent") needs approval for \(tool)",
+                    : String(localized: "\(AgentProviderID(rawValue: source.lowercased())?.title ?? String(localized: "The agent")) needs approval for \(tool)"),
                 detail: target,
                 options: answerable
-                    ? [Option(id: 0, label: "Deny"), Option(id: 1, label: "Allow once")]
+                    ? [Option(id: 0, label: String(localized: "Deny")), Option(id: 1, label: String(localized: "Allow once"))]
                     : [],
                 sessionID: sessionID,
                 receivedAt: Date(),
@@ -705,10 +705,10 @@ final class AgentHookBridge: ObservableObject {
     ) -> PendingRequest {
         let questions = input["questions"] as? [[String: Any]] ?? []
         let first = questions.first?["question"] as? String
-        let agent = AgentProviderID(rawValue: source.lowercased())?.title ?? "The agent"
+        let agent = AgentProviderID(rawValue: source.lowercased())?.title ?? String(localized: "The agent")
         let title = questions.count > 1
-            ? "\(agent) has \(questions.count) questions for you"
-            : (first ?? "\(agent) has a question for you")
+            ? String(localized: "\(agent) has \(questions.count) questions for you")
+            : (first ?? String(localized: "\(agent) has a question for you"))
         return PendingRequest(
             id: "question:\(sessionID ?? "unknown")",
             source: source,
@@ -759,10 +759,10 @@ final class AgentHookBridge: ObservableObject {
         default: .notification
         }
         let fallback = switch kind {
-        case .permission: "Agent needs approval"
-        case .question: "Agent is waiting for you"
-        case .completion: "Agent finished"
-        case .notification: "Agent update"
+        case .permission: String(localized: "Agent needs approval")
+        case .question: String(localized: "Agent is waiting for you")
+        case .completion: String(localized: "Agent finished")
+        case .notification: String(localized: "Agent update")
         }
         return PendingRequest(
             id: "notification:\(sessionID ?? "unknown"):\(type)",
@@ -2365,46 +2365,75 @@ final class AgentHookBridge: ObservableObject {
 enum AgentApprovalCopy {
     /// "Claude wants to run a command", "… edit main.swift", "… use Slackbot: post message".
     static func headline(provider: String, tool: String, preview: AgentHookBridge.Preview) -> String {
-        "\(provider) \(action(tool: tool, preview: preview))"
+        switch action(tool: tool, preview: preview) {
+        case .runCommand: String(localized: "\(provider) wants to run a command")
+        case let .write(path): String(localized: "\(provider) wants to write \(path)")
+        case let .edit(path): String(localized: "\(provider) wants to edit \(path)")
+        case .approvePlan: String(localized: "\(provider) wants you to approve a plan")
+        case .changeFiles: String(localized: "\(provider) wants to change files")
+        case .readFile: String(localized: "\(provider) wants to read a file")
+        case .searchFiles: String(localized: "\(provider) wants to search files")
+        case .openWebPage: String(localized: "\(provider) wants to open a web page")
+        case .searchWeb: String(localized: "\(provider) wants to search the web")
+        case .startSubagent: String(localized: "\(provider) wants to start a subagent")
+        case let .use(name): String(localized: "\(provider) wants to use \(name)")
+        }
     }
 
     /// The headline without the provider: "Wants to run a command".
     static func shortHeadline(tool: String, preview: AgentHookBridge.Preview) -> String {
-        let text = action(tool: tool, preview: preview)
-        return text.prefix(1).uppercased() + text.dropFirst()
+        switch action(tool: tool, preview: preview) {
+        case .runCommand: String(localized: "Wants to run a command")
+        case let .write(path): String(localized: "Wants to write \(path)")
+        case let .edit(path): String(localized: "Wants to edit \(path)")
+        case .approvePlan: String(localized: "Wants you to approve a plan")
+        case .changeFiles: String(localized: "Wants to change files")
+        case .readFile: String(localized: "Wants to read a file")
+        case .searchFiles: String(localized: "Wants to search files")
+        case .openWebPage: String(localized: "Wants to open a web page")
+        case .searchWeb: String(localized: "Wants to search the web")
+        case .startSubagent: String(localized: "Wants to start a subagent")
+        case let .use(name): String(localized: "Wants to use \(name)")
+        }
     }
 
-    private static func action(tool: String, preview: AgentHookBridge.Preview) -> String {
+    private enum Action {
+        case runCommand, approvePlan, changeFiles, readFile, searchFiles
+        case openWebPage, searchWeb, startSubagent
+        case write(String), edit(String), use(String)
+    }
+
+    private static func action(tool: String, preview: AgentHookBridge.Preview) -> Action {
         switch preview {
         case .command where isShell(tool):
-            return "wants to run a command"
+            return .runCommand
         case let .diff(path, removed, _, _):
             let writes = ["write", "create"].contains(tool.lowercased()) && removed.isEmpty
-            return "wants to \(writes ? "write" : "edit") \(path)"
+            return writes ? .write(path) : .edit(path)
         case .plan:
-            return "wants you to approve a plan"
+            return .approvePlan
         default:
             break
         }
         switch tool.lowercased() {
         case "bash", "shell", "terminal", "exec", "exec_command", "shell_command":
-            return "wants to run a command"
+            return .runCommand
         case "edit", "multiedit", "write", "apply_patch", "notebookedit":
-            return "wants to change files"
+            return .changeFiles
         case "read", "view":
-            return "wants to read a file"
+            return .readFile
         case "glob", "grep", "ls", "search":
-            return "wants to search files"
+            return .searchFiles
         case "webfetch", "web_fetch":
-            return "wants to open a web page"
+            return .openWebPage
         case "websearch", "web_search":
-            return "wants to search the web"
+            return .searchWeb
         case "task", "agent":
-            return "wants to start a subagent"
+            return .startSubagent
         case "exitplanmode":
-            return "wants you to approve a plan"
+            return .approvePlan
         default:
-            return "wants to use \(toolName(tool))"
+            return .use(toolName(tool))
         }
     }
 
@@ -2434,20 +2463,22 @@ enum AgentApprovalCopy {
     static func optionLabel(_ option: AgentHookBridge.Option, preview: AgentHookBridge.Preview) -> String {
         guard case .plan = preview else { return option.label }
         switch option.id {
-        case 1: return "Approve plan"
-        case 0: return "Keep planning"
+        case 1: return String(localized: "Approve plan")
+        case 0: return String(localized: "Keep planning")
         default: return option.label
         }
     }
 
     /// "2 lines added, 1 removed": what the edit tries to change.
     static func diffSummary(removed: Int, added: Int) -> String? {
-        func lines(_ count: Int) -> String { count == 1 ? "1 line" : "\(count) lines" }
         switch (added, removed) {
         case (0, 0): return nil
-        case (_, 0): return "\(lines(added)) added"
-        case (0, _): return "\(lines(removed)) removed"
-        default: return "\(lines(added)) added, \(removed) removed"
+        case (_, 0): return added == 1 ? String(localized: "1 line added") : String(localized: "\(added) lines added")
+        case (0, _): return removed == 1 ? String(localized: "1 line removed") : String(localized: "\(removed) lines removed")
+        default:
+            return added == 1
+                ? String(localized: "1 line added, \(removed) removed")
+                : String(localized: "\(added) lines added, \(removed) removed")
         }
     }
 

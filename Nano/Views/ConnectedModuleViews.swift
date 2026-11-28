@@ -309,7 +309,7 @@ struct AgentModuleView: View {
             }
 
             if turns.isEmpty, latest == nil {
-                emptyLine("Nothing recorded for this session yet")
+                emptyLine(String(localized: "Nothing recorded for this session yet"))
             }
         }
     }
@@ -391,7 +391,7 @@ struct AgentModuleView: View {
                 withAnimation(.snappy(duration: 0.22)) { showsChangedFiles.toggle() }
             } label: {
                 HStack(spacing: 6) {
-                    Text("Changed \(session.changedFiles.count) \(session.changedFiles.count == 1 ? "file" : "files")")
+                    Text(session.changedFiles.count == 1 ? String(localized: "Changed 1 file") : String(localized: "Changed \(session.changedFiles.count) files"))
                         .font(.system(size: 11.5, weight: .semibold))
                         .foregroundStyle(.white.opacity(0.6))
                     Image(systemName: "chevron.right")
@@ -408,9 +408,9 @@ struct AgentModuleView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .help(showsChangedFiles ? "Hide changed files" : "Show changed files")
+            .help(showsChangedFiles ? String(localized: "Hide changed files") : String(localized: "Show changed files"))
             .accessibilityLabel("Changed \(session.changedFiles.count) files")
-            .accessibilityValue(showsChangedFiles ? "Expanded" : "Collapsed")
+            .accessibilityValue(showsChangedFiles ? String(localized: "Expanded") : String(localized: "Collapsed"))
             if showsChangedFiles {
                 VStack(spacing: 4) {
                     ForEach(files, id: \.path) { file in
@@ -475,14 +475,14 @@ struct AgentModuleView: View {
             ?? session.lastAgentMessage
         return HStack(spacing: 7) {
             if AgentSessionJump.canJump(session) {
-                detailAction("Open session", symbol: "arrow.up.right") {
+                detailAction(String(localized: "Open session"), symbol: "arrow.up.right") {
                     AgentSessionJump.open(session)
                 }
                 .help("Open this session in \(AgentSessionJump.hostTitle(for: session))")
             }
             if let reply {
                 let copied = copiedReplySessionID == session.id
-                detailAction(copied ? "Copied" : "Copy reply", symbol: copied ? "checkmark" : "doc.on.doc") {
+                detailAction(copied ? String(localized: "Copied") : String(localized: "Copy reply"), symbol: copied ? "checkmark" : "doc.on.doc") {
                     NSPasteboard.general.clearContents()
                     NSPasteboard.general.setString(reply, forType: .string)
                     copiedReplySessionID = session.id
@@ -494,7 +494,7 @@ struct AgentModuleView: View {
             }
             Spacer(minLength: 0)
             if !session.needsAttention {
-                detailAction("Hide", symbol: "eye.slash") { sessions.dismiss(session.id) }
+                detailAction(String(localized: "Hide"), symbol: "eye.slash") { sessions.dismiss(session.id) }
                     .help("Hide until this session is active again")
             }
         }
@@ -530,7 +530,7 @@ struct AgentModuleView: View {
 
         return VStack(alignment: .leading, spacing: 7) {
             HStack(spacing: 7) {
-                Text(done == todos.count ? "Plan complete" : "Plan")
+                Text(done == todos.count ? String(localized: "Plan complete") : String(localized: "Plan"))
                     .font(.system(size: 11.5, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.6))
                 Text("\(done)/\(todos.count)")
@@ -584,7 +584,7 @@ struct AgentModuleView: View {
                 }
             }
             if hidden > 0 {
-                Text("\(hidden) more \(hidden == 1 ? "step" : "steps")")
+                Text(hidden == 1 ? String(localized: "1 more step") : String(localized: "\(hidden) more steps"))
                     .font(.system(size: 11))
                     .foregroundStyle(.white.opacity(0.38))
                     .padding(.leading, 20)
@@ -601,7 +601,7 @@ struct AgentModuleView: View {
         let files = session.focusScores.sorted { $0.value > $1.value }.prefix(5).map(\.key)
         return VStack(alignment: .leading, spacing: 7) {
             HStack(spacing: 6) {
-                Text(files.isEmpty ? "Changes" : "Working in \(files.count) \(files.count == 1 ? "file" : "files")")
+                Text(files.isEmpty ? String(localized: "Changes") : files.count == 1 ? String(localized: "Working in 1 file") : String(localized: "Working in \(files.count) files"))
                     .font(.system(size: 11.5, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.6))
                 Spacer(minLength: 0)
@@ -732,7 +732,7 @@ struct AgentModuleView: View {
                                 }
                             }
                         } label: {
-                            Text(isExpanded ? "Show less" : "Show \(hiddenCount) earlier")
+                            Text(isExpanded ? String(localized: "Show less") : String(localized: "Show \(hiddenCount) earlier"))
                                 .font(.system(size: 11, weight: .medium))
                                 .foregroundStyle(.white.opacity(0.45))
                                 .padding(.leading, 20)
@@ -751,14 +751,14 @@ struct AgentModuleView: View {
     private static func activitySummary(_ entries: [AgentActivityEntry]) -> String {
         let counts = Dictionary(grouping: entries, by: \.kind).mapValues(\.count)
         var parts: [String] = []
-        if let n = counts[.edit] { parts.append("edited \(n) \(n == 1 ? "file" : "files")") }
-        if let n = counts[.read] { parts.append("read \(n)") }
-        if let n = counts[.command] { parts.append("ran \(n) \(n == 1 ? "command" : "commands")") }
-        if let n = counts[.search] { parts.append("searched \(n) \(n == 1 ? "time" : "times")") }
-        if let n = counts[.web] { parts.append("browsed \(n)") }
-        if let n = counts[.subagent] { parts.append("delegated \(n)") }
+        if let n = counts[.edit] { parts.append(n == 1 ? String(localized: "edited 1 file") : String(localized: "edited \(n) files")) }
+        if let n = counts[.read] { parts.append(String(localized: "read \(n)")) }
+        if let n = counts[.command] { parts.append(n == 1 ? String(localized: "ran 1 command") : String(localized: "ran \(n) commands")) }
+        if let n = counts[.search] { parts.append(n == 1 ? String(localized: "searched 1 time") : String(localized: "searched \(n) times")) }
+        if let n = counts[.web] { parts.append(String(localized: "browsed \(n)")) }
+        if let n = counts[.subagent] { parts.append(String(localized: "delegated \(n)")) }
         guard var sentence = parts.first.map({ _ in parts.joined(separator: ", ") }) else {
-            return "\(entries.count) steps"
+            return entries.count == 1 ? String(localized: "1 step") : String(localized: "\(entries.count) steps")
         }
         sentence = sentence.prefix(1).uppercased() + sentence.dropFirst()
         return sentence
@@ -819,7 +819,7 @@ struct AgentModuleView: View {
     private func planSection(_ session: AgentSession) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             sectionHeader(
-                "Plan",
+                String(localized: "Plan"),
                 count: nil,
                 tint: Self.planTint,
                 isOpen: isOpen("plan")
@@ -858,7 +858,7 @@ struct AgentModuleView: View {
         return VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 6) {
                 sectionHeader(
-                    "Subagents",
+                    String(localized: "Subagents"),
                     count: entries.count,
                     tint: Self.subagentsTint,
                     isOpen: isOpen("subagents")
@@ -1003,7 +1003,7 @@ struct AgentModuleView: View {
     /// Compact age for a feed row: "now", "4m", "2h", "3d".
     private static func ago(_ date: Date) -> String {
         let seconds = Int(Date().timeIntervalSince(date))
-        if seconds < 45 { return "now" }
+        if seconds < 45 { return String(localized: "now") }
         if seconds < 3600 { return "\(seconds / 60)m" }
         if seconds < 86_400 { return "\(seconds / 3600)h" }
         return "\(seconds / 86_400)d"
@@ -1013,7 +1013,7 @@ struct AgentModuleView: View {
     /// resumed over several days was rendering as "143h 36m".
     private static func elapsed(since start: Date) -> String {
         let seconds = Int(Date().timeIntervalSince(start))
-        guard seconds > 0 else { return "just started" }
+        guard seconds > 0 else { return String(localized: "just started") }
         let days = seconds / 86_400
         let hours = (seconds % 86_400) / 3600
         let minutes = (seconds % 3600) / 60
@@ -1101,7 +1101,7 @@ struct AgentModuleView: View {
             // Full-width row: a decision that blocks an agent should not be a
             // pair of 60pt buttons tucked at the end of a line.
             if let outcome = request.outcome {
-                AgentDecisionReceipt(outcome: outcome, provider: provider?.title ?? "the agent")
+                AgentDecisionReceipt(outcome: outcome, provider: provider?.title ?? String(localized: "the agent"))
                     .frame(height: 32)
             } else {
             HStack(spacing: 8) {
@@ -1172,14 +1172,14 @@ struct AgentModuleView: View {
     /// Tokens that make a command worth a second look, and how to say so.
     /// Pattern checks only: a hint to read carefully, not a verdict.
     private static let riskRules: [(pattern: String, label: String)] = [
-        (#"(^|[\s;&|(])rm\s+(-[a-zA-Z]*[rf]|--recursive|--force)"#, "Deletes files"),
-        (#"git\s+push\s+.*(--force|-f\b)"#, "Force push"),
-        (#"git\s+(reset\s+--hard|clean\s+-[a-zA-Z]*f)"#, "Discards changes"),
-        (#"(^|[\s;&|(])sudo\s"#, "Runs as admin"),
-        (#"(curl|wget)[^|]*\|\s*(sh|bash|zsh)"#, "Pipes a download to a shell"),
-        (#"(?i)\bdrop\s+(table|database)\b"#, "Drops data"),
-        (#"(^|[\s;&|(])(mkfs|dd\s+if=|diskutil\s+erase)"#, "Erases a disk"),
-        (#"chmod\s+(-R\s+)?777"#, "Opens permissions"),
+        (#"(^|[\s;&|(])rm\s+(-[a-zA-Z]*[rf]|--recursive|--force)"#, String(localized: "Deletes files")),
+        (#"git\s+push\s+.*(--force|-f\b)"#, String(localized: "Force push")),
+        (#"git\s+(reset\s+--hard|clean\s+-[a-zA-Z]*f)"#, String(localized: "Discards changes")),
+        (#"(^|[\s;&|(])sudo\s"#, String(localized: "Runs as admin")),
+        (#"(curl|wget)[^|]*\|\s*(sh|bash|zsh)"#, String(localized: "Pipes a download to a shell")),
+        (#"(?i)\bdrop\s+(table|database)\b"#, String(localized: "Drops data")),
+        (#"(^|[\s;&|(])(mkfs|dd\s+if=|diskutil\s+erase)"#, String(localized: "Erases a disk")),
+        (#"chmod\s+(-R\s+)?777"#, String(localized: "Opens permissions")),
     ]
 
     static func risk(of request: AgentHookBridge.PendingRequest) -> String? {
@@ -1257,7 +1257,7 @@ struct AgentModuleView: View {
         case let .diff(path, removed, added, startLine):
             let first = startLine ?? 1
             VStack(alignment: .leading, spacing: 0) {
-                Text(startLine.map { "\(path) \u{00B7} line \($0)" } ?? path)
+                Text(startLine.map { String(localized: "\(path) \u{00B7} line \($0)") } ?? path)
                     .font(.system(size: 10.5, design: .monospaced))
                     .foregroundStyle(.white.opacity(0.4))
                     .lineLimit(1)
@@ -1377,10 +1377,10 @@ struct AgentModuleView: View {
 
     private static func foundSentence(_ names: [String]) -> String {
         switch names.count {
-        case 0: return "Your agents aren't connected"
-        case 1: return "\(names[0]) found"
-        case 2: return "\(names[0]) and \(names[1]) found"
-        default: return "\(names[0]), \(names[1]) and \(names.count - 2) more found"
+        case 0: return String(localized: "Your agents aren't connected")
+        case 1: return String(localized: "\(names[0]) found")
+        case 2: return String(localized: "\(names[0]) and \(names[1]) found")
+        default: return String(localized: "\(names[0]), \(names[1]) and \(names.count - 2) more found")
         }
     }
 
@@ -1714,7 +1714,7 @@ struct MusicModuleView: View {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 3) {
                         NanoMarqueeText(
-                            text: controller.nowPlaying?.title ?? controller.lastPlayed?.title ?? "Nothing playing",
+                            text: controller.nowPlaying?.title ?? controller.lastPlayed?.title ?? String(localized: "Nothing playing"),
                             fontSize: 17,
                             weight: .semibold,
                             height: 22
@@ -1735,7 +1735,7 @@ struct MusicModuleView: View {
                                 color: track.player.accentColor,
                                 isActive: track.isPlaying
                             )
-                            Text(track.isPlaying ? "Playing" : "Paused")
+                            Text(track.isPlaying ? String(localized: "Playing") : String(localized: "Paused"))
                                 .font(.system(size: 11, weight: .medium))
                                 .foregroundStyle(playbackTint)
                         }
@@ -1810,9 +1810,9 @@ struct MusicModuleView: View {
 
     private var mediaSubtitle: String {
         guard let first = controller.availablePlayers.first else {
-            return "Open Apple Music or Spotify"
+            return String(localized: "Open Apple Music or Spotify")
         }
-        return "Ready to control \(first.title)"
+        return String(localized: "Ready to control \(first.title)")
     }
 
 }
@@ -1859,10 +1859,10 @@ struct BatteryModuleView: View {
     }
 
     private func batteryStatus(_ battery: BatterySnapshot) -> String {
-        if battery.isCharging { return "Charging" }
-        if battery.isPluggedIn { return "Connected to power" }
-        guard let minutes = battery.timeRemainingMinutes else { return "On battery" }
-        return "\(minutes / 60)h \(minutes % 60)m remaining"
+        if battery.isCharging { return String(localized: "Charging") }
+        if battery.isPluggedIn { return String(localized: "Connected to power") }
+        guard let minutes = battery.timeRemainingMinutes else { return String(localized: "On battery") }
+        return String(localized: "\(minutes / 60)h \(minutes % 60)m remaining")
     }
 }
 
@@ -1952,7 +1952,7 @@ struct MediaProgressRow: View {
             }
             if showsTimes {
                 // Radio and other live streams have no end to count down to.
-                Text(track != nil && duration <= 0 ? "Live" : "-\(Self.label(max(duration - elapsed, 0)))")
+                Text(track != nil && duration <= 0 ? String(localized: "Live") : "-\(Self.label(max(duration - elapsed, 0)))")
             }
         }
     }
@@ -2059,10 +2059,10 @@ struct MediaIdlePill: View {
 
     var body: some View {
         if let last = controller.lastPlayed {
-            pill("Resume", symbol: "play.fill", action: controller.resumeLastPlayed)
+            pill(String(localized: "Resume"), symbol: "play.fill", action: controller.resumeLastPlayed)
                 .help("Play \(last.title) in \(last.player.title)")
         } else if let player = controller.suggestedPlayer {
-            pill("Open \(player.title)", symbol: nil) { controller.open(player) }
+            pill(String(localized: "Open \(player.title)"), symbol: nil) { controller.open(player) }
         }
     }
 
@@ -2126,7 +2126,7 @@ struct MediaArtwork: View {
         }
         .buttonStyle(.nanoPress)
         .disabled(controller.nowPlaying == nil)
-        .help(controller.nowPlaying.map { "Open \($0.player.title)" } ?? "")
+        .help(controller.nowPlaying.map { String(localized: "Open \($0.player.title)") } ?? "")
     }
 }
 
@@ -2293,13 +2293,19 @@ struct AgentSubagentCountChip: View {
         .padding(.vertical, 1.5)
         .background(AgentSessionRow.subagentTint.opacity(0.14), in: Capsule())
         .fixedSize()
-        .help(running ? "\(working) of \(total) subagents still working" : "All \(total) subagents finished")
+        .help(running ? String(localized: "\(working) of \(total) subagents still working") : String(localized: "All \(total) subagents finished"))
     }
 
     private var label: String {
-        let noun = total == 1 ? "subagent" : "subagents"
-        if running { return working == total ? "\(total) \(noun)" : "\(working)/\(total) \(noun)" }
-        return "\(total) \(noun) \u{00B7} done"
+        if running {
+            if working == total {
+                return total == 1 ? String(localized: "1 subagent") : String(localized: "\(total) subagents")
+            }
+            return total == 1
+                ? String(localized: "\(working)/1 subagent")
+                : String(localized: "\(working)/\(total) subagents")
+        }
+        return total == 1 ? String(localized: "1 subagent \u{00B7} done") : String(localized: "\(total) subagents \u{00B7} done")
     }
 }
 
@@ -2353,7 +2359,7 @@ struct AgentSessionRow: View {
                     if let note = session.nanoDecision {
                         TimelineView(.periodic(from: note.at, by: AgentSession.decisionNoteLifetime)) { context in
                             if context.date.timeIntervalSince(note.at) < AgentSession.decisionNoteLifetime {
-                                Text("\u{00B7} \(note.allowed ? "allowed" : "denied") from Nano")
+                                Text(note.allowed ? String(localized: "\u{00B7} allowed from Nano") : String(localized: "\u{00B7} denied from Nano"))
                                     .font(.system(size: size(12, 10.5), weight: .medium))
                                     .foregroundStyle(AgentDecisionReceipt.tint(note.allowed ? .allowed : .denied).opacity(0.9))
                                     .lineLimit(1)
@@ -2481,9 +2487,9 @@ struct AgentDecisionReceipt: View {
 
     static func label(_ outcome: AgentHookBridge.Outcome) -> String {
         switch outcome {
-        case .allowed: "Allowed"
-        case .denied: "Denied"
-        case .answeredElsewhere: "Answered elsewhere"
+        case .allowed: String(localized: "Allowed")
+        case .denied: String(localized: "Denied")
+        case .answeredElsewhere: String(localized: "Answered elsewhere")
         }
     }
 
@@ -2492,8 +2498,10 @@ struct AgentDecisionReceipt: View {
             Image(systemName: outcome == .answeredElsewhere ? "arrow.uturn.forward" : "checkmark")
                 .font(.system(size: size - 2, weight: .bold))
             Text(outcome == .answeredElsewhere
-                ? "\(provider) took its answer from somewhere else"
-                : "\(Self.label(outcome)) from Nano, sent to \(provider)")
+                ? String(localized: "\(provider) took its answer from somewhere else")
+                : outcome == .allowed
+                    ? String(localized: "Allowed from Nano, sent to \(provider)")
+                    : String(localized: "Denied from Nano, sent to \(provider)"))
                 .lineLimit(1)
         }
         .font(.system(size: size, weight: .semibold))
@@ -2533,7 +2541,7 @@ struct AgentTurnRuntimeLabel: View {
             .font(.system(size: size))
             .foregroundStyle(.white.opacity(live ? 0.55 : 0.35))
             .lineLimit(1)
-            .help(live ? "This turn has been running for \(text)" : "The last turn took \(text)")
+            .help(live ? String(localized: "This turn has been running for \(text)") : String(localized: "The last turn took \(text)"))
         }
     }
 }
@@ -2890,7 +2898,7 @@ struct AgentUsagePill: View {
                         }
 
                         if snapshot.usage.isEmpty {
-                            Text(snapshot.usageMessage ?? "Usage unavailable")
+                            Text(snapshot.usageMessage ?? String(localized: "Usage unavailable"))
                                 .font(.system(size: 12))
                                 .foregroundStyle(.white.opacity(0.45))
                                 .lineLimit(1)
@@ -2965,7 +2973,7 @@ struct AgentUsagePill: View {
                     service.refresh()
                 } label: {
                     if service.isRefreshing {
-                        NanoLoadingRing(size: 11, label: "Refreshing agents")
+                        NanoLoadingRing(size: 11, label: String(localized: "Refreshing agents"))
                     } else {
                         Image(systemName: "arrow.clockwise").font(.system(size: 10))
                     }
@@ -3018,18 +3026,18 @@ struct AgentUsagePill: View {
         usage: [NanoUsageWindow],
         message: String?
     ) -> String {
-        var text = plan.map { "\(provider.title) \($0) plan" } ?? provider.title
+        var text = plan.map { String(localized: "\(provider.title) \($0) plan") } ?? provider.title
         // With numbers on screen the message is their age ("3h ago") during
         // a cool-off; leaving it out made old numbers look live.
-        if let message, !message.isEmpty, message != "now" { text += ". \(message)" }
+        if let message, !message.isEmpty, message != "now", message != String(localized: "now") { text += ". \(message)" }
         let resets = ordered(usage).compactMap { window in
-            window.resetCountdown.map { "\(canonicalLabel(window)) in \($0)" }
+            window.resetCountdown.map { String(localized: "\(canonicalLabel(window)) in \($0)") }
         }
-        if !resets.isEmpty { text += ". Resets: " + resets.joined(separator: ", ") }
+        if !resets.isEmpty { text += String(localized: ". Resets: \(resets.joined(separator: ", "))") }
         if usage.contains(where: { $0.id == "cursor.models" || $0.id == "cursor.other" }) {
-            text += ". Cursor Models are Composer and Grok. Other Models are Claude, Codex, and the rest. Both reset monthly"
+            text += String(localized: ". Cursor Models are Composer and Grok. Other Models are Claude, Codex, and the rest. Both reset monthly")
         }
-        if cycles { text += " \u{00B7} click for the next agent" }
+        if cycles { text += String(localized: " \u{00B7} click for the next agent") }
         return text
     }
 
@@ -3142,7 +3150,7 @@ struct AgentUsagePill: View {
     private static func short(_ label: String) -> String {
         switch label {
         case "Cursor Models": return "Cursor"
-        case "Other Models": return "Other"
+        case "Other Models": return String(localized: "Other")
         default: break
         }
         guard label.count > 12 else { return label }
@@ -3189,7 +3197,7 @@ struct AgentTokenSummary: View {
                 .monospacedDigit()
                 .foregroundStyle(.white.opacity(0.42))
             } else if ledger.isScanning {
-                NanoLoadingRing(size: 11, label: "Counting tokens")
+                NanoLoadingRing(size: 11, label: String(localized: "Counting tokens"))
             }
 
             // The range governs every figure to its left, so it reads as a
@@ -3272,7 +3280,7 @@ struct AgentTokenSummary: View {
                 Text("Partial")
                     .font(.system(size: 9, weight: .medium))
                     .foregroundStyle(.white.opacity(0.42))
-                    .help("API cost estimate excludes models without a published price: " + totals.unpricedModels.sorted().joined(separator: ", "))
+                    .help(String(localized: "API cost estimate excludes models without a published price: \(totals.unpricedModels.sorted().joined(separator: ", "))"))
                     .padding(.leading, 1)
             }
         }
@@ -3343,11 +3351,11 @@ struct AgentTokenSummary: View {
         }
         if providers.count > 1 {
             lines.append(
-                "All \(AgentModuleView.compact(counts.total)) · \(AgentModuleView.money(costNanos))"
+                String(localized: "All \(AgentModuleView.compact(counts.total)) · \(AgentModuleView.money(costNanos))")
             )
         }
         return lines.joined(separator: "\n")
-            + "\nPriced at list API rates \u{2014} your plans already cover this."
+            + "\n" + String(localized: "Priced at list API rates \u{2014} your plans already cover this.")
     }
 }
 
@@ -3478,8 +3486,7 @@ struct AgentUsageDetailView: View {
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(.yellow.opacity(0.75))
                     .help(
-                        "No published rate for \(names.joined(separator: ", ")). "
-                            + "Their tokens are counted, but not their cost, rather than guessing."
+                        String(localized: "No published rate for \(names.joined(separator: ", ")). Their tokens are counted, but not their cost, rather than guessing.")
                     )
             }
         }
@@ -3598,7 +3605,7 @@ struct AgentUsageDetailView: View {
                         .font(.system(size: 12.5, weight: .semibold))
                         .foregroundStyle(.white)
                         .lineLimit(1)
-                    Text("\(models.count) \(models.count == 1 ? "model" : "models")")
+                    Text(models.count == 1 ? String(localized: "1 model") : String(localized: "\(models.count) models"))
                         .font(.system(size: 11))
                         .foregroundStyle(.white.opacity(0.4))
                     if expandable {
@@ -3708,7 +3715,7 @@ struct AgentUsageDetailView: View {
             }
             .foregroundStyle(.white)
             .monospacedDigit()
-            .help(partial ? "Includes unpriced models" : "")
+            .help(partial ? String(localized: "Includes unpriced models") : "")
         }
     }
 
@@ -3808,7 +3815,7 @@ struct ExpandableAgentReply: View {
                     .lineLimit(Self.collapsedLines)
             }
             if Self.hasMore(excerpt: excerpt, full: full) {
-                Button(expanded ? "Show less" : "Show more") {
+                Button(expanded ? String(localized: "Show less") : String(localized: "Show more")) {
                     withAnimation(.snappy(duration: 0.22)) { expanded.toggle() }
                 }
                 .buttonStyle(.plain)

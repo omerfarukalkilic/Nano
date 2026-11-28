@@ -80,10 +80,10 @@ struct NanoSetupChecklistRow: View {
 
     private var actionTitle: String {
         switch item {
-        case .connectAgents: "Connect"
-        case .downloadVoiceModel: "Download"
-        case .allowFullDiskAccess: "Open"
-        default: "Allow"
+        case .connectAgents: String(localized: "Connect")
+        case .downloadVoiceModel: String(localized: "Download")
+        case .allowFullDiskAccess: String(localized: "Open")
+        default: String(localized: "Allow")
         }
     }
 }

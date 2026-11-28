@@ -125,17 +125,17 @@ final class CalendarService: ObservableObject {
             invalidateEventCache()
             isLoading = false
             events = []
-            errorMessage = "Nano needs full Calendar access to read events."
+            errorMessage = String(localized: "Nano needs full Calendar access to read events.")
         case .denied:
             invalidateEventCache()
             isLoading = false
             events = []
-            errorMessage = "Calendar access is denied. Enable Nano in System Settings."
+            errorMessage = String(localized: "Calendar access is denied. Enable Nano in System Settings.")
         case .restricted:
             invalidateEventCache()
             isLoading = false
             events = []
-            errorMessage = "Calendar access is restricted on this Mac."
+            errorMessage = String(localized: "Calendar access is restricted on this Mac.")
         case .notDetermined:
             invalidateEventCache()
             events = []
@@ -146,7 +146,7 @@ final class CalendarService: ObservableObject {
             invalidateEventCache()
             isLoading = false
             events = []
-            errorMessage = "Calendar access is unavailable."
+            errorMessage = String(localized: "Calendar access is unavailable.")
         }
     }
 
@@ -173,15 +173,15 @@ final class CalendarService: ObservableObject {
         case .fullAccess:
             activate()
         case .writeOnly:
-            errorMessage = "Nano needs full Calendar access to read events."
+            errorMessage = String(localized: "Nano needs full Calendar access to read events.")
         case .denied:
-            errorMessage = "Calendar access is denied. Enable Nano in System Settings."
+            errorMessage = String(localized: "Calendar access is denied. Enable Nano in System Settings.")
         case .restricted:
-            errorMessage = "Calendar access is restricted on this Mac."
+            errorMessage = String(localized: "Calendar access is restricted on this Mac.")
         case .notDetermined:
             requestFullAccess()
         @unknown default:
-            errorMessage = "Calendar access is unavailable."
+            errorMessage = String(localized: "Calendar access is unavailable.")
         }
     }
 
@@ -202,7 +202,7 @@ final class CalendarService: ObservableObject {
             }
             authorizationRecoveryTask = nil
             isLoading = false
-            errorMessage = "Calendar permission did not finish. Try again."
+            errorMessage = String(localized: "Calendar permission did not finish. Try again.")
         }
         eventStore.requestFullAccessToEvents { [weak self] granted, error in
             Task { @MainActor in
@@ -220,7 +220,7 @@ final class CalendarService: ObservableObject {
                     self.authorizationRecoveryTask?.cancel()
                     self.authorizationRecoveryTask = nil
                     self.isLoading = false
-                    self.errorMessage = "Calendar access was not granted."
+                    self.errorMessage = String(localized: "Calendar access was not granted.")
                 }
             }
         }
@@ -251,7 +251,7 @@ final class CalendarService: ObservableObject {
             NanoCalendarEvent(
                 // Every occurrence of a recurring event shares one identifier.
                 id: "\(event.eventIdentifier ?? event.calendarItemIdentifier)|\(event.startDate.timeIntervalSince1970)",
-                title: event.title?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty ?? "Untitled event",
+                title: event.title?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty ?? String(localized: "Untitled event"),
                 startDate: event.startDate,
                 endDate: event.endDate,
                 isAllDay: event.isAllDay,
@@ -395,9 +395,9 @@ enum NanoWeatherSource: Sendable {
 
     var attribution: String {
         switch self {
-        case .appleWeatherKit: "Weather data by Apple"
-        case .metNorway: "Weather data from MET Norway"
-        case .nationalWeatherService: "Weather data from NOAA / NWS"
+        case .appleWeatherKit: String(localized: "Weather data by Apple")
+        case .metNorway: String(localized: "Weather data from MET Norway")
+        case .nationalWeatherService: String(localized: "Weather data from NOAA / NWS")
         }
     }
 
@@ -449,7 +449,7 @@ enum NanoTemperature {
 
     /// "H 104° · L 76°"
     static func highLow(high: Double, low: Double, locale: Locale = .current) -> String {
-        "H \(text(high, locale: locale)) · L \(text(low, locale: locale))"
+        String(localized: "H \(text(high, locale: locale)) · L \(text(low, locale: locale))")
     }
 }
 
@@ -527,8 +527,8 @@ final class NanoWeatherService: NSObject, ObservableObject, CLLocationManagerDel
     /// `errorMessage`. Nil when the reason is not known.
     var shortFailureReason: String? {
         guard snapshot == nil, errorMessage != nil else { return nil }
-        if failedOffline { return "No connection" }
-        if wantsCurrentLocation, locationAccessIsOff { return "Location is off" }
+        if failedOffline { return String(localized: "No connection") }
+        if wantsCurrentLocation, locationAccessIsOff { return String(localized: "Location is off") }
         return nil
     }
 
@@ -549,8 +549,8 @@ final class NanoWeatherService: NSObject, ObservableObject, CLLocationManagerDel
         isLoading = false
         watchdogTask?.cancel()
         errorMessage = failedOffline
-            ? "No internet connection. Weather updates when you are back online."
-            : "Weather is unavailable right now."
+            ? String(localized: "No internet connection. Weather updates when you are back online.")
+            : String(localized: "Weather is unavailable right now.")
     }
 
     nonisolated private static func isConnectionError(_ error: Error) -> Bool {
@@ -599,7 +599,7 @@ final class NanoWeatherService: NSObject, ObservableObject, CLLocationManagerDel
         NanoActivationPolicyController.shared.beginTemporaryRegularPresentation("weather-location")
         NSApp.activate(ignoringOtherApps: true)
         NSApp.windows
-            .first { $0.title == "Nano Settings" }
+            .first { $0.title == String(localized: "Nano Settings") }
             .map { $0.makeKeyAndOrderFront(nil) }
 
         switch authorizationStatus {
@@ -625,7 +625,7 @@ final class NanoWeatherService: NSObject, ObservableObject, CLLocationManagerDel
             }
         case .restricted, .denied:
             isLoading = false
-            errorMessage = "Location access is off. Turn it on in Privacy & Security, or set a location manually."
+            errorMessage = String(localized: "Location access is off. Turn it on in Privacy & Security, or set a location manually.")
             finishPermissionPresentation()
         default:
             isLoading = true
@@ -676,7 +676,7 @@ final class NanoWeatherService: NSObject, ObservableObject, CLLocationManagerDel
             }
         case .restricted, .denied:
             isLoading = false
-            errorMessage = "Location access is off. Turn it on in Privacy & Security, or set a location manually."
+            errorMessage = String(localized: "Location access is off. Turn it on in Privacy & Security, or set a location manually.")
         default:
             isLoading = true
             errorMessage = nil
@@ -694,8 +694,8 @@ final class NanoWeatherService: NSObject, ObservableObject, CLLocationManagerDel
             NanoDiag.log("weather: watchdog fired, still loading")
             self.isLoading = false
             self.errorMessage = self.authorizationStatus == .notDetermined
-                ? "macOS never showed the location prompt. Enable Nano under Privacy & Security → Location Services, or set a location manually."
-                : "Could not get a location fix. Try again, or set a location manually."
+                ? String(localized: "macOS never showed the location prompt. Enable Nano under Privacy & Security → Location Services, or set a location manually.")
+                : String(localized: "Could not get a location fix. Try again, or set a location manually.")
         }
     }
 
@@ -703,7 +703,7 @@ final class NanoWeatherService: NSObject, ObservableObject, CLLocationManagerDel
         guard force || isStale else { return }
         guard (-90...90).contains(latitude), (-180...180).contains(longitude) else {
             snapshot = nil
-            errorMessage = "Enter a valid latitude and longitude."
+            errorMessage = String(localized: "Enter a valid latitude and longitude.")
             return
         }
 
@@ -742,7 +742,7 @@ final class NanoWeatherService: NSObject, ObservableObject, CLLocationManagerDel
             NanoDiag.log("weather: location failed — \(description)")
             self?.watchdogTask?.cancel()
             self?.isLoading = false
-            self?.errorMessage = "Could not read your location. \(description)"
+            self?.errorMessage = String(localized: "Could not read your location. \(description)")
         }
     }
 
@@ -804,7 +804,7 @@ final class NanoWeatherService: NSObject, ObservableObject, CLLocationManagerDel
 
                 snapshot = NanoWeatherSnapshot(
                     source: .appleWeatherKit,
-                    placeName: resolvedPlace ?? "Current Location",
+                    placeName: resolvedPlace ?? String(localized: "Current Location"),
                     temperature: current.temperature.converted(to: .fahrenheit).value,
                     apparentTemperature: current.apparentTemperature.converted(to: .fahrenheit).value,
                     condition: current.condition.description,
@@ -1144,19 +1144,19 @@ final class NanoWeatherService: NSObject, ObservableObject, CLLocationManagerDel
 
     private static func condition(for symbolCode: String?) -> String {
         switch base(of: symbolCode) {
-        case "clearsky": "Clear"
-        case "fair": "Fair"
-        case "partlycloudy": "Partly Cloudy"
-        case "cloudy": "Cloudy"
-        case "fog": "Fog"
-        case "lightrain", "lightrainshowers": "Light Rain"
-        case "rain", "rainshowers": "Rain"
-        case "heavyrain", "heavyrainshowers": "Heavy Rain"
+        case "clearsky": String(localized: "Clear")
+        case "fair": String(localized: "Fair")
+        case "partlycloudy": String(localized: "Partly Cloudy")
+        case "cloudy": String(localized: "Cloudy")
+        case "fog": String(localized: "Fog")
+        case "lightrain", "lightrainshowers": String(localized: "Light Rain")
+        case "rain", "rainshowers": String(localized: "Rain")
+        case "heavyrain", "heavyrainshowers": String(localized: "Heavy Rain")
         case "lightsleet", "sleet", "heavysleet",
-             "lightsleetshowers", "sleetshowers", "heavysleetshowers": "Sleet"
+             "lightsleetshowers", "sleetshowers", "heavysleetshowers": String(localized: "Sleet")
         case "lightsnow", "snow", "heavysnow",
-             "lightsnowshowers", "snowshowers", "heavysnowshowers": "Snow"
-        default: base(of: symbolCode).contains("thunder") ? "Thunderstorms" : "Unknown"
+             "lightsnowshowers", "snowshowers", "heavysnowshowers": String(localized: "Snow")
+        default: base(of: symbolCode).contains("thunder") ? String(localized: "Thunderstorms") : String(localized: "Unknown")
         }
     }
 
@@ -1199,7 +1199,7 @@ final class NanoWeatherService: NSObject, ObservableObject, CLLocationManagerDel
         let name = placemark?.locality
             ?? placemark?.subAdministrativeArea
             ?? placemark?.administrativeArea
-            ?? "Current Location"
+            ?? String(localized: "Current Location")
         return (name, placemark?.isoCountryCode)
     }
 }
