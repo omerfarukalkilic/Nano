@@ -601,7 +601,11 @@ final class AgentHookBridge: ObservableObject {
             }
 
             guard let choice = await decision(for: request, hookPIDs: hookPIDs) else { return nil }
-            guard let response = adapter?.permissionResponse(allowed: choice == 1) else {
+            guard let response = adapter?.permissionResponse(
+                allowed: choice == 1,
+                // Claude's plan approval needs the plan handed back with it.
+                updatedInput: tool == "ExitPlanMode" ? input : nil
+            ) else {
                 return nil
             }
             return try? JSONSerialization.data(withJSONObject: response)

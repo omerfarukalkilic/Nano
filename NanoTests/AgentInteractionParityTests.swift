@@ -265,6 +265,43 @@ final class AgentInteractionParityTests: XCTestCase {
         XCTAssertEqual(updated["answers"] as? [String: String], ["Ship now?": "No"])
     }
 
+    func testApprovedPlanCarriesItsInputBack() async throws {
+        let bridge = AgentHookBridge()
+        let input: [String: Any] = ["plan": "1. Rewrite auth", "planFilePath": "/tmp/plan.md"]
+        let data = try payload(source: "claude", [
+            "hook_event_name": "PermissionRequest", "session_id": "claude-1",
+            "tool_name": "ExitPlanMode", "tool_input": input,
+        ])
+
+        let reply = Task { await bridge.handle(data) }
+        let request = try await waitForPending(bridge)
+        bridge.respond(to: request.id, choice: 1)
+
+        let answered = try object(await reply.value)
+        let output = try XCTUnwrap(answered["hookSpecificOutput"] as? [String: Any])
+        let decision = try XCTUnwrap(output["decision"] as? [String: Any])
+        XCTAssertEqual(decision["behavior"] as? String, "allow")
+        XCTAssertEqual(decision["updatedInput"] as? [String: String], input as? [String: String])
+    }
+
+    func testApprovedCommandSendsNoUpdatedInput() async throws {
+        let bridge = AgentHookBridge()
+        let data = try payload(source: "claude", [
+            "hook_event_name": "PermissionRequest", "session_id": "claude-1",
+            "tool_name": "Bash", "tool_input": ["command": "ls"],
+        ])
+
+        let reply = Task { await bridge.handle(data) }
+        let request = try await waitForPending(bridge)
+        bridge.respond(to: request.id, choice: 1)
+
+        let answered = try object(await reply.value)
+        let output = try XCTUnwrap(answered["hookSpecificOutput"] as? [String: Any])
+        let decision = try XCTUnwrap(output["decision"] as? [String: Any])
+        XCTAssertEqual(decision["behavior"] as? String, "allow")
+        XCTAssertNil(decision["updatedInput"])
+    }
+
     /// The reply goes out byte for byte. A plan's `\\n` that came out as a
     /// line break made the JSON unreadable, so the plan was never approved.
     func testBridgeScriptPrintsTheReplyUnchanged() throws {
