@@ -181,6 +181,10 @@ final class AgentHookBridge: ObservableObject {
         var cmuxLocation: CmuxSessionJump.Location? = nil
         /// The Warp terminal session the agent runs in, when it runs in Warp.
         var warpSessionID: String? = nil
+        /// The tmux server and pane the agent runs in, when it runs in tmux.
+        var tmuxLocation: TmuxSessionJump.Location? = nil
+        /// The iTerm2 session the agent runs in, when it runs in iTerm2.
+        var itermSessionID: String? = nil
         var workingDirectory: String?
         /// Supplied by the agent, so the right transcript is known without
         /// enumerating a directory to guess at it.
@@ -192,6 +196,8 @@ final class AgentHookBridge: ObservableObject {
         var lastUserPrompt: String?
         /// Excerpt of the agent's latest reply, from turn-end hooks.
         var lastAgentMessage: String?
+        /// The same reply in full (capped), for Show more and Copy reply.
+        var lastAgentFullMessage: String?
         var model: String?
         var firstSeen: Date
         var lastEventAt: Date
@@ -437,7 +443,7 @@ final class AgentHookBridge: ObservableObject {
         if event["host_bundle_id"] == nil, let host = payload["host_bundle_id"] as? String {
             event["host_bundle_id"] = host
         }
-        for key in ["cmux_workspace_id", "cmux_surface_id", "warp_session_id"] where event[key] == nil {
+        for key in ["cmux_workspace_id", "cmux_surface_id", "warp_session_id", "tmux_socket", "tmux_pane", "iterm_session_id"] where event[key] == nil {
             if let value = payload[key] as? String, !value.isEmpty { event[key] = value }
         }
         // Devin's payloads carry no cwd; the bridge script adds the agent's
@@ -815,6 +821,11 @@ final class AgentHookBridge: ObservableObject {
         // Same rule for Warp: empty outside it, so a resumed session forgets
         // the old tab.
         state.warpSessionID = WarpSessionJump.sessionID(event["warp_session_id"] as? String)
+        state.tmuxLocation = TmuxSessionJump.location(
+            socketPath: event["tmux_socket"] as? String,
+            paneID: event["tmux_pane"] as? String
+        )
+        state.itermSessionID = ITermSessionJump.sessionID(event["iterm_session_id"] as? String)
         if let cwd = (event["cwd"] as? String) ?? (event["workspaceRoot"] as? String),
            !cwd.isEmpty {
             state.workingDirectory = cwd
@@ -838,8 +849,14 @@ final class AgentHookBridge: ObservableObject {
             ?? (event["lastAssistantMessage"] as? String)
             ?? (event["prompt_response"] as? String)
             ?? (name == "AfterAgentResponse" || name == "afterAgentResponse" ? event["text"] as? String : nil)
-        if let reply, let excerpt = AgentSessionPromptSummary.agentExcerpt(reply) {
+        // A subagent's last message is its own, not the session's reply.
+        // Claude Code also writes its suggested next prompt through an unnamed
+        // subagent right after the turn ends, under the parent's session ID,
+        // so that suggestion ("devam") replaced the real reply on the card.
+        if let reply, !Self.isSubagentEvent(name: name, event: event),
+           let excerpt = AgentSessionPromptSummary.agentExcerpt(reply) {
             state.lastAgentMessage = excerpt
+            state.lastAgentFullMessage = String(reply.prefix(AgentConversationTurn.fullReplyLimit))
         }
 
         var finishedTurn = false
@@ -1940,6 +1957,14 @@ final class AgentHookBridge: ObservableObject {
     /// command names the bridge are dropped, and a file holding nothing of
     /// Nano's is not rewritten at all — not even its mtime moves.
     /// Every agent Nano can hook into.
+    /// Subagent lifecycle events, by name or by the `agent_id` Claude Code
+    /// adds to them.
+    nonisolated static func isSubagentEvent(name: String, event: [String: Any]) -> Bool {
+        if event["agent_id"] != nil { return true }
+        return ["subagentstart", "subagentstop", "subagentend", "subagent_stop", "subagent_end"]
+            .contains(name.lowercased())
+    }
+
     nonisolated static let hookableProviders: [AgentProviderID] = [.claude, .codex, .gemini, .cursor, .kimi, .pi, .grok, .opencode, .devin]
 
     /// Removes Nano's hooks for the given agents, or for all of them.
@@ -2307,6 +2332,15 @@ final class AgentHookBridge: ObservableObject {
     # island can focus that exact tab or pane through warp://session/<id>.
     warp_session=$(printf '%s' "${WARP_TERMINAL_SESSION_UUID:-}" | tr -cd 'A-Fa-f0-9-')
 
+    # tmux names its server socket (TMUX is "<socket>,<pid>,<session>") and
+    # the pane, and iTerm2 names its session ("w0t1p0:<UUID>"), so the island
+    # can select that exact pane or split.
+    tmux_raw=${TMUX:-}
+    tmux_socket=$(printf '%s' "${tmux_raw%%,*}" | tr -cd 'A-Za-z0-9/._-')
+    tmux_pane=$(printf '%s' "${TMUX_PANE:-}" | tr -cd '%0-9')
+    iterm_raw=${ITERM_SESSION_ID:-}
+    iterm_session=$(printf '%s' "${iterm_raw##*:}" | tr -cd 'A-Fa-f0-9-')
+
     # Devin's hook payloads carry no cwd; it exports DEVIN_PROJECT_DIR to hook
     # processes instead. Escape the two characters JSON strings cannot hold
     # verbatim so the path survives as a value.
@@ -2316,8 +2350,8 @@ final class AgentHookBridge: ObservableObject {
     # (Claude in bypass mode approves a command while its PermissionRequest
     # hook is still running) kills them, and the island retracts the card.
     # The socket cannot say so: nc half-closes as soon as it has sent.
-    reply=$(printf '{"token":"%s","source":"%s","host_bundle_id":"%s","project_dir":"%s","parent_session_id":"%s","cmux_workspace_id":"%s","cmux_surface_id":"%s","warp_session_id":"%s","hook_pids":[%s,%s],"event":%s}\\n' \\
-      "$token" "$source" "$host" "$project_dir" "$parent" "$cmux_workspace" "$cmux_surface" "$warp_session" "$$" "$PPID" "$payload" | nc -U "$sock" 2>/dev/null)
+    reply=$(printf '{"token":"%s","source":"%s","host_bundle_id":"%s","project_dir":"%s","parent_session_id":"%s","cmux_workspace_id":"%s","cmux_surface_id":"%s","warp_session_id":"%s","tmux_socket":"%s","tmux_pane":"%s","iterm_session_id":"%s","hook_pids":[%s,%s],"event":%s}\\n' \\
+      "$token" "$source" "$host" "$project_dir" "$parent" "$cmux_workspace" "$cmux_surface" "$warp_session" "$tmux_socket" "$tmux_pane" "$iterm_session" "$$" "$PPID" "$payload" | nc -U "$sock" 2>/dev/null)
 
     if [ -n "$reply" ]; then echo "$reply"; else echo '{}'; fi
     exit 0
