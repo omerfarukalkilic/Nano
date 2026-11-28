@@ -625,7 +625,9 @@ final class AgentHookBridge: ObservableObject {
             let note = writtenReplies.removeValue(forKey: request.id)
             guard let response = adapter?.permissionResponse(
                 allowed: choice == 1,
-                message: choice == 1 ? nil : note
+                message: choice == 1 ? nil : note,
+                // Claude's plan approval needs the plan handed back with it.
+                updatedInput: tool == "ExitPlanMode" ? input : nil
             ) else {
                 return nil
             }

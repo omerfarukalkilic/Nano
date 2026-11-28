@@ -49,11 +49,18 @@ struct AgentProviderAdapter: Equatable, Sendable {
     /// a pre-tool event means the agent is blocked on a question.
     var questionTool: String? = nil
 
-    func permissionResponse(allowed: Bool, message: String? = nil) -> [String: Any]? {
+    /// `updatedInput` goes with an allow only. Claude ignores an allow for
+    /// `ExitPlanMode` that does not carry the tool's input back.
+    func permissionResponse(
+        allowed: Bool,
+        message: String? = nil,
+        updatedInput: [String: Any]? = nil
+    ) -> [String: Any]? {
         switch decisionEncoding {
         case .hookSpecificOutput:
             var decision: [String: Any] = ["behavior": allowed ? "allow" : "deny"]
-            if let message, !message.isEmpty { decision["message"] = message }
+            if let message, !message.isEmpty, !allowed { decision["message"] = message }
+            if allowed, let updatedInput { decision["updatedInput"] = updatedInput }
             return [
                 "hookSpecificOutput": [
                     "hookEventName": "PermissionRequest",
