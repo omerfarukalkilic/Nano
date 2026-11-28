@@ -54,6 +54,39 @@ struct AgentAlertSettingsSections: View {
             }
             .settingsAnchor("agents.alerts.quiet")
 
+            SettingsSection(
+                "Usage alerts",
+                footer: "Checked whenever usage refreshes. One alert per window until it resets."
+            ) {
+                SettingsToggleRow(
+                    "Alert when a limit runs low",
+                    subtitle: "Shows a card when a 5h, 7d or plan window passes the line.",
+                    isOn: $settings.agentAlerts.usageAlertsEnabled
+                )
+                Group {
+                    SettingsRow("Alert at") {
+                        Picker("Alert at", selection: $settings.agentAlerts.usageThreshold) {
+                            ForEach(AgentAlertPreferences.usageThresholdChoices, id: \.self) { percent in
+                                Text("\(percent)% used").tag(percent)
+                            }
+                        }
+                        .labelsHidden()
+                        .pickerStyle(.segmented)
+                        .fixedSize()
+                    }
+                    SettingsToggleRow(
+                        "Tell me when it resets",
+                        isOn: $settings.agentAlerts.usageResetAlerts
+                    )
+                    SettingsRow(AgentAlertEvent.usage.title) {
+                        soundControls(for: .usage)
+                    }
+                    .disabled(!settings.agentAlerts.soundsEnabled)
+                }
+                .disabled(!settings.agentAlerts.usageAlertsEnabled)
+            }
+            .settingsAnchor("agents.alerts.usage")
+
             SettingsSection("Reminders") {
                 SettingsToggleRow(
                     "Remind me about unanswered requests",

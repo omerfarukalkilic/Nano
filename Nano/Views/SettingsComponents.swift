@@ -471,6 +471,7 @@ struct SettingsSearchItem: Identifiable, Hashable {
             .init("Agent sounds", "A sound when an agent needs approval, asks, or finishes", .agents, anchor: "agents.alerts.sounds"),
             .init("Quiet hours", "Mute agent sounds at night, when locked, or in a call", .agents, anchor: "agents.alerts.quiet"),
             .init("Reminders", "Repeat unanswered approvals and questions", .agents, anchor: "agents.alerts.reminders"),
+            .init("Usage alerts", "A card when a usage limit runs low or resets", .agents, anchor: "agents.alerts.usage"),
             .init("Claude usage", "Local status data for the 5h and 7d windows", .agents, anchor: "agents.claudeUsage"),
             .init("Sessions and usage", "Which agents Nano tracks", .agents, anchor: "agents.providers"),
             .init("Quill insights", "Speed, time saved, words, streak", .voiceDictation),

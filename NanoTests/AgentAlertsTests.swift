@@ -207,3 +207,129 @@ final class AgentAlertsTests: XCTestCase {
         XCTAssertEqual(represented, 0)
     }
 }
+
+/// Usage alerts: one per window per reset period, a reset notice after it,
+/// and no repeat after a restart.
+@MainActor
+final class AgentUsageAlertTests: XCTestCase {
+    private let base = Date(timeIntervalSince1970: 2_000_000_000)
+
+    private func window(_ used: Double, resetsIn hours: Double? = 2, id: String = "claude.5h", at offset: TimeInterval = 0) -> NanoUsageWindow {
+        NanoUsageWindow(
+            id: id,
+            label: "5h",
+            usedPercent: used,
+            resetsAt: hours.map { base.addingTimeInterval($0 * 3600 + offset) },
+            resetAfterSeconds: nil
+        )
+    }
+
+    func testCrossingTheThresholdAlertsOncePerPeriod() {
+        var tracker = AgentUsageAlertTracker()
+        XCTAssertTrue(tracker.evaluate([(.claude, window(60))], threshold: 80).isEmpty)
+        XCTAssertEqual(tracker.evaluate([(.claude, window(82))], threshold: 80).map(\.kind), [.threshold])
+        XCTAssertTrue(tracker.evaluate([(.claude, window(90))], threshold: 80).isEmpty, "same period, already said")
+        XCTAssertTrue(tracker.evaluate([(.claude, window(95, at: 40))], threshold: 80).isEmpty,
+                      "a reset time that drifts by seconds is the same period")
+    }
+
+    func testANewPeriodAnnouncesTheResetThenCanAlertAgain() {
+        var tracker = AgentUsageAlertTracker()
+        _ = tracker.evaluate([(.claude, window(85, resetsIn: 1))], threshold: 80)
+        XCTAssertEqual(tracker.evaluate([(.claude, window(3, resetsIn: 6))], threshold: 80).map(\.kind), [.reset])
+        XCTAssertEqual(tracker.evaluate([(.claude, window(81, resetsIn: 6))], threshold: 80).map(\.kind), [.threshold])
+    }
+
+    func testANewPeriodAlreadyPastTheLineAlertsAgain() {
+        var tracker = AgentUsageAlertTracker()
+        _ = tracker.evaluate([(.claude, window(85, resetsIn: 1))], threshold: 80)
+        XCTAssertEqual(tracker.evaluate([(.claude, window(88, resetsIn: 6))], threshold: 80).map(\.kind), [.threshold])
+    }
+
+    func testAWindowWithoutResetTimeRearmsWellUnderTheLine() {
+        var tracker = AgentUsageAlertTracker()
+        _ = tracker.evaluate([(.cursor, window(85, resetsIn: nil))], threshold: 80)
+        XCTAssertTrue(tracker.evaluate([(.cursor, window(78, resetsIn: nil))], threshold: 80).isEmpty, "a small dip is not a reset")
+        XCTAssertEqual(tracker.evaluate([(.cursor, window(60, resetsIn: nil))], threshold: 80).map(\.kind), [.reset])
+        XCTAssertEqual(tracker.evaluate([(.cursor, window(85, resetsIn: nil))], threshold: 80).map(\.kind), [.threshold])
+    }
+
+    func testWindowsAreTrackedSeparately() {
+        var tracker = AgentUsageAlertTracker()
+        let alerts = tracker.evaluate([
+            (.claude, window(85, id: "claude.5h")),
+            (.claude, window(40, id: "claude.7d")),
+            (.codex, window(90, id: "codex.primary")),
+        ], threshold: 80)
+        XCTAssertEqual(alerts.map(\.key), ["claude|claude.5h", "codex|codex.primary"])
+    }
+
+    private func snapshot(_ provider: AgentProviderID, _ windows: [NanoUsageWindow], hasQuota: Bool = true) -> AgentProviderSnapshot {
+        var snapshot = AgentProviderSnapshot(
+            id: provider, isConfigured: true, isActive: false, projectName: nil,
+            lastActivityAt: nil, usage: windows, usageMessage: nil
+        )
+        snapshot.hasQuota = hasQuota
+        return snapshot
+    }
+
+    func testTheCenterPresentsPlaysAndRemembersAcrossLaunches() throws {
+        let suite = "NanoTests.usageAlerts.\(UUID().uuidString)"
+        let store = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { store.removePersistentDomain(forName: suite) }
+        func makeCenter(player: RecordingPlayer, presented: @escaping (AgentUsageAlert) -> Void) -> AgentAlertCenter {
+            AgentAlertCenter(
+                preferences: { AgentAlertPreferences() },
+                isPending: { _ in false },
+                represent: { _ in },
+                player: player,
+                probe: FixedProbe(),
+                now: { Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: Date())! },
+                sleep: { _ in },
+                presentUsage: presented,
+                usageStore: store
+            )
+        }
+        let player = RecordingPlayer()
+        var presented: [AgentUsageAlert] = []
+        makeCenter(player: player) { presented.append($0) }
+            .usageDidRefresh([snapshot(.claude, [window(85)]), snapshot(.openrouter, [window(99, id: "or")], hasQuota: false)])
+        XCTAssertEqual(presented.map(\.key), ["claude|claude.5h"], "providers without a quota are skipped")
+        XCTAssertEqual(player.played, [.system("Hero")])
+
+        // Nano restarts: the same window in the same period stays quiet.
+        let relaunched = RecordingPlayer()
+        var again: [AgentUsageAlert] = []
+        makeCenter(player: relaunched) { again.append($0) }.usageDidRefresh([snapshot(.claude, [window(87)])])
+        XCTAssertTrue(again.isEmpty)
+        XCTAssertTrue(relaunched.played.isEmpty)
+    }
+
+    func testUsageAlertsOffOrResetAlertsOff() {
+        var off = AgentAlertPreferences()
+        off.usageAlertsEnabled = false
+        var presented = 0
+        AgentAlertCenter(preferences: { off }, isPending: { _ in false }, represent: { _ in },
+                         player: RecordingPlayer(), probe: FixedProbe(), presentUsage: { _ in presented += 1 }, usageStore: nil)
+            .usageDidRefresh([snapshot(.claude, [window(95)])])
+        XCTAssertEqual(presented, 0)
+
+        var noResets = AgentAlertPreferences()
+        noResets.usageResetAlerts = false
+        var kinds: [AgentUsageAlert.Kind] = []
+        let center = AgentAlertCenter(preferences: { noResets }, isPending: { _ in false }, represent: { _ in },
+                                      player: RecordingPlayer(), probe: FixedProbe(), presentUsage: { kinds.append($0.kind) }, usageStore: nil)
+        center.usageDidRefresh([snapshot(.claude, [window(95, resetsIn: 1)])])
+        center.usageDidRefresh([snapshot(.claude, [window(2, resetsIn: 6)])])
+        XCTAssertEqual(kinds, [.threshold])
+    }
+
+    func testOlderSettingsGetUsageDefaults() throws {
+        let decoded = try JSONDecoder().decode(AgentAlertPreferences.self, from: Data(#"{"soundsEnabled": false}"#.utf8))
+        XCTAssertTrue(decoded.usageAlertsEnabled)
+        XCTAssertEqual(decoded.usageThreshold, 80)
+        XCTAssertTrue(decoded.usageResetAlerts)
+        let odd = try JSONDecoder().decode(AgentAlertPreferences.self, from: Data(#"{"usageThreshold": 33}"#.utf8))
+        XCTAssertEqual(odd.usageThreshold, 80)
+    }
+}
