@@ -2390,7 +2390,9 @@ final class AgentHookBridge: ObservableObject {
     reply=$(printf '{"token":"%s","source":"%s","host_bundle_id":"%s","project_dir":"%s","parent_session_id":"%s","cmux_workspace_id":"%s","cmux_surface_id":"%s","warp_session_id":"%s","tmux_socket":"%s","tmux_pane":"%s","iterm_session_id":"%s","hook_pids":[%s,%s],"event":%s}\\n' \\
       "$token" "$source" "$host" "$project_dir" "$parent" "$cmux_workspace" "$cmux_surface" "$warp_session" "$tmux_socket" "$tmux_pane" "$iterm_session" "$$" "$PPID" "$payload" | nc -U "$sock" 2>/dev/null)
 
-    if [ -n "$reply" ]; then echo "$reply"; else echo '{}'; fi
+    # printf, not echo: macOS sh's echo turns the \\n inside a JSON string
+    # (a plan, a note) into a real line break, and the agent drops the reply.
+    if [ -n "$reply" ]; then printf '%s\\n' "$reply"; else echo '{}'; fi
     exit 0
     """
 }

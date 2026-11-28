@@ -344,6 +344,25 @@ final class AgentInteractionParityTests: XCTestCase {
         XCTAssertNil(decision["updatedInput"])
     }
 
+    /// The reply goes out byte for byte. A plan's `\\n` that came out as a
+    /// line break made the JSON unreadable, so the plan was never approved.
+    func testBridgeScriptPrintsTheReplyUnchanged() throws {
+        let line = try XCTUnwrap(
+            AgentHookBridge.bridgeScript.split(separator: "\n").first { $0.contains("[ -n \"$reply\" ]") }
+        )
+        let reply = ##"{"decision":{"updatedInput":{"plan":"# Plan\n1. One\t\\ two"}}}"##
+        let shell = Process()
+        shell.executableURL = URL(fileURLWithPath: "/bin/sh")
+        shell.arguments = ["-c", "reply=\"$1\"\n" + line, "sh", reply]
+        let out = Pipe()
+        shell.standardOutput = out
+        try shell.run()
+        shell.waitUntilExit()
+        let printed = String(decoding: out.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+        XCTAssertEqual(printed, reply + "\n")
+        XCTAssertNotNil(try JSONSerialization.jsonObject(with: Data(printed.utf8)))
+    }
+
     func testPlainKeepPlanningSendsNoMessage() async throws {
         let bridge = AgentHookBridge()
         let data = try payload(source: "claude", [
