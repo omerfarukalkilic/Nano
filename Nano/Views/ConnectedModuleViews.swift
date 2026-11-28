@@ -468,7 +468,11 @@ struct AgentModuleView: View {
     /// What is left to do once the result has been read: go there, take the
     /// reply elsewhere, or put the row away.
     private func detailActions(_ session: AgentSession) -> some View {
-        let reply = session.conversation.last?.fullReply ?? session.lastAgentMessage
+        // The shown turn's full reply: from hooks when they are ahead of the
+        // transcript, else the transcript's.
+        let reply = session.displayedTurns.last?.fullReply
+            ?? session.conversation.last?.fullReply
+            ?? session.lastAgentMessage
         return HStack(spacing: 7) {
             if AgentSessionJump.canJump(session) {
                 detailAction("Open session", symbol: "arrow.up.right") {

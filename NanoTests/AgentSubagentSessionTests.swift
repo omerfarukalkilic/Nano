@@ -569,3 +569,30 @@ final class AgentReplyExpansionTests: XCTestCase {
         XCTAssertTrue(ExpandableAgentReply.hasMore(excerpt: "A…", full: "A long reply"))
     }
 }
+
+/// When hooks are ahead of the transcript, the newest turn is built from
+/// them and still carries the whole reply.
+final class AgentHookFullReplyTests: XCTestCase {
+    @MainActor
+    func testHookKeepsTheWholeReplyBesideItsExcerpt() async throws {
+        let bridge = AgentHookBridge()
+        let long = String(repeating: "Tüm test suite'i bitti ve sonuç şöyle. ", count: 40)
+        for event: [String: Any] in [
+            ["hook_event_name": "UserPromptSubmit", "session_id": "s", "cwd": "/tmp", "prompt": "hi"],
+            ["hook_event_name": "Stop", "session_id": "s", "cwd": "/tmp", "last_assistant_message": long],
+        ] {
+            _ = await bridge.handle(try JSONSerialization.data(withJSONObject: ["source": "claude", "event": event]))
+        }
+        let state = try XCTUnwrap(bridge.sessionStates["s"])
+        XCTAssertLessThanOrEqual(state.lastAgentMessage?.count ?? 0, 280)
+        XCTAssertEqual(state.lastAgentFullMessage, long)
+    }
+
+    func testATurnBuiltFromHooksCarriesTheFullReply() {
+        var session = AgentSession(id: "s", provider: .claude, projectName: "p", lastActivityAt: Date())
+        session.lastUserPrompt = "newest prompt"
+        session.lastAgentMessage = "short…"
+        session.lastAgentFullMessage = "short and then the rest of it"
+        XCTAssertEqual(session.displayedTurns.last?.fullReply, "short and then the rest of it")
+    }
+}

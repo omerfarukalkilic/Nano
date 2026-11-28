@@ -196,6 +196,8 @@ final class AgentHookBridge: ObservableObject {
         var lastUserPrompt: String?
         /// Excerpt of the agent's latest reply, from turn-end hooks.
         var lastAgentMessage: String?
+        /// The same reply in full (capped), for Show more and Copy reply.
+        var lastAgentFullMessage: String?
         var model: String?
         var firstSeen: Date
         var lastEventAt: Date
@@ -854,6 +856,7 @@ final class AgentHookBridge: ObservableObject {
         if let reply, !Self.isSubagentEvent(name: name, event: event),
            let excerpt = AgentSessionPromptSummary.agentExcerpt(reply) {
             state.lastAgentMessage = excerpt
+            state.lastAgentFullMessage = String(reply.prefix(AgentConversationTurn.fullReplyLimit))
         }
 
         var finishedTurn = false
