@@ -547,3 +547,25 @@ final class AgentSubagentReplyTests: XCTestCase {
         XCTAssertFalse(AgentHookBridge.isSubagentEvent(name: "AfterAgent", event: [:]))
     }
 }
+
+/// The newest reply expands to the whole reply, as lines.
+final class AgentReplyExpansionTests: XCTestCase {
+    func testReadableReplyKeepsLinesAndStripsMarkdown() {
+        let raw = "## Done\n\n- **Fixed** `#91`\n- Merged\n\n```swift\nlet x = 1\n```\nNext: deploy."
+        XCTAssertEqual(AgentConversationTurn.readableReply(raw), "Done\nFixed #91\nMerged\nNext: deploy.")
+        XCTAssertEqual(AgentSessionPromptSummary.agentExcerpt(raw), "Done Fixed #91 Merged Next: deploy.",
+                       "rows and cards keep one paragraph")
+    }
+
+    func testReadableReplyKeepsFarMoreThanTheExcerpt() {
+        let raw = String(repeating: "word ", count: 1500)
+        XCTAssertEqual(AgentConversationTurn.readableReply(raw)?.count, AgentConversationTurn.readableReplyLimit)
+    }
+
+    func testShowMoreOnlyWhenThereIsMore() {
+        XCTAssertFalse(ExpandableAgentReply.hasMore(excerpt: "Done.", full: "Done."))
+        XCTAssertFalse(ExpandableAgentReply.hasMore(excerpt: "Done.", full: nil))
+        XCTAssertTrue(ExpandableAgentReply.hasMore(excerpt: "A B", full: "A\nB"))
+        XCTAssertTrue(ExpandableAgentReply.hasMore(excerpt: "A…", full: "A long reply"))
+    }
+}
