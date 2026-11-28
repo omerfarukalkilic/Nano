@@ -39,7 +39,7 @@ actor CohereRecognizer: VoiceDictationRecognizer {
         } catch {
             loading = nil
             throw VoiceDictationError.modelLoadFailed(
-                "Cohere Transcribe failed to load: \(error.localizedDescription)"
+                String(localized: "Cohere Transcribe failed to load: \(error.localizedDescription)")
             )
         }
     }
@@ -77,7 +77,7 @@ actor CohereRecognizer: VoiceDictationRecognizer {
     func transcribe(_ samples: [Float], request: VoiceDictationRecognitionRequest) async throws -> VoiceDictationRecognition {
         try await load()
         guard let models else {
-            throw VoiceDictationError.modelLoadFailed("Cohere Transcribe is not loaded.")
+            throw VoiceDictationError.modelLoadFailed(String(localized: "Cohere Transcribe is not loaded."))
         }
         let language = request.language.flatMap(CohereAsrConfig.Language.init(rawValue:)) ?? .english
         var pieces: [String] = []
@@ -89,7 +89,7 @@ actor CohereRecognizer: VoiceDictationRecognizer {
             }
         } catch {
             throw VoiceDictationError.recognitionFailed(
-                "Cohere Transcribe failed: \(error.localizedDescription)"
+                String(localized: "Cohere Transcribe failed: \(error.localizedDescription)")
             )
         }
         return VoiceDictationRecognition(

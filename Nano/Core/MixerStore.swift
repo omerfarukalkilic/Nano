@@ -68,15 +68,15 @@ struct MixerOutput: Identifiable, Equatable {
 
         var label: String {
             switch self {
-            case .builtIn: "Built-in"
+            case .builtIn: String(localized: "Built-in")
             case .bluetooth: "Bluetooth"
             case .usb: "USB"
             case .hdmi: "HDMI"
             case .displayPort: "DisplayPort"
             case .airPlay: "AirPlay"
-            case .virtual: "Virtual"
-            case .aggregate: "Aggregate"
-            case .other: "Audio device"
+            case .virtual: String(localized: "Virtual")
+            case .aggregate: String(localized: "Aggregate")
+            case .other: String(localized: "Audio device")
             }
         }
 
@@ -151,7 +151,7 @@ final class MixerStore: ObservableObject {
         isConfigured = defaults.bool(forKey: Self.configuredKey)
     }
 
-    var outputName: String { outputs.first { $0.id == outputID }?.name ?? "Choose output" }
+    var outputName: String { outputs.first { $0.id == outputID }?.name ?? String(localized: "Choose output") }
     var visibleApps: [MixerApp] {
         let selected = apps.filter {
             showsAllApps || $0.isRunning || $0.preference.isPinned || $0.error != nil ||
@@ -344,7 +344,7 @@ final class MixerStore: ObservableObject {
         var device = output.id
         do {
             try MixerAudio.check(AudioObjectSetPropertyData(MixerAudio.system, &address, 0, nil,
-                UInt32(MemoryLayout<AudioObjectID>.size), &device), "Switching output")
+                UInt32(MemoryLayout<AudioObjectID>.size), &device), String(localized: "Switching output"))
             refresh(rebuild: true)
         } catch { self.error = error.localizedDescription }
     }
@@ -375,7 +375,7 @@ final class MixerStore: ObservableObject {
                   !uid.hasPrefix("com.nanoapp.mixer."),
                   !MixerAudio.objects(id, kAudioDevicePropertyStreams, scope: kAudioDevicePropertyScopeOutput).isEmpty
             else { return nil }
-            let name = MixerAudio.string(id, kAudioObjectPropertyName) ?? "Audio output"
+            let name = MixerAudio.string(id, kAudioObjectPropertyName) ?? String(localized: "Audio output")
             let hasInput = !MixerAudio.objects(id, kAudioDevicePropertyStreams,
                 scope: kAudioDevicePropertyScopeInput).isEmpty
             guard Self.isListedOutput(name: name, hasInput: hasInput, isDefault: id == nextOutput) else { return nil }

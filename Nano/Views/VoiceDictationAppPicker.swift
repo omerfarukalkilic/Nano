@@ -34,7 +34,7 @@ struct VoiceDictationAppChoice: Identifiable, Hashable, Sendable {
         panel.allowedContentTypes = [.application]
         panel.directoryURL = URL(fileURLWithPath: "/Applications")
         panel.canChooseDirectories = false
-        panel.prompt = "Choose"
+        panel.prompt = String(localized: "Choose")
         guard panel.runModal() == .OK, let url = panel.url,
               let bundle = Bundle(url: url), let bundleID = bundle.bundleIdentifier
         else { return nil }

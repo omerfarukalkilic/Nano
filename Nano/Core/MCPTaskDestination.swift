@@ -64,7 +64,7 @@ final class MCPTaskDestination: TaskDestination {
         let result = try await client.callTool("cue_describe", [:])
         capabilities = Set(result["capabilities"] as? [String] ?? [])
         return DestinationInfo(
-            name: result["name"] as? String ?? "App",
+            name: result["name"] as? String ?? String(localized: "App"),
             twoWay: capabilities.contains("two_way"),
             supportsDelete: capabilities.contains("two_way"),
             acceptsAllKinds: capabilities.contains("all_kinds"),
@@ -167,13 +167,13 @@ enum MCPError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .insecureURL: "Use https, or http only for a server on this Mac (localhost)."
-        case let .http(code): "The server answered with HTTP \(code)."
-        case .unauthorized: "The server didn't accept the token."
-        case let .rpc(message): "The server reported an error: \(message)"
-        case let .tool(name, message): "\(name) failed: \(message)"
-        case let .missingTools(names): "This server doesn't offer Cue sync. Missing: \(names.joined(separator: ", "))."
-        case let .badResponse(what): "The server's reply to \(what) wasn't understood."
+        case .insecureURL: String(localized: "Use https, or http only for a server on this Mac (localhost).")
+        case let .http(code): String(localized: "The server answered with HTTP \(code).")
+        case .unauthorized: String(localized: "The server didn't accept the token.")
+        case let .rpc(message): String(localized: "The server reported an error: \(message)")
+        case let .tool(name, message): String(localized: "\(name) failed: \(message)")
+        case let .missingTools(names): String(localized: "This server doesn't offer Cue sync. Missing: \(names.joined(separator: ", ")).")
+        case let .badResponse(what): String(localized: "The server's reply to \(what) wasn't understood.")
         }
     }
 }

@@ -23,43 +23,43 @@ enum OnboardingFeature: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .agents: "Agents"
+        case .agents: String(localized: "Agents")
         case .quill: "Quill"
         case .cue: "Cue"
         case .mixer: "Mixer"
-        case .music: "Music"
-        case .weather: "Weather"
-        case .calendar: "Calendar"
-        case .timer: "Timer"
-        case .camera: "Camera"
-        case .battery: "Battery"
-        case .tray: "Tray"
-        case .notifications: "Notifications"
+        case .music: String(localized: "Music")
+        case .weather: String(localized: "Weather")
+        case .calendar: String(localized: "Calendar")
+        case .timer: String(localized: "Timer")
+        case .camera: String(localized: "Camera")
+        case .battery: String(localized: "Battery")
+        case .tray: String(localized: "Tray")
+        case .notifications: String(localized: "Notifications")
         }
     }
 
     func line(word: String) -> String {
         switch self {
-        case .agents: "Approve Claude Code, Codex, Cursor and others from the \(word)."
-        case .quill: "Hold a key, talk, and Nano types it for you."
-        case .cue: "A to-do list for each project, one hover away."
-        case .mixer: "Set the volume of each app on its own."
-        case .music: "See what's playing. Play, pause, skip."
-        case .weather: "Today's forecast, one hover away."
-        case .calendar: "Your next event and the week ahead."
-        case .timer: "Focus sessions with a countdown in the \(word)."
-        case .camera: "Check your face before a call. The camera is off until you open it."
-        case .battery: "Your Mac's charge at a glance."
-        case .tray: "Drop files on the \(word), AirDrop them later."
-        case .notifications: "Volume, AirPods, messages and app alerts in the \(word)."
+        case .agents: String(localized: "Approve Claude Code, Codex, Cursor and others from the \(word).")
+        case .quill: String(localized: "Hold a key, talk, and Nano types it for you.")
+        case .cue: String(localized: "A to-do list for each project, one hover away.")
+        case .mixer: String(localized: "Set the volume of each app on its own.")
+        case .music: String(localized: "See what's playing. Play, pause, skip.")
+        case .weather: String(localized: "Today's forecast, one hover away.")
+        case .calendar: String(localized: "Your next event and the week ahead.")
+        case .timer: String(localized: "Focus sessions with a countdown in the \(word).")
+        case .camera: String(localized: "Check your face before a call. The camera is off until you open it.")
+        case .battery: String(localized: "Your Mac's charge at a glance.")
+        case .tray: String(localized: "Drop files on the \(word), AirDrop them later.")
+        case .notifications: String(localized: "Volume, AirPods, messages and app alerts in the \(word).")
         }
     }
 
     var placeholderLine: String {
         switch self {
-        case .cue: "Your next steps, one hover away"
-        case .mixer: "A slider for every app"
-        case .camera: "A mirror, one hover away"
+        case .cue: String(localized: "Your next steps, one hover away")
+        case .mixer: String(localized: "A slider for every app")
+        case .camera: String(localized: "A mirror, one hover away")
         default: title
         }
     }
@@ -148,13 +148,13 @@ enum OnboardingRoom: String, CaseIterable, Identifiable, Codable, Sendable {
 
     var title: String {
         switch self {
-        case .notifications: "Notifications"
-        case .agents: "Agents"
+        case .notifications: String(localized: "Notifications")
+        case .agents: String(localized: "Agents")
         case .voice: "Quill"
         case .sketch: "Sketch"
         case .cue: "Cue"
         case .mixer: "Mixer"
-        case .dashboard: "Dashboard"
+        case .dashboard: String(localized: "Dashboard")
         }
     }
 }
@@ -279,7 +279,7 @@ final class OnboardingFlow: ObservableObject {
         return picks
     }
 
-    var word: String { settings.placement == .attached ? "notch" : "island" }
+    var word: String { settings.placement == .attached ? String(localized: "notch") : String(localized: "island") }
 
     var orderedPicks: [OnboardingFeature] { OnboardingFeature.offered.filter(picks.contains) }
 
@@ -432,11 +432,11 @@ final class OnboardingFlow: ObservableObject {
 
     var resumeTitle: String {
         switch resumeTarget {
-        case .welcome: "Welcome"
-        case .pick: "Pick"
-        case .summary: "Summary"
+        case .welcome: String(localized: "Welcome")
+        case .pick: String(localized: "Pick")
+        case .summary: String(localized: "Summary")
         case let .room(index): rooms[index].title
-        default: "Setup"
+        default: String(localized: "Setup")
         }
     }
 
@@ -812,11 +812,11 @@ final class OnboardingFlow: ObservableObject {
     var enabledSummary: [String] {
         var items = ["\(settings.placement.title), \(settings.appearance.title)"]
         if picks.contains(.notifications) {
-            items.append(settings.hudReplacesSystemHUD ? "Volume cards" : "Notifications")
+            items.append(settings.hudReplacesSystemHUD ? String(localized: "Volume cards") : String(localized: "Notifications"))
         }
         if picks.contains(.agents) {
             let count = connectedCount
-            items.append(count == 0 ? "Agents" : "\(count) agent\(count == 1 ? "" : "s")")
+            items.append(count == 0 ? String(localized: "Agents") : count == 1 ? String(localized: "1 agent") : String(localized: "\(count) agents"))
         }
         if picks.contains(.quill) { items.append("Quill") }
         if picks.contains(.quill), settings.voiceDictationSketchEnabled { items.append("Sketch") }
@@ -915,15 +915,15 @@ final class OnboardingFlow: ObservableObject {
 
     private func syncIsland() {
         let content: OnboardingIslandContent?
-        let home = settings.placement != .attached ? "under the menu bar"
+        let home = settings.placement != .attached ? String(localized: "under the menu bar")
             : NSScreen.main.map({ NanoDisplayObstruction.measure(screen: $0).housing }) == .dynamicIsland
-                ? "around the camera" : "around the notch"
+                ? String(localized: "around the camera") : String(localized: "around the notch")
         switch step {
         case .arrival(.greeting), .arrival(.prompt):
             content = isReplay
-                ? .greeting(title: "Welcome back.", detail: nil)
-                : .greeting(title: "Hi, I'm Nano.", detail: "I live up here, \(home).")
-        case .resume: content = .greeting(title: "Welcome back.", detail: nil)
+                ? .greeting(title: String(localized: "Welcome back."), detail: nil)
+                : .greeting(title: String(localized: "Hi, I'm Nano."), detail: String(localized: "I live up here, \(home)."))
+        case .resume: content = .greeting(title: String(localized: "Welcome back."), detail: nil)
         case .welcome, .pick, .room, .summary: content = .watching
         case .finale(.goodbye): content = .done
         default: content = nil

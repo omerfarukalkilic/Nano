@@ -30,9 +30,9 @@ enum VoiceDictationEngine: String, CaseIterable, Identifiable, Codable, Sendable
     /// The choice, said as what it is for.
     var choiceTitle: String {
         switch self {
-        case .parakeetS1: "English, best quality"
-        case .whisperTurbo, .cohereTranscribe: "Many languages"
-        case .whisperBase, .whisperTiny: "Small download"
+        case .parakeetS1: String(localized: "English, best quality")
+        case .whisperTurbo, .cohereTranscribe: String(localized: "Many languages")
+        case .whisperBase, .whisperTiny: String(localized: "Small download")
         }
     }
 
@@ -49,26 +49,26 @@ enum VoiceDictationEngine: String, CaseIterable, Identifiable, Codable, Sendable
     var summary: String {
         switch self {
         case .parakeetS1:
-            "Best English results. Parakeet recognizes speech; S1-mini by Superwhisper removes fillers and false starts and writes numbers, dates, and emails properly."
+            String(localized: "Best English results. Parakeet recognizes speech; S1-mini by Superwhisper removes fillers and false starts and writes numbers, dates, and emails properly.")
         case .cohereTranscribe:
-            "Experimental. Strong on German, French, Spanish, Italian, Portuguese, Dutch, Polish, Greek, Arabic, Japanese, Chinese, Korean and Vietnamese, but takes several seconds per dictation on this Mac. Pick your language below; Whisper Turbo is the faster multilingual choice."
+            String(localized: "Experimental. Strong on German, French, Spanish, Italian, Portuguese, Dutch, Polish, Greek, Arabic, Japanese, Chinese, Korean and Vietnamese, but takes several seconds per dictation on this Mac. Pick your language below; Whisper Turbo is the faster multilingual choice.")
         case .whisperTurbo:
-            "Hears which language you speak and writes it, across 99 languages. The multilingual pick: about two seconds per dictation, and a good fit if you switch languages."
+            String(localized: "Hears which language you speak and writes it, across 99 languages. The multilingual pick: about two seconds per dictation, and a good fit if you switch languages.")
         case .whisperBase:
-            "Good accuracy for clear English speech with less memory and processing than the best-quality option."
+            String(localized: "Good accuracy for clear English speech with less memory and processing than the best-quality option.")
         case .whisperTiny:
-            "Fastest and easiest on your Mac, but trades recognition accuracy for its small footprint."
+            String(localized: "Fastest and easiest on your Mac, but trades recognition accuracy for its small footprint.")
         }
     }
 
     /// Short, deliberately plain-language guidance shown beside every option.
     var resourceLabel: String {
         switch self {
-        case .parakeetS1: "Recommended"
-        case .cohereTranscribe: "Experimental"
-        case .whisperTurbo: "99 languages"
-        case .whisperBase: "English"
-        case .whisperTiny: "English"
+        case .parakeetS1: String(localized: "Recommended")
+        case .cohereTranscribe: String(localized: "Experimental")
+        case .whisperTurbo: String(localized: "99 languages")
+        case .whisperBase: String(localized: "English")
+        case .whisperTiny: String(localized: "English")
         }
     }
 
@@ -107,10 +107,10 @@ enum VoiceDictationEngine: String, CaseIterable, Identifiable, Codable, Sendable
 
     var languageNote: String {
         switch self {
-        case .parakeetS1: "Parakeet hears 25 European languages on its own. S1-mini cleanup runs on English; other languages are written as recognized."
-        case .cohereTranscribe: "Cohere cannot detect the language: speech in another one comes out translated. Automatic follows your Mac's language."
-        case .whisperTurbo: "Automatic detects the language of each dictation."
-        case .whisperBase, .whisperTiny: "English-only model (\(rawValueAsset)). Choose Many languages for other languages."
+        case .parakeetS1: String(localized: "Parakeet hears 25 European languages on its own. S1-mini cleanup runs on English; other languages are written as recognized.")
+        case .cohereTranscribe: String(localized: "Cohere cannot detect the language: speech in another one comes out translated. Automatic follows your Mac's language.")
+        case .whisperTurbo: String(localized: "Automatic detects the language of each dictation.")
+        case .whisperBase, .whisperTiny: String(localized: "English-only model (\(rawValueAsset)). Choose Many languages for other languages.")
         }
     }
 
@@ -154,20 +154,20 @@ struct VoiceDictationLanguage: Identifiable, Hashable, Sendable {
     static let automatic = "auto"
 
     static let all: [VoiceDictationLanguage] = [
-        .init(code: "en", name: "English"),
-        .init(code: "de", name: "German"),
-        .init(code: "fr", name: "French"),
-        .init(code: "es", name: "Spanish"),
-        .init(code: "it", name: "Italian"),
-        .init(code: "pt", name: "Portuguese"),
-        .init(code: "nl", name: "Dutch"),
-        .init(code: "pl", name: "Polish"),
-        .init(code: "el", name: "Greek"),
-        .init(code: "ar", name: "Arabic"),
-        .init(code: "ja", name: "Japanese"),
-        .init(code: "zh", name: "Chinese"),
-        .init(code: "ko", name: "Korean"),
-        .init(code: "vi", name: "Vietnamese"),
+        .init(code: "en", name: String(localized: "English")),
+        .init(code: "de", name: String(localized: "German")),
+        .init(code: "fr", name: String(localized: "French")),
+        .init(code: "es", name: String(localized: "Spanish")),
+        .init(code: "it", name: String(localized: "Italian")),
+        .init(code: "pt", name: String(localized: "Portuguese")),
+        .init(code: "nl", name: String(localized: "Dutch")),
+        .init(code: "pl", name: String(localized: "Polish")),
+        .init(code: "el", name: String(localized: "Greek")),
+        .init(code: "ar", name: String(localized: "Arabic")),
+        .init(code: "ja", name: String(localized: "Japanese")),
+        .init(code: "zh", name: String(localized: "Chinese")),
+        .init(code: "ko", name: String(localized: "Korean")),
+        .init(code: "vi", name: String(localized: "Vietnamese")),
     ]
 
     static func name(for code: String) -> String {
@@ -236,29 +236,29 @@ enum VoiceDictationCleanupLevel: String, CaseIterable, Identifiable, Codable, Se
 
     var title: String {
         switch self {
-        case .verbatim: "Verbatim"
-        case .light: "Casual"
-        case .full: "Polished"
+        case .verbatim: String(localized: "Verbatim")
+        case .light: String(localized: "Casual")
+        case .full: String(localized: "Polished")
         }
     }
 
     /// One line for a settings row.
     var shortDetail: String {
         switch self {
-        case .verbatim: "Every word as said, punctuated by the recognizer"
-        case .light: "Relaxed, your wording as spoken, without um and uh"
-        case .full: "Removes fillers, writes numbers, punctuates sentences"
+        case .verbatim: String(localized: "Every word as said, punctuated by the recognizer")
+        case .light: String(localized: "Relaxed, your wording as spoken, without um and uh")
+        case .full: String(localized: "Removes fillers, writes numbers, punctuates sentences")
         }
     }
 
     var detail: String {
         switch self {
         case .verbatim:
-            "Keeps every word you said. Punctuation and capitalization only, straight from the recognizer. Lists keep the numbers you spoke."
+            String(localized: "Keeps every word you said. Punctuation and capitalization only, straight from the recognizer. Lists keep the numbers you spoke.")
         case .light:
-            "Relaxed, like a message to a friend: your wording left as spoken, without um and uh. Corrections are still resolved and numbers written as figures."
+            String(localized: "Relaxed, like a message to a friend: your wording left as spoken, without um and uh. Corrections are still resolved and numbers written as figures.")
         case .full:
-            "Removes fillers and false starts, writes numbers, dates, and emails properly, and punctuates as sentences. The default."
+            String(localized: "Removes fillers and false starts, writes numbers, dates, and emails properly, and punctuates as sentences. The default.")
         }
     }
 
@@ -305,15 +305,15 @@ enum VoiceDictationActivationMode: String, CaseIterable, Identifiable, Codable, 
 
     var title: String {
         switch self {
-        case .pushToTalk: "Push to talk"
-        case .toggle: "Toggle"
+        case .pushToTalk: String(localized: "Push to talk")
+        case .toggle: String(localized: "Toggle")
         }
     }
 
     var detail: String {
         switch self {
-        case .pushToTalk: "Hold the shortcut while you speak. Release to finish."
-        case .toggle: "Press the shortcut once to start and again to finish."
+        case .pushToTalk: String(localized: "Hold the shortcut while you speak. Release to finish.")
+        case .toggle: String(localized: "Press the shortcut once to start and again to finish.")
         }
     }
 }
@@ -410,7 +410,7 @@ struct VoiceDictationHotkey: Codable, Equatable, Hashable, Sendable {
 /// ANSI layout, which is what the key code space is defined against.
 enum VoiceDictationKeyNames {
     private static let special: [UInt16: String] = [
-        36: "↩", 48: "⇥", 49: "Space", 51: "⌫", 53: "⎋", 76: "⌤", 117: "⌦",
+        36: "↩", 48: "⇥", 49: String(localized: "Space"), 51: "⌫", 53: "⎋", 76: "⌤", 117: "⌦",
         123: "←", 124: "→", 125: "↓", 126: "↑", 115: "↖", 119: "↘", 116: "⇞", 121: "⇟",
         122: "F1", 120: "F2", 99: "F3", 118: "F4", 96: "F5", 97: "F6", 98: "F7", 100: "F8",
         101: "F9", 109: "F10", 103: "F11", 111: "F12", 105: "F13", 107: "F14", 113: "F15",
@@ -427,7 +427,7 @@ enum VoiceDictationKeyNames {
     ]
 
     static func name(for keyCode: UInt16) -> String {
-        special[keyCode] ?? ansi[keyCode] ?? "Key \(keyCode)"
+        special[keyCode] ?? ansi[keyCode] ?? String(localized: "Key \(keyCode)")
     }
 }
 
@@ -443,8 +443,8 @@ struct VoiceDictationVocabularyEntry: Identifiable, Codable, Equatable, Hashable
 
         var title: String {
             switch self {
-            case .vocabulary: "Vocabulary"
-            case .snippet: "Snippet"
+            case .vocabulary: String(localized: "Vocabulary")
+            case .snippet: String(localized: "Snippet")
             }
         }
     }
@@ -520,49 +520,51 @@ enum VoiceDictationError: Error, Equatable, Sendable {
 
     var title: String {
         switch self {
-        case .featureDisabled: "Quill is off"
-        case .microphoneDenied: "Microphone access denied"
-        case .microphoneUnavailable: "No microphone available"
-        case .audioCaptureFailed: "Recording failed"
-        case .modelMissing: "Engine not downloaded"
-        case .modelLoadFailed: "Engine failed to load"
-        case .recognitionFailed: "Recognition failed"
-        case .cleanupFailed: "Cleanup failed"
-        case .clipboardFailed: "Could not copy to the clipboard"
-        case .cancelled: "Dictation cancelled"
-        case .noSpeech: "Nothing to transcribe"
-        case .busy: "Already transcribing"
-        case .screenRecordingDenied: "Screen Recording needed"
-        case .screenCaptureFailed: "Screenshot failed"
+        case .featureDisabled: String(localized: "Quill is off")
+        case .microphoneDenied: String(localized: "Microphone access denied")
+        case .microphoneUnavailable: String(localized: "No microphone available")
+        case .audioCaptureFailed: String(localized: "Recording failed")
+        case .modelMissing: String(localized: "Engine not downloaded")
+        case .modelLoadFailed: String(localized: "Engine failed to load")
+        case .recognitionFailed: String(localized: "Recognition failed")
+        case .cleanupFailed: String(localized: "Cleanup failed")
+        case .clipboardFailed: String(localized: "Could not copy to the clipboard")
+        case .cancelled: String(localized: "Dictation cancelled")
+        case .noSpeech: String(localized: "Nothing to transcribe")
+        case .busy: String(localized: "Already transcribing")
+        case .screenRecordingDenied: String(localized: "Screen Recording needed")
+        case .screenCaptureFailed: String(localized: "Screenshot failed")
         }
     }
 
     var detail: String {
         switch self {
         case .featureDisabled:
-            "Turn Quill on in Settings → General."
+            String(localized: "Turn Quill on in Settings → General.")
         case .microphoneDenied:
-            "Allow Nano in System Settings → Privacy & Security → Microphone, then try again."
+            String(localized: "Allow Nano in System Settings → Privacy & Security → Microphone, then try again.")
         case .microphoneUnavailable:
-            "Connect or select an input device in System Settings → Sound."
+            String(localized: "Connect or select an input device in System Settings → Sound.")
         case let .audioCaptureFailed(message):
             message
         case let .modelMissing(engine, models):
-            "\(engine.title) needs \(models.count == 1 ? "a download" : "\(models.count) downloads") before it can run. Open Settings → Quill to download it."
+            models.count == 1
+                ? String(localized: "\(engine.title) needs a download before it can run. Open Settings → Quill to download it.")
+                : String(localized: "\(engine.title) needs \(models.count) downloads before it can run. Open Settings → Quill to download it.")
         case let .modelLoadFailed(message), let .recognitionFailed(message), let .cleanupFailed(message):
             message
         case .clipboardFailed:
-            "The transcript is kept in Nano. Open Quill in the island and press Copy."
+            String(localized: "The transcript is kept in Nano. Open Quill in the island and press Copy.")
         case .cancelled:
-            "Nothing was transcribed or copied."
+            String(localized: "Nothing was transcribed or copied.")
         case .noSpeech:
-            "The recording was empty or too short. Hold the shortcut while you speak."
+            String(localized: "The recording was empty or too short. Hold the shortcut while you speak.")
         case .busy:
-            "Wait for the current dictation to finish."
+            String(localized: "Wait for the current dictation to finish.")
         case .screenRecordingDenied:
-            "Sketch takes screenshots. Allow Nano in System Settings → Privacy & Security → Screen & System Audio Recording, then try again."
+            String(localized: "Sketch takes screenshots. Allow Nano in System Settings → Privacy & Security → Screen & System Audio Recording, then try again.")
         case .screenCaptureFailed:
-            "Nano could not take a screenshot. The transcript was copied."
+            String(localized: "Nano could not take a screenshot. The transcript was copied.")
         }
     }
 

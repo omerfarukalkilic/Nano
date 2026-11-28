@@ -78,8 +78,8 @@ enum CueRecentProjects {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = false
-        panel.prompt = "Link"
-        panel.message = "Choose the project folder. Cue shows its path next to the folder's name."
+        panel.prompt = String(localized: "Link")
+        panel.message = String(localized: "Choose the project folder. Cue shows its path next to the folder's name.")
         // The island floats above ordinary windows; the sheet has to as well.
         panel.level = .popUpMenu
         NSApp.activate(ignoringOtherApps: true)
@@ -91,10 +91,10 @@ enum CueRecentProjects {
 }
 
 extension NanoSettings {
-    /// How a capture starts from another app, as it is set up right now.
-    /// Nil when the shortcut is turned off.
-    var cueCaptureGesture: String? {
-        cueQuickCaptureEnabled ? "Press \(cueQuickCaptureHotkey.displayString)" : nil
+    /// The shortcut that starts a capture from another app, as it is set up
+    /// right now. Nil when the shortcut is turned off.
+    var cueCaptureShortcut: String? {
+        cueQuickCaptureEnabled ? cueQuickCaptureHotkey.displayString : nil
     }
 }
 
@@ -208,7 +208,7 @@ private struct CueCaptureView: View {
                     onImages: { store.draft?.images.append(contentsOf: $0) }
                 )
                 if draft?.text.isEmpty != false {
-                    Text(draft?.images.isEmpty == false ? "Add a line of context…" : "What do you need to remember?")
+                    Text(draft?.images.isEmpty == false ? String(localized: "Add a line of context…") : String(localized: "What do you need to remember?"))
                         .font(.system(size: 14))
                         .foregroundStyle(.white.opacity(0.3))
                         .padding(.leading, 5)
@@ -268,7 +268,7 @@ private struct CueCaptureView: View {
         HStack(spacing: 8) {
             if let source = draft?.sourceApp {
                 CueChip(
-                    text: draft?.pulledFromSelection == true ? "From selection · \(source)" : "From \(source)",
+                    text: draft?.pulledFromSelection == true ? String(localized: "From selection · \(source)") : String(localized: "From \(source)"),
                     tint: CueStyle.accent
                 )
             }
@@ -280,7 +280,7 @@ private struct CueCaptureView: View {
                     Button(kind.title) { store.draft?.kind = kind }
                 }
             } label: {
-                CueChip(text: draft?.resolvedKind.title ?? "To-do", tint: CueStyle.tint(for: draft?.resolvedKind ?? .todo), showsChevron: true)
+                CueChip(text: draft?.resolvedKind.title ?? String(localized: "To-do"), tint: CueStyle.tint(for: draft?.resolvedKind ?? .todo), showsChevron: true)
             }
             .menuStyle(.borderlessButton)
             .menuIndicator(.hidden)
@@ -296,7 +296,7 @@ private struct CueCaptureView: View {
                 Button {
                     store.draft?.images.append(contentsOf: CueStore.imageData(from: .general))
                 } label: {
-                    CueChip(text: "Add clipboard image", symbol: "photo")
+                    CueChip(text: String(localized: "Add clipboard image"), symbol: "photo")
                 }
                 .buttonStyle(.nanoPress)
             }
@@ -308,10 +308,10 @@ private struct CueCaptureView: View {
     private var footer: some View {
         HStack(spacing: 10) {
             HStack(spacing: 10) {
-                hint("⏎", "Save")
-                hint("⇧⏎", "New line")
-                hint("⌘⏎", "Save and add another")
-                hint("esc", "Cancel")
+                hint("⏎", String(localized: "Save"))
+                hint("⇧⏎", String(localized: "New line"))
+                hint("⌘⏎", String(localized: "Save and add another"))
+                hint("esc", String(localized: "Cancel"))
             }
             .lineLimit(1)
             Spacer(minLength: 8)
@@ -456,7 +456,7 @@ private struct CueLibraryView: View {
     private var sidebar: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 2) {
-                scopeRow(.inbox, name: "Inbox", color: nil, linked: false)
+                scopeRow(.inbox, name: String(localized: "Inbox"), color: nil, linked: false)
 
                 ForEach(CueFolderSection.allCases) { section in
                     sectionHeader(section)
@@ -508,7 +508,7 @@ private struct CueLibraryView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.nanoPress)
-                .help("New \(section == .project ? "project" : "stash") folder")
+                .help(section == .project ? String(localized: "New project folder") : String(localized: "New stash folder"))
             }
         }
         .padding(.leading, 8)
@@ -565,12 +565,12 @@ private struct CueLibraryView: View {
         }
         Menu("Color") {
             ForEach(CueFolder.palette.indices, id: \.self) { index in
-                Button(["Blue", "Orange", "Green", "Purple", "Red", "Teal"][index]) {
+                Button([String(localized: "Blue"), String(localized: "Orange"), String(localized: "Green"), String(localized: "Purple"), String(localized: "Red"), String(localized: "Teal")][index]) {
                     store.setFolderColor(folder.id, index: index)
                 }
             }
         }
-        Button(folder.section == .project ? "Move to Stash" : "Move to Projects") {
+        Button(folder.section == .project ? String(localized: "Move to Stash") : String(localized: "Move to Projects")) {
             store.setFolderSection(folder.id, section: folder.section == .project ? .stash : .project)
         }
         Divider()
@@ -628,7 +628,7 @@ private struct CueLibraryView: View {
     }
 
     private func newFolderField(_ section: CueFolderSection) -> some View {
-        TextField(section == .project ? "Project name" : "Folder name", text: $newFolderName)
+        TextField(section == .project ? String(localized: "Project name") : String(localized: "Folder name"), text: $newFolderName)
             .textFieldStyle(.plain)
             .font(.system(size: 12))
             .focused($folderFieldFocused)
@@ -736,7 +736,7 @@ private struct CueLibraryView: View {
                             row(item, position: index + 1)
                         }
                         if open.isEmpty {
-                            Text(store.searchQuery.isEmpty ? "Everything here is done." : "No open cues match.")
+                            Text(store.searchQuery.isEmpty ? String(localized: "Everything here is done.") : String(localized: "No open cues match."))
                                 .font(.system(size: 11.5))
                                 .foregroundStyle(.white.opacity(0.4))
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -784,9 +784,9 @@ private struct CueLibraryView: View {
             Image(systemName: "checklist")
                 .font(.system(size: 24, weight: .medium))
                 .foregroundStyle(CueStyle.accent)
-            Text(store.searchQuery.isEmpty ? "Nothing cued up in \(store.title(for: store.scope))" : "No cues match")
+            Text(store.searchQuery.isEmpty ? String(localized: "Nothing cued up in \(store.title(for: store.scope))") : String(localized: "No cues match"))
                 .font(.system(size: 13, weight: .semibold))
-            Text(store.searchQuery.isEmpty ? emptyBlurb : "Try a different search.")
+            Text(store.searchQuery.isEmpty ? emptyBlurb : String(localized: "Try a different search."))
                 .font(.system(size: 11))
                 .foregroundStyle(.white.opacity(0.45))
                 .multilineTextAlignment(.center)
@@ -796,9 +796,10 @@ private struct CueLibraryView: View {
     }
 
     private var emptyBlurb: String {
-        let blurb = "Save to-dos, prompts, and screenshots here in the order you'll need them."
-        guard let gesture = viewModel.settings.cueCaptureGesture else { return blurb }
-        return "\(blurb) \(gesture) from any app to capture."
+        guard let shortcut = viewModel.settings.cueCaptureShortcut else {
+            return String(localized: "Save to-dos, prompts, and screenshots here in the order you'll need them.")
+        }
+        return String(localized: "Save to-dos, prompts, and screenshots here in the order you'll need them. Press \(shortcut) from any app to capture.")
     }
 
     private func doneHeader(count: Int) -> some View {
@@ -888,7 +889,7 @@ private struct CueFolderDropDelegate: DropDelegate {
         withAnimation(.snappy(duration: 0.2)) {
             store.move(draggingID, to: scope)
         }
-        store.showToast("Moved to \(store.title(for: scope))")
+        store.showToast(String(localized: "Moved to \(store.title(for: scope))"))
         self.draggingID = nil
         return true
     }
@@ -938,8 +939,8 @@ private struct CueItemRow: View {
             }
             .buttonStyle(.nanoPress)
             .padding(.top, 1)
-            .help(item.isDone ? "Mark not done" : "Mark done")
-            .accessibilityLabel(item.isDone ? "Mark not done" : "Mark done")
+            .help(item.isDone ? String(localized: "Mark not done") : String(localized: "Mark done"))
+            .accessibilityLabel(item.isDone ? String(localized: "Mark not done") : String(localized: "Mark done"))
 
             VStack(alignment: .leading, spacing: 5) {
                 if isEditing {
@@ -1103,10 +1104,10 @@ private struct CueItemRow: View {
 
     private var metaLine: String {
         if let completed = item.completedAt {
-            return "Done \(completed.formatted(.relative(presentation: .named)))"
+            return String(localized: "Done \(completed.formatted(.relative(presentation: .named)))")
         }
         let when = item.createdAt.formatted(.relative(presentation: .named))
-        return item.sourceApp.map { "From \($0) · \(when)" } ?? when
+        return item.sourceApp.map { String(localized: "From \($0) · \(when)") } ?? when
     }
 
     private var actions: some View {
@@ -1120,10 +1121,10 @@ private struct CueItemRow: View {
                 .help("Copy to the clipboard")
             if !item.isDone {
                 if viewModel.settings.isEnabled(.timer) {
-                    focusButton("Focus \(focusMinutes) min")
+                    focusButton(String(localized: "Focus \(focusMinutes) min"))
                         .buttonStyle(CueActionStyle())
                         .opacity(viewModel.canStartCueFocus ? 1 : 0.4)
-                        .help(viewModel.canStartCueFocus ? "Focus on this Cue for \(focusMinutes) minutes" : "Finish or reset the current timer first")
+                        .help(viewModel.canStartCueFocus ? String(localized: "Focus on this Cue for \(focusMinutes) minutes") : String(localized: "Finish or reset the current timer first"))
                 }
                 Button("Copy + done") {
                     withAnimation(.snappy(duration: 0.22)) { store.copy(item.id, markDone: true) }
@@ -1141,7 +1142,7 @@ private struct CueItemRow: View {
         Button("Copy") { store.copy(item.id, markDone: false) }
         if !item.isDone {
             if viewModel.settings.isEnabled(.timer) {
-                focusButton("Focus for \(focusMinutes) Minutes")
+                focusButton(String(localized: "Focus for \(focusMinutes) Minutes"))
             }
             Button("Copy + done") { store.copy(item.id, markDone: true) }
             Button("Move to Top") { withAnimation(.snappy(duration: 0.2)) { store.moveToTop(item.id) } }
@@ -1195,9 +1196,9 @@ private struct CueItemRow: View {
         Task {
             do {
                 try await sync.send(id, to: record.id, projectID: project.id)
-                store.showToast("Sent to \(project.name)")
+                store.showToast(String(localized: "Sent to \(project.name)"))
             } catch {
-                store.showToast("Couldn't send: \(error.localizedDescription)")
+                store.showToast(String(localized: "Couldn't send: \(error.localizedDescription)"))
             }
         }
     }

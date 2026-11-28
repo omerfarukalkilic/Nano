@@ -49,7 +49,7 @@ actor S1MiniCleaner: VoiceDictationCleaner {
     func clean(_ transcript: String, directive: VoiceDictationCleanupDirective) throws -> String {
         try load()
         guard let model else {
-            throw VoiceDictationError.modelLoadFailed("S1-mini is not loaded.")
+            throw VoiceDictationError.modelLoadFailed(String(localized: "S1-mini is not loaded."))
         }
         let trimmed = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return "" }
@@ -90,10 +90,10 @@ actor S1MiniCleaner: VoiceDictationCleaner {
     private nonisolated static func describe(_ error: LlamaRuntimeError) -> String {
         switch error {
         case .loadFailed(let message): message
-        case .contextFailed: "llama.cpp could not create a context for S1-mini."
-        case .tokenizeFailed: "S1-mini could not tokenize the transcript."
-        case .decodeFailed(let status): "llama.cpp decode returned \(status)."
-        case .promptTooLong: "The transcript is too long for one cleanup pass."
+        case .contextFailed: String(localized: "llama.cpp could not create a context for S1-mini.")
+        case .tokenizeFailed: String(localized: "S1-mini could not tokenize the transcript.")
+        case .decodeFailed(let status): String(localized: "llama.cpp decode returned \(status).")
+        case .promptTooLong: String(localized: "The transcript is too long for one cleanup pass.")
         }
     }
 }

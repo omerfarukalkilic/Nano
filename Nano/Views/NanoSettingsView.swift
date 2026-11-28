@@ -20,17 +20,17 @@ enum SettingsDestination: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .general: "General"
-        case .island: "Island"
-        case .dashboard: "Dashboard"
-        case .notifications: "Notifications"
-        case .agents: "Agents"
+        case .general: String(localized: "General")
+        case .island: String(localized: "Island")
+        case .dashboard: String(localized: "Dashboard")
+        case .notifications: String(localized: "Notifications")
+        case .agents: String(localized: "Agents")
         case .voiceDictation: "Quill"
         case .cue: "Cue"
         case .mixer: "Mixer"
-        case .permissions: "Permissions"
-        case .privacy: "Privacy & About"
-        case .support: "Support Nano"
+        case .permissions: String(localized: "Permissions")
+        case .privacy: String(localized: "Privacy & About")
+        case .support: String(localized: "Support Nano")
         }
     }
 
@@ -128,7 +128,7 @@ enum SettingsNavGroup: String, CaseIterable, Identifiable {
 
     /// Only add-ons get a heading; the other groups are separated by space.
     var title: String? {
-        self == .work ? "Add-ons" : nil
+        self == .work ? String(localized: "Add-ons") : nil
     }
 
     var destinations: [SettingsDestination] {
@@ -435,7 +435,7 @@ struct NanoSettingsView: View {
                     .padding(.horizontal, 6)
                     .frame(height: 17)
                     .background(Color.orange, in: Capsule())
-                    .help("\(missing) permission\(missing == 1 ? "" : "s") not granted")
+                    .help(missing == 1 ? String(localized: "1 permission not granted") : String(localized: "\(missing) permissions not granted"))
             }
         }
         .foregroundStyle(selected ? Color.white : Color.primary)
@@ -453,7 +453,7 @@ struct NanoSettingsView: View {
         .onTapGesture { select(item) }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(item.title)
-        .accessibilityValue(missing > 0 ? "\(missing) not granted" : "")
+        .accessibilityValue(missing > 0 ? String(localized: "\(missing) not granted") : "")
         .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
         .accessibilityAction { select(item) }
     }
@@ -730,8 +730,10 @@ private struct GeneralSettingsPane: View {
         SettingsPage(title: "General", symbol: "gearshape", subtitle: "How Nano opens, and what it shows.") {
             if !permissions.missing.isEmpty {
                 SettingsBanner(
-                    title: "\(permissions.missing.count) permission\(permissions.missing.count == 1 ? "" : "s") not granted",
-                    detail: blockedDetail,
+                    title: permissions.missing.count == 1
+                        ? LocalizedStringResource("1 permission not granted")
+                        : LocalizedStringResource("\(permissions.missing.count) permissions not granted"),
+                    detail: "\(blockedDetail)",
                     action: "Review"
                 ) { open(.permissions) }
             }
@@ -740,14 +742,18 @@ private struct GeneralSettingsPane: View {
 
             NanoSetupChecklistCard(settings: settings, viewModel: viewModel, open: open)
 
+            SettingsSection("Language") {
+                AppLanguageRow()
+            }
+
             SettingsSection("Opening") {
                 LoginItemRow(loginItem: viewModel.loginItem)
                     .settingsAnchor("open.login")
                 SettingsToggleRow(
                     "Require a click to open",
                     subtitle: settings.clickToOpen
-                        ? "The dashboard stays closed until you click the island."
-                        : "Hovering opens the island. A click keeps it open.",
+                        ? LocalizedStringResource("The dashboard stays closed until you click the island.")
+                        : LocalizedStringResource("Hovering opens the island. A click keeps it open."),
                     isOn: $settings.clickToOpen
                 )
                 .settingsAnchor("open.click")
@@ -783,7 +789,7 @@ private struct GeneralSettingsPane: View {
 
             SettingsSection("Add-ons", footer: "Each add-on gets its own page in the sidebar while it's on.") {
                 ForEach(addOns, id: \.self) { module in
-                    SettingsRow(module.title, symbol: module.symbol, subtitle: module.featureDescription) {
+                    SettingsRow(verbatim: module.title, symbol: module.symbol, subtitle: module.featureDescription) {
                         if settings.isEnabled(module), let page = page(for: module) {
                             Button("Settings…") { open(page) }
                                 .controlSize(.small)
@@ -816,11 +822,11 @@ private struct GeneralSettingsPane: View {
         let noCamera = module == .camera && permissions.state(for: .camera) == .unavailable
 
         SettingsRow(
-            module.title,
+            verbatim: module.title,
             symbol: module.symbol,
             subtitle: noCamera
-                ? "No camera is connected to this Mac."
-                : (blocker.map { "Needs \($0.title) access" } ?? module.featureDescription),
+                ? String(localized: "No camera is connected to this Mac.")
+                : (blocker.map { String(localized: "Needs \($0.title) access") } ?? module.featureDescription),
             subtitleIsWarning: blocker != nil
         ) {
             if let blocker {
@@ -885,17 +891,17 @@ private struct GeneralSettingsPane: View {
         ]
         let blocked = order.filter(permissions.missing.contains).map { kind in
             switch kind {
-            case .calendar: "Calendar"
-            case .location: "weather"
-            case .microphone: "dictation"
-            case .camera: "the camera preview"
-            case .fullDisk: "macOS notifications"
-            case .accessibility: "auto-paste"
-            case .automation: "music controls"
-            case .bluetooth: "accessory alerts"
-            case .contacts: "sender photos"
+            case .calendar: String(localized: "Calendar")
+            case .location: String(localized: "weather")
+            case .microphone: String(localized: "dictation")
+            case .camera: String(localized: "the camera preview")
+            case .fullDisk: String(localized: "macOS notifications")
+            case .accessibility: String(localized: "auto-paste")
+            case .automation: String(localized: "music controls")
+            case .bluetooth: String(localized: "accessory alerts")
+            case .contacts: String(localized: "sender photos")
             case .screenRecording: "Sketch"
-            case .reminders: "Reminders sync"
+            case .reminders: String(localized: "Reminders sync")
             }
         }
         guard !blocked.isEmpty else { return "" }
@@ -903,14 +909,16 @@ private struct GeneralSettingsPane: View {
         let rest = blocked.count - named.count
         var list: String
         if rest > 0 {
-            list = named.joined(separator: ", ") + " and \(rest) more"
+            list = String(localized: "\(named.joined(separator: ", ")) and \(rest) more")
         } else if named.count == 1 {
             list = named[0]
         } else {
-            list = named.dropLast().joined(separator: ", ") + " and " + named[named.count - 1]
+            list = String(localized: "\(named.dropLast().joined(separator: ", ")) and \(named[named.count - 1])")
         }
         list = list.prefix(1).uppercased() + list.dropFirst()
-        return list + (blocked.count == 1 ? " is" : " are") + " off until you grant access."
+        return blocked.count == 1
+            ? String(localized: "\(list) is off until you grant access.")
+            : String(localized: "\(list) are off until you grant access.")
     }
 }
 
@@ -995,7 +1003,7 @@ private struct IslandSettingsPane: View {
 
                                 if settings.placement == .floating {
                                     pointSliderRow(
-                                        "Distance from top",
+                                        String(localized: "Distance from top"),
                                         value: $settings.islandGeometry.floatingTopOffset,
                                         range: IslandGeometry.floatingTopOffsetRange,
                                         focus: .topOffset
@@ -1024,25 +1032,25 @@ private struct IslandSettingsPane: View {
                         if let target, Self.advancedAnchors.contains(target) { showsAdvanced = true }
                     }
 
-                    SettingsSection(settings.appearance.title) {
-                        colorRow("Surface color", value: $settings.surfaceColor, focus: .surfaceColor)
+                    SettingsSection(verbatim: settings.appearance.title) {
+                        colorRow(String(localized: "Surface color"), value: $settings.surfaceColor, focus: .surfaceColor)
                             .settingsAnchor("island.surfaceColor")
                         if settings.appearance != .solidBlack {
                             colorRow(
-                                settings.appearance == .hybrid ? "Lower gradient tint" : "Glass tint",
+                                settings.appearance == .hybrid ? String(localized: "Lower gradient tint") : String(localized: "Glass tint"),
                                 value: $settings.glassTintColor,
                                 focus: .tint
                             )
                             .settingsAnchor("island.tint")
                         }
-                        sliderRow("Surface opacity", value: $settings.blackOpacity, range: 0.55...1, focus: .opacity)
+                        sliderRow(String(localized: "Surface opacity"), value: $settings.blackOpacity, range: 0.55...1, focus: .opacity)
                             .settingsAnchor("island.opacity")
                         if settings.appearance != .solidBlack {
-                            sliderRow("Glass intensity", value: $settings.blurIntensity, range: 0...1, focus: .glass)
+                            sliderRow(String(localized: "Glass intensity"), value: $settings.blurIntensity, range: 0...1, focus: .glass)
                                 .settingsAnchor("island.glass")
                         }
                         if settings.appearance == .hybrid {
-                            sliderRow("Gradient midpoint", value: $settings.gradientMidpoint, range: 0.25...0.8, focus: .midpoint)
+                            sliderRow(String(localized: "Gradient midpoint"), value: $settings.gradientMidpoint, range: 0.25...0.8, focus: .midpoint)
                                 .settingsAnchor("island.midpoint")
                         }
                     }
@@ -1059,7 +1067,7 @@ private struct IslandSettingsPane: View {
     }
 
     private func colorRow(_ title: String, value: Binding<NanoColorValue>, focus target: IslandPreviewFocus) -> some View {
-        SettingsRow(title) {
+        SettingsRow(verbatim: title) {
             ColorPicker(title, selection: Binding(
                 get: { value.wrappedValue.color },
                 set: { value.wrappedValue = NanoColorValue(color: $0) }
@@ -1075,7 +1083,7 @@ private struct IslandSettingsPane: View {
         range: ClosedRange<Double>,
         focus target: IslandPreviewFocus
     ) -> some View {
-        SettingsRow(title) {
+        SettingsRow(verbatim: title) {
             Slider(value: value, in: range) { editing in
                 if editing { focus = target }
             }
@@ -1098,7 +1106,7 @@ private struct IslandSettingsPane: View {
         range: ClosedRange<CGFloat>,
         focus target: IslandPreviewFocus
     ) -> some View {
-        SettingsRow(title) {
+        SettingsRow(verbatim: title) {
             Slider(value: value, in: range, step: 1) { editing in
                 if editing { focus = target }
             }
@@ -1129,31 +1137,31 @@ private enum IslandPreviewFocus {
 
     var title: String {
         switch self {
-        case .shape: "Shape"
-        case .surface: "Surface"
-        case .surfaceColor: "Surface color"
-        case .tint: "Tint"
-        case .opacity: "Surface opacity"
-        case .glass: "Glass intensity"
-        case .midpoint: "Gradient midpoint"
-        case .size: "Size"
-        case .width: "Width"
-        case .topOffset: "Distance from top"
+        case .shape: String(localized: "Shape")
+        case .surface: String(localized: "Surface")
+        case .surfaceColor: String(localized: "Surface color")
+        case .tint: String(localized: "Tint")
+        case .opacity: String(localized: "Surface opacity")
+        case .glass: String(localized: "Glass intensity")
+        case .midpoint: String(localized: "Gradient midpoint")
+        case .size: String(localized: "Size")
+        case .width: String(localized: "Width")
+        case .topOffset: String(localized: "Distance from top")
         }
     }
 
     var detail: String {
         switch self {
-        case .shape: "Notch hangs from the top edge. Floating sits just below it."
-        case .surface: "Solid Black hides the wallpaper. Glass lets it through. Hybrid is black on top, glass at the bottom."
-        case .surfaceColor: "The island's base color. Black matches the notch."
-        case .tint: "Colors the glass, and the lower edge of Hybrid."
-        case .opacity: "Lower lets more of the wallpaper through."
-        case .glass: "How strongly the glass blurs what's behind it."
-        case .midpoint: "Where Hybrid's black gives way to glass."
-        case .size: "Mini keeps the icons and drops the words. Volume and brightness play inside it."
-        case .width: "How much room the closed island gives its icons. It never gets too narrow for them."
-        case .topOffset: "Nudges a floating island a few points up or down."
+        case .shape: String(localized: "Notch hangs from the top edge. Floating sits just below it.")
+        case .surface: String(localized: "Solid Black hides the wallpaper. Glass lets it through. Hybrid is black on top, glass at the bottom.")
+        case .surfaceColor: String(localized: "The island's base color. Black matches the notch.")
+        case .tint: String(localized: "Colors the glass, and the lower edge of Hybrid.")
+        case .opacity: String(localized: "Lower lets more of the wallpaper through.")
+        case .glass: String(localized: "How strongly the glass blurs what's behind it.")
+        case .midpoint: String(localized: "Where Hybrid's black gives way to glass.")
+        case .size: String(localized: "Mini keeps the icons and drops the words. Volume and brightness play inside it.")
+        case .width: String(localized: "How much room the closed island gives its icons. It never gets too narrow for them.")
+        case .topOffset: String(localized: "Nudges a floating island a few points up or down.")
         }
     }
 }
@@ -1322,7 +1330,7 @@ private struct DashboardSettingsPane: View {
                     } message: {
                         Text("Your current layout is replaced.")
                     }
-                Button(viewModel.phase == .pinnedDashboard ? "Close Dashboard" : "Open Dashboard") {
+                Button(viewModel.phase == .pinnedDashboard ? String(localized: "Close Dashboard") : String(localized: "Open Dashboard")) {
                     viewModel.togglePinnedDashboard()
                 }
                 .buttonStyle(.borderedProminent)
@@ -1354,9 +1362,9 @@ private struct NotificationSettingsPane: View {
                 ForEach(visibleSources, id: \.self) { source in
                     let needsAccess = source == .system && permissions.missing.contains(.fullDisk)
                     SettingsRow(
-                        source.title,
+                        verbatim: source.title,
                         symbol: source.symbol,
-                        subtitle: needsAccess ? "Needs Full Disk Access" : summary(source),
+                        subtitle: needsAccess ? String(localized: "Needs Full Disk Access") : summary(source),
                         subtitleIsWarning: needsAccess
                     ) {
                         previewButton(source)
@@ -1390,13 +1398,13 @@ private struct NotificationSettingsPane: View {
 
     private func summary(_ source: IslandNotificationSource) -> String {
         switch source {
-        case .volume: "When the volume keys change"
-        case .brightness: "When the brightness keys change"
-        case .bluetooth: "AirPods, mice, and keyboards connecting"
-        case .battery: "When a laptop starts charging"
-        case .timer: "When a timer finishes"
-        case .agent: "Finished, needs approval, or has a question"
-        case .system: "iMessage, calls, Mail, and every other app"
+        case .volume: String(localized: "When the volume keys change")
+        case .brightness: String(localized: "When the brightness keys change")
+        case .bluetooth: String(localized: "AirPods, mice, and keyboards connecting")
+        case .battery: String(localized: "When a laptop starts charging")
+        case .timer: String(localized: "When a timer finishes")
+        case .agent: String(localized: "Finished, needs approval, or has a question")
+        case .system: String(localized: "iMessage, calls, Mail, and every other app")
         }
     }
 
@@ -1409,7 +1417,7 @@ private struct NotificationSettingsPane: View {
             NotificationPreviewPill(source: source, isOn: settings.isNotificationEnabled(source))
         }
         .buttonStyle(.plain)
-        .help(hasVariants(source) ? "Show on the island. Right-click for more." : "Show on the island")
+        .help(hasVariants(source) ? String(localized: "Show on the island. Right-click for more.") : String(localized: "Show on the island"))
         .contextMenu { variants(source) }
         .accessibilityLabel("Preview \(source.title)")
     }
@@ -1510,7 +1518,7 @@ private struct MediaKeySettingsCard: View {
             )
 
             Toggle(isOn: $settings.hudReplacesSystemHUD) {
-                labeled("Replace the macOS HUD", replaceDetail)
+                labeled(String(localized: "Replace the macOS HUD"), replaceDetail)
             }
             .onChange(of: settings.hudReplacesSystemHUD) { _, on in
                 if on { NanoAccessibilityPermission.requestIfNeeded() }
@@ -1525,19 +1533,19 @@ private struct MediaKeySettingsCard: View {
             if settings.hudReplacesSystemHUD {
                 let noAdjustableDisplay = DisplayBrightnessService.controllableDisplay == nil
                 Toggle(isOn: $settings.hudReplacesVolumeKeys) {
-                    labeled("Volume keys", "Including mute. Option-Shift steps in quarter increments, like macOS.")
+                    labeled(String(localized: "Volume keys"), String(localized: "Including mute. Option-Shift steps in quarter increments, like macOS."))
                 }
                 Toggle(isOn: $settings.hudReplacesBrightnessKeys) {
                     labeled(
-                        "Brightness keys",
+                        String(localized: "Brightness keys"),
                         noAdjustableDisplay
-                            ? "No adjustable display found, so macOS keeps handling these keys."
-                            : "Adjusts the built-in display."
+                            ? String(localized: "No adjustable display found, so macOS keeps handling these keys.")
+                            : String(localized: "Adjusts the built-in display.")
                     )
                 }
                 .disabled(noAdjustableDisplay)
                 Toggle(isOn: $settings.hudVolumeFeedbackSound) {
-                    labeled("Play feedback sound", "The macOS tick when the volume changes.")
+                    labeled(String(localized: "Play feedback sound"), String(localized: "The macOS tick when the volume changes."))
                 }
             }
         }
@@ -1546,11 +1554,11 @@ private struct MediaKeySettingsCard: View {
     private var replaceDetail: String {
         switch interceptor.status {
         case .needsAccessibility:
-            "Needs Accessibility. Nano takes over the keys only after it is allowed to control your Mac."
+            String(localized: "Needs Accessibility. Nano takes over the keys only after it is allowed to control your Mac.")
         case .failed:
-            "The key intercept could not start. Try turning it off and on."
+            String(localized: "The key intercept could not start. Try turning it off and on.")
         default:
-            "Volume and brightness keys go to Nano first. Sliders in Control Center still show the Apple HUD."
+            String(localized: "Volume and brightness keys go to Nano first. Sliders in Control Center still show the Apple HUD.")
         }
     }
 
@@ -1588,18 +1596,18 @@ private struct SystemNotificationSettingsCard: View {
             Divider()
 
             Toggle(isOn: $settings.systemNotificationsShowBody) {
-                labeled("Show message text", "Display the body of each notification, not only its title.")
+                labeled(String(localized: "Show message text"), String(localized: "Display the body of each notification, not only its title."))
             }
             Toggle(isOn: $settings.systemNotificationsShowActions) {
                 labeled(
-                    "Show app buttons",
-                    "Complete, Archive, Snooze and other buttons the app registered appear on the card. They press the matching macOS banner button, so they work best with the banner visible."
+                    String(localized: "Show app buttons"),
+                    String(localized: "Complete, Archive, Snooze and other buttons the app registered appear on the card. They press the matching macOS banner button, so they work best with the banner visible.")
                 )
             }
             Toggle(isOn: $settings.systemNotificationsHidePreviewsOnCamera) {
                 labeled(
-                    "Hide previews while the camera is on",
-                    "While any app is using the camera, as on a FaceTime or Zoom call, cards show only the app name. Sharing your screen without the camera is not covered."
+                    String(localized: "Hide previews while the camera is on"),
+                    String(localized: "While any app is using the camera, as on a FaceTime or Zoom call, cards show only the app name. Sharing your screen without the camera is not covered.")
                 )
             }
             .onChange(of: settings.systemNotificationsHidePreviewsOnCamera) { _, on in
@@ -1607,16 +1615,16 @@ private struct SystemNotificationSettingsCard: View {
             }
             Toggle(isOn: $settings.systemNotificationsCatchUp) {
                 labeled(
-                    "Catch up after sleep or lock",
-                    "One \"While you were away\" card sums up what arrived while the Mac was asleep or locked. Tap it to open the Notifications history."
+                    String(localized: "Catch up after sleep or lock"),
+                    String(localized: "One \"While you were away\" card sums up what arrived while the Mac was asleep or locked. Tap it to open the Notifications history.")
                 )
             }
             Toggle(isOn: $settings.systemNotificationsHideNativeBanner) {
                 labeled(
-                    "Handle notifications with Nano",
+                    String(localized: "Handle notifications with Nano"),
                     NanoAccessibilityPermission.isTrusted
-                        ? "Keep agent actions in Nano and dismiss matching native banners when macOS allows it."
-                        : "Close the matching macOS banner once the island shows it. Needs Accessibility, which Nano already asks for."
+                        ? String(localized: "Keep agent actions in Nano and dismiss matching native banners when macOS allows it.")
+                        : String(localized: "Close the matching macOS banner once the island shows it. Needs Accessibility, which Nano already asks for.")
                 )
             }
 
@@ -1629,8 +1637,8 @@ private struct SystemNotificationSettingsCard: View {
                         Text("Banner setup needed for \(issue.appName)")
                             .font(.system(size: 12, weight: .semibold))
                         Text(issue.outcome == .grouped
-                             ? "macOS only offers a group-wide dismissal. Set up for me turns off this app’s Desktop banners while keeping Allow Notifications and Notification Center on. You can restore Desktop banners in macOS settings."
-                             : "Nano could not verify that this banner disappeared. Check Accessibility access or turn off this app's Desktop banners while leaving Allow Notifications on.")
+                             ? String(localized: "macOS only offers a group-wide dismissal. Set up for me turns off this app’s Desktop banners while keeping Allow Notifications and Notification Center on. You can restore Desktop banners in macOS settings.")
+                             : String(localized: "Nano could not verify that this banner disappeared. Check Accessibility access or turn off this app's Desktop banners while leaving Allow Notifications on."))
                             .font(.system(size: 11)).foregroundStyle(.secondary)
                         HStack {
                             Button("Set up for me") {
@@ -1658,22 +1666,22 @@ private struct SystemNotificationSettingsCard: View {
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(.secondary)
             Toggle(isOn: $settings.systemNotificationsInlineReply) {
-                labeled("Reply from the island", "Type a reply inside the card. macOS asks once to let Nano control Messages.")
+                labeled(String(localized: "Reply from the island"), String(localized: "Type a reply inside the card. macOS asks once to let Nano control Messages."))
             }
             Toggle(isOn: $settings.systemNotificationsContactPhotos) {
-                labeled("Sender photos", contactsDetail)
+                labeled(String(localized: "Sender photos"), contactsDetail)
             }
             Toggle(isOn: $settings.systemNotificationsMarkReadAfterReply) {
                 labeled(
-                    "Mark read after replying",
-                    "Open the conversation in Messages behind your windows once a reply sends, so the unread badge clears. Messages may show its window."
+                    String(localized: "Mark read after replying"),
+                    String(localized: "Open the conversation in Messages behind your windows once a reply sends, so the unread badge clears. Messages may show its window.")
                 )
             }
             .onChange(of: settings.systemNotificationsContactPhotos) { _, on in
                 if on { contacts.requestAccess() }
             }
             if settings.systemNotificationsContactPhotos, contacts.authorization != .authorized {
-                Button(contacts.authorization == .notDetermined ? "Allow Contacts" : "Open Contacts privacy settings") {
+                Button(contacts.authorization == .notDetermined ? String(localized: "Allow Contacts") : String(localized: "Open Contacts privacy settings")) {
                     if contacts.authorization == .notDetermined {
                         contacts.requestAccess()
                     } else {
@@ -1700,9 +1708,9 @@ private struct SystemNotificationSettingsCard: View {
 
     private var contactsDetail: String {
         switch contacts.authorization {
-        case .authorized: "Show the sender's contact photo on iMessage cards."
-        case .notDetermined: "Show the sender's contact photo on iMessage cards. Asks for Contacts access."
-        default: "Contacts access is off for Nano. Allow it in System Settings to show sender photos."
+        case .authorized: String(localized: "Show the sender's contact photo on iMessage cards.")
+        case .notDetermined: String(localized: "Show the sender's contact photo on iMessage cards. Asks for Contacts access.")
+        default: String(localized: "Contacts access is off for Nano. Allow it in System Settings to show sender photos.")
         }
     }
 
@@ -1730,23 +1738,23 @@ private struct SystemNotificationSettingsCard: View {
 
     private var accessTitle: String {
         switch store.access {
-        case .ready: "Capturing macOS notifications"
-        case .needsFullDiskAccess: "Needs Full Disk Access"
-        case .unavailable: "Notification store unavailable"
-        case .idle: "Not running"
+        case .ready: String(localized: "Capturing macOS notifications")
+        case .needsFullDiskAccess: String(localized: "Needs Full Disk Access")
+        case .unavailable: String(localized: "Notification store unavailable")
+        case .idle: String(localized: "Not running")
         }
     }
 
     private var accessDetail: String {
         switch store.access {
         case .ready:
-            "New notifications from any app appear in the island as they arrive."
+            String(localized: "New notifications from any app appear in the island as they arrive.")
         case .needsFullDiskAccess:
-            "Add Nano under System Settings → Privacy & Security → Full Disk Access. If Nano is already listed, turn it off and on again, then relaunch Nano."
+            String(localized: "Add Nano under System Settings → Privacy & Security → Full Disk Access. If Nano is already listed, turn it off and on again, then relaunch Nano.")
         case .unavailable:
-            "macOS did not expose a readable notification store. Nano keeps retrying."
+            String(localized: "macOS did not expose a readable notification store. Nano keeps retrying.")
         case .idle:
-            "Turn on Notifications above to start."
+            String(localized: "Turn on Notifications above to start.")
         }
     }
 
@@ -1839,7 +1847,7 @@ private struct SystemNotificationSettingsCard: View {
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = false
         panel.directoryURL = URL(fileURLWithPath: "/Applications")
-        panel.prompt = "Mute"
+        panel.prompt = String(localized: "Mute")
         guard panel.runModal() == .OK else { return }
         for url in panel.urls {
             guard let bundleID = Bundle(url: url)?.bundleIdentifier else { continue }
@@ -1892,8 +1900,10 @@ private struct AgentSettingsPane: View {
                 SettingsRow(
                     "Live hooks",
                     subtitle: installedHookCount == 0
-                        ? "Not installed. Sessions are still found without them."
-                        : "Installed in \(installedHookCount) config file\(installedHookCount == 1 ? "" : "s")"
+                        ? LocalizedStringResource("Not installed. Sessions are still found without them.")
+                        : installedHookCount == 1
+                            ? LocalizedStringResource("Installed in 1 config file")
+                            : LocalizedStringResource("Installed in \(installedHookCount) config files")
                 ) {
                     Button("Manage…") { showsHooks = true }
                         .controlSize(.small)
@@ -1911,8 +1921,8 @@ private struct AgentSettingsPane: View {
                 SettingsToggleRow(
                     "Open sessions in cmux",
                     subtitle: CmuxSessionJump.isInstalled
-                        ? "Jumps to the exact cmux tab running the session. In cmux, set Settings › Automation › Socket Control to Automation so Nano can reach it."
-                        : "cmux isn't installed.",
+                        ? LocalizedStringResource("Jumps to the exact cmux tab running the session. In cmux, set Settings › Automation › Socket Control to Automation so Nano can reach it.")
+                        : LocalizedStringResource("cmux isn't installed."),
                     isOn: $settings.opensSessionsInCmux
                 )
                 .disabled(!CmuxSessionJump.isInstalled)
@@ -1991,7 +2001,7 @@ private struct AgentSettingsPane: View {
                 ),
                 isEnabled: provider.supportsUsage
             )
-            .help(provider.supportsUsage ? "Read remaining quota from \(provider.title)" : provider.usageUnavailableHelp)
+            .help(provider.supportsUsage ? String(localized: "Read remaining quota from \(provider.title)") : provider.usageUnavailableHelp)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
@@ -2078,7 +2088,7 @@ struct AgentHookReviewSheet: View {
                     Button("Remove All…", role: .destructive) { confirmsRemoval = true }
                 }
                 Spacer()
-                Button(selected.isEmpty ? "Done" : "Not Now", action: done)
+                Button(selected.isEmpty ? String(localized: "Done") : String(localized: "Not Now"), action: done)
                     .keyboardShortcut(.cancelAction)
                 Button(connectTitle) {
                     bridge.installHooks(for: selected)
@@ -2102,7 +2112,9 @@ struct AgentHookReviewSheet: View {
             selected = Set(providers.filter { settings.isAgentProviderEnabled($0) && !isConnected($0) })
         }
         .confirmationDialog(
-            "Remove Nano's hooks from \(installed.count) file\(installed.count == 1 ? "" : "s")?",
+            installed.count == 1
+                ? String(localized: "Remove Nano's hooks from 1 file?")
+                : String(localized: "Remove Nano's hooks from \(installed.count) files?"),
             isPresented: $confirmsRemoval,
             titleVisibility: .visible
         ) {
@@ -2125,12 +2137,12 @@ struct AgentHookReviewSheet: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Nano removes only its own hook for \(removing?.title ?? "this agent"). A running session may need restarting. It's still found without the hook.")
+            Text("Nano removes only its own hook for \(removing?.title ?? String(localized: "this agent")). A running session may need restarting. It's still found without the hook.")
         }
     }
 
     private var connectTitle: String {
-        selected.count == 1 ? "Connect 1 Agent" : "Connect \(selected.count) Agents"
+        selected.count == 1 ? String(localized: "Connect 1 Agent") : String(localized: "Connect \(selected.count) Agents")
     }
 
     private func row(_ provider: AgentProviderID) -> some View {
@@ -2173,8 +2185,8 @@ struct AgentHookReviewSheet: View {
                 }
                 Label(
                     Self.ownedFiles.contains(provider)
-                        ? "A new file that belongs to Nano"
-                        : "Adds Nano's hooks next to yours. Backup: .nano-bak",
+                        ? String(localized: "A new file that belongs to Nano")
+                        : String(localized: "Adds Nano's hooks next to yours. Backup: .nano-bak"),
                     systemImage: Self.ownedFiles.contains(provider) ? "doc.badge.plus" : "plus.circle"
                 )
                 .font(.system(size: 11))
@@ -2360,7 +2372,7 @@ private struct LoginItemRow: View {
     var body: some View {
         SettingsRow(
             "Open at login",
-            subtitle: subtitle,
+            subtitle: "\(subtitle)",
             subtitleIsWarning: loginItem.needsApproval || loginItem.errorMessage != nil
         ) {
             if loginItem.needsApproval {
@@ -2383,8 +2395,8 @@ private struct LoginItemRow: View {
 
     private var subtitle: String {
         if let error = loginItem.errorMessage { return error }
-        if loginItem.needsApproval { return "Blocked in System Settings → General → Login Items. Allow Nano there." }
-        return loginItem.isEnabled ? "Nano starts when you log in." : "You open Nano yourself after each restart."
+        if loginItem.needsApproval { return String(localized: "Blocked in System Settings → General → Login Items. Allow Nano there.") }
+        return loginItem.isEnabled ? String(localized: "Nano starts when you log in.") : String(localized: "You open Nano yourself after each restart.")
     }
 }
 
@@ -2423,7 +2435,7 @@ private struct UpdateStatusRow: View {
     @ObservedObject var checker: NanoUpdateChecker
 
     var body: some View {
-        SettingsRow(title, subtitle: subtitle, subtitleIsWarning: isFailure) {
+        SettingsRow(verbatim: title, subtitle: subtitle, subtitleIsWarning: isFailure) {
             if checker.available != nil {
                 Button("Notes", action: checker.openNotes)
                     .controlSize(.small)
@@ -2446,28 +2458,28 @@ private struct UpdateStatusRow: View {
     private var title: String {
         switch checker.status {
         case .idle: "Nano \(NanoAppInfo.version)"
-        case .checking: "Checking for updates…"
-        case .current: "Nano \(NanoAppInfo.version) is up to date"
-        case .noReleases: "No updates published yet"
-        case let .available(update): "Nano \(update.version) is available"
-        case .failed: "Couldn't check for updates"
+        case .checking: String(localized: "Checking for updates…")
+        case .current: String(localized: "Nano \(NanoAppInfo.version) is up to date")
+        case .noReleases: String(localized: "No updates published yet")
+        case let .available(update): String(localized: "Nano \(update.version) is available")
+        case .failed: String(localized: "Couldn't check for updates")
         }
     }
 
     private var subtitle: String? {
         switch checker.status {
         case let .failed(message): message
-        case let .available(update): ["You have \(NanoAppInfo.version)", update.summary.map { "What's new: \($0)" }]
+        case let .available(update): [String(localized: "You have \(NanoAppInfo.version)"), update.summary.map { String(localized: "What's new: \($0)") }]
             .compactMap { $0 }.joined(separator: " · ")
-        case let .current(date), let .noReleases(date): "Checked \(Self.relative(date))"
-        case .idle, .checking: checker.lastCheckedAt.map { "Last checked \(Self.relative($0))" }
+        case let .current(date), let .noReleases(date): String(localized: "Checked \(Self.relative(date))")
+        case .idle, .checking: checker.lastCheckedAt.map { String(localized: "Last checked \(Self.relative($0))") }
         }
     }
 
     private static func relative(_ date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
-        return date.timeIntervalSinceNow > -60 ? "just now" : formatter.localizedString(for: date, relativeTo: .now)
+        return date.timeIntervalSinceNow > -60 ? String(localized: "just now") : formatter.localizedString(for: date, relativeTo: .now)
     }
 }
 
@@ -2570,7 +2582,7 @@ private struct ClaudeLocalUsageRow: View {
             } else if choice == .local {
                 TimelineView(.periodic(from: .now, by: 2)) { _ in
                     Text(bridge.status().cachedAt.map { ClaudeLocalUsageCache.ageLabel(since: $0) }
-                        ?? "Waiting for the next Claude Code response")
+                        ?? String(localized: "Waiting for the next Claude Code response"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -2585,8 +2597,8 @@ private struct ClaudeLocalUsageRow: View {
                         .textFieldStyle(.roundedBorder)
                         .disabled(choice == .local)
                     Text(choice == .local
-                        ? "Turn Claude usage off before changing the folder."
-                        : "Leave empty to use Claude Code's default, or CLAUDE_CONFIG_DIR when it's set.")
+                        ? String(localized: "Turn Claude usage off before changing the folder.")
+                        : String(localized: "Leave empty to use Claude Code's default, or CLAUDE_CONFIG_DIR when it's set."))
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                     Text("A project's own Claude settings can replace this status line.")
@@ -2643,7 +2655,7 @@ private struct CallWatcherDiagnosticsRow: View {
             Circle()
                 .fill(watcher.isAttached ? Color.green : Color.orange)
                 .frame(width: 7, height: 7)
-            Text(watcher.isAttached ? "Watching Notification Center" : "Waiting for Accessibility")
+            Text(watcher.isAttached ? String(localized: "Watching Notification Center") : String(localized: "Waiting for Accessibility"))
                 .font(.system(size: 11))
                 .foregroundStyle(.secondary)
             Spacer()
@@ -2658,5 +2670,42 @@ private struct CallWatcherDiagnosticsRow: View {
                     .foregroundStyle(.tertiary)
             }
         }
+    }
+}
+
+/// Picks Nano's interface language. The bundle's strings are fixed at launch,
+/// so a change offers a restart instead of switching in place.
+private struct AppLanguageRow: View {
+    @State private var choice = AppLanguage.current()
+
+    /// The language a launch with `choice` would resolve to.
+    private var resolved: AppLanguage {
+        if choice != .system { return choice }
+        let global = UserDefaults.standard.persistentDomain(forName: UserDefaults.globalDomain)?[AppLanguage.defaultsKey] as? [String]
+        let match = Bundle.preferredLocalizations(from: Bundle.main.localizations, forPreferences: global ?? []).first
+        return AppLanguage.choice(for: match ?? "en")
+    }
+
+    private var needsRelaunch: Bool { resolved != AppLanguage.running }
+
+    var body: some View {
+        SettingsRow(
+            "Interface language",
+            subtitle: needsRelaunch
+                ? LocalizedStringResource("Restart Nano to switch the language.")
+                : LocalizedStringResource("System follows the macOS language.")
+        ) {
+            HStack(spacing: 8) {
+                if needsRelaunch {
+                    Button("Restart Nano") { AppLanguage.relaunch() }
+                }
+                Picker("Interface language", selection: $choice) {
+                    ForEach(AppLanguage.allCases) { Text(verbatim: $0.title).tag($0) }
+                }
+                .labelsHidden()
+                .fixedSize()
+            }
+        }
+        .onChange(of: choice) { _, newValue in newValue.store() }
     }
 }

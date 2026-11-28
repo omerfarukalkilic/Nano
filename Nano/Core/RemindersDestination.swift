@@ -23,9 +23,9 @@ final class RemindersDestination: TaskDestination {
 
         var errorDescription: String? {
             switch self {
-            case .noAccess: "Nano can't read Reminders. Allow it in System Settings > Privacy & Security > Reminders."
-            case .listMissing: "That Reminders list no longer exists."
-            case .fetchFailed: "Reminders didn't return its lists."
+            case .noAccess: String(localized: "Nano can't read Reminders. Allow it in System Settings > Privacy & Security > Reminders.")
+            case .listMissing: String(localized: "That Reminders list no longer exists.")
+            case .fetchFailed: String(localized: "Reminders didn't return its lists.")
             }
         }
     }

@@ -32,7 +32,7 @@ actor WhisperCppRecognizer: VoiceDictationRecognizer {
     func transcribe(_ samples: [Float], request: VoiceDictationRecognitionRequest) throws -> VoiceDictationRecognition {
         try load()
         guard let model else {
-            throw VoiceDictationError.modelLoadFailed("Whisper is not loaded.")
+            throw VoiceDictationError.modelLoadFailed(String(localized: "Whisper is not loaded."))
         }
         // whisper.cpp rejects input shorter than one second.
         let audio = VoiceDictationEngineFactory.padded(samples, minimumSeconds: 1.1)
@@ -82,7 +82,7 @@ actor WhisperCppRecognizer: VoiceDictationRecognizer {
     private nonisolated static func describe(_ error: WhisperRuntimeError) -> String {
         switch error {
         case .loadFailed(let message): message
-        case .inferenceFailed(let status): "whisper.cpp returned \(status)."
+        case .inferenceFailed(let status): String(localized: "whisper.cpp returned \(status).")
         }
     }
 }

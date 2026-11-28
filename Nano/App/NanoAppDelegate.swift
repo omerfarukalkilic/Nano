@@ -283,16 +283,16 @@ final class NanoAppDelegate: NSObject, NSApplicationDelegate {
     private func rebuildStatusMenu(_ menu: NSMenu) {
         menu.removeAllItems()
         if let update = viewModel.updateChecker.available {
-            menu.addItem(withTitle: "Update Available: Nano \(update.version)…", action: #selector(downloadUpdate), keyEquivalent: "")
+            menu.addItem(withTitle: String(localized: "Update Available: Nano \(update.version)…"), action: #selector(downloadUpdate), keyEquivalent: "")
             menu.addItem(.separator())
         }
-        menu.addItem(withTitle: "Open Nano", action: #selector(toggleDashboard), keyEquivalent: "")
-        menu.addItem(withTitle: "Settings…", action: #selector(openSettingsFromMenu), keyEquivalent: ",")
+        menu.addItem(withTitle: String(localized: "Open Nano"), action: #selector(toggleDashboard), keyEquivalent: "")
+        menu.addItem(withTitle: String(localized: "Settings…"), action: #selector(openSettingsFromMenu), keyEquivalent: ",")
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Check for Updates…", action: #selector(checkForUpdates), keyEquivalent: "")
-        menu.addItem(withTitle: "Report a Bug…", action: #selector(reportBug), keyEquivalent: "")
+        menu.addItem(withTitle: String(localized: "Check for Updates…"), action: #selector(checkForUpdates), keyEquivalent: "")
+        menu.addItem(withTitle: String(localized: "Report a Bug…"), action: #selector(reportBug), keyEquivalent: "")
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Quit Nano", action: #selector(quitNano), keyEquivalent: "q")
+        menu.addItem(withTitle: String(localized: "Quit Nano"), action: #selector(quitNano), keyEquivalent: "q")
         menu.items.forEach { $0.target = self }
     }
 
@@ -482,7 +482,7 @@ enum SettingsWindowChrome {
 
     static func apply(_ window: NSWindow) {
         window.styleMask = styleMask
-        window.title = "Nano Settings"
+        window.title = String(localized: "Nano Settings")
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true
         window.titlebarSeparatorStyle = .none

@@ -74,7 +74,7 @@ final class CameraService: ObservableObject {
             if granted {
                 if isModuleOpen { start() }
             } else {
-                errorMessage = "Camera access was not granted."
+                errorMessage = String(localized: "Camera access was not granted.")
             }
         }
     }
@@ -168,7 +168,7 @@ final class CameraService: ObservableObject {
 
     private func handleRuntimeError(_ message: String?) {
         isRunning = false
-        errorMessage = message ?? "The camera stopped unexpectedly."
+        errorMessage = message ?? String(localized: "The camera stopped unexpectedly.")
         activeDeviceID = nil
         // The session's inputs are no longer usable; force a rebuild on next start.
         worker.invalidateConfiguration()
@@ -313,8 +313,8 @@ private enum CameraSessionError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .noCamera: "No camera is available."
-        case .cannotAddInput: "Nano could not connect to the selected camera."
+        case .noCamera: String(localized: "No camera is available.")
+        case .cannotAddInput: String(localized: "Nano could not connect to the selected camera.")
         }
     }
 }

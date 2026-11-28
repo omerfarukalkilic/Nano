@@ -317,11 +317,11 @@ final class NanoUpdateChecker: ObservableObject {
             let (data, response) = try await session.data(for: request)
             let code = (response as? HTTPURLResponse)?.statusCode ?? 0
             if code == 404 { return .success(nil) }
-            guard code == 200 else { return .failure("The update server answered \(code)") }
+            guard code == 200 else { return .failure(String(localized: "The update server answered \(code)")) }
             let feed = try JSONDecoder().decode(Feed.self, from: data)
             let download = feed.dmg ?? feed.htmlURL
             guard isSecure(download), isSecure(feed.htmlURL) else {
-                return .failure("The update information couldn't be read")
+                return .failure(String(localized: "The update information couldn't be read"))
             }
             let notes = feed.body?.trimmingCharacters(in: .whitespacesAndNewlines)
             return .success(NanoUpdate(
@@ -331,9 +331,9 @@ final class NanoUpdateChecker: ObservableObject {
                 notes: notes?.isEmpty == false ? notes : nil
             ))
         } catch is DecodingError {
-            return .failure("The update information couldn't be read")
+            return .failure(String(localized: "The update information couldn't be read"))
         } catch {
-            return .failure("Couldn't reach GitHub")
+            return .failure(String(localized: "Couldn't reach GitHub"))
         }
     }
 }

@@ -138,9 +138,9 @@ struct MixerModuleView: View {
                                        set: { system.setOutputVolume($0) }),
                         maxValue: 1,
                         muted: system.isMuted,
-                        label: "Output volume"
+                        label: String(localized: "Output volume")
                     )
-                    Text(system.isMuted ? "Muted" : "\(Int((volume * 100).rounded()))%")
+                    Text(system.isMuted ? String(localized: "Muted") : "\(Int((volume * 100).rounded()))%")
                         .font(.system(size: 11)).monospacedDigit()
                         .frame(width: 40, alignment: .trailing)
                         .contentTransition(.numericText())
@@ -167,7 +167,7 @@ struct MixerModuleView: View {
                     }
                     .buttonStyle(.plain)
                     .animation(MixerMotion.fast(reduceMotion), value: system.isMuted)
-                    .accessibilityLabel(system.isMuted ? "Unmute output" : "Mute output")
+                    .accessibilityLabel(system.isMuted ? String(localized: "Unmute output") : String(localized: "Mute output"))
                 } else {
                     Color.clear.frame(width: 26, height: 26)
                 }
@@ -190,7 +190,7 @@ struct MixerModuleView: View {
                 .foregroundStyle(.white.opacity(0.4))
             Spacer()
             Button { store.showsAllApps.toggle() } label: {
-                Text(store.showsAllApps ? "Active only" : "Show all")
+                Text(store.showsAllApps ? String(localized: "Active only") : String(localized: "Show all"))
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(.white.opacity(0.6))
                     .nanoHoverCapsule()
@@ -249,7 +249,7 @@ struct MixerModuleView: View {
                 .contentTransition(.symbolEffect(.replace))
                 .animation(MixerMotion.fast(reduceMotion), value: store.isMicMuted)
             VStack(alignment: .leading, spacing: 1) {
-                Text(store.inputName ?? "Microphone")
+                Text(store.inputName ?? String(localized: "Microphone"))
                     .font(.system(size: 12.5, weight: .medium))
                     .lineLimit(1)
                 Text("Microphone")
@@ -280,7 +280,7 @@ struct MixerModuleView: View {
             }
             .buttonStyle(.plain)
             .animation(MixerMotion.quick(reduceMotion), value: store.isMicMuted)
-            .accessibilityLabel(store.isMicMuted ? "Unmute microphone" : "Mute microphone")
+            .accessibilityLabel(store.isMicMuted ? String(localized: "Unmute microphone") : String(localized: "Mute microphone"))
         }
         .padding(.horizontal, 6)
         .frame(height: 40)
@@ -309,9 +309,9 @@ private struct MixerAppRow: View {
 
     private var appSubtitle: String {
         var parts: [String] = []
-        if !app.isRunning { parts.append("Paused") }
+        if !app.isRunning { parts.append(String(localized: "Paused")) }
         if let uid = app.preference.outputUID {
-            let name = store.outputs.first { $0.uid == uid }?.name ?? "another output"
+            let name = store.outputs.first { $0.uid == uid }?.name ?? String(localized: "another output")
             parts.append("→ \(name)")
         }
         return parts.joined(separator: " · ")
@@ -387,8 +387,8 @@ private struct MixerAppRow: View {
                 }
                 .buttonStyle(.plain)
                 .animation(MixerMotion.fast(reduceMotion), value: app.preference.isMuted)
-                .accessibilityLabel("\(app.preference.isMuted ? "Unmute" : "Mute") \(app.name)")
-                .help(app.preference.isMuted ? "Unmute \(app.name)" : "Mute \(app.name)")
+                .accessibilityLabel(app.preference.isMuted ? String(localized: "Unmute \(app.name)") : String(localized: "Mute \(app.name)"))
+                .help(app.preference.isMuted ? String(localized: "Unmute \(app.name)") : String(localized: "Mute \(app.name)"))
             }
             .frame(height: 40)
             .padding(.horizontal, 6)
@@ -411,11 +411,11 @@ private struct MixerAppRow: View {
             }
         }
         .contextMenu {
-            Button(app.preference.isPinned ? "Unpin app" : "Pin app", systemImage: "pin") { store.togglePin(app.id) }
+            Button(app.preference.isPinned ? String(localized: "Unpin app") : String(localized: "Pin app"), systemImage: "pin") { store.togglePin(app.id) }
             Button("Reset volume", systemImage: "arrow.counterclockwise") { store.reset(app.id) }
         }
         .accessibilityElement(children: .contain)
-        .accessibilityAction(named: app.preference.isPinned ? "Unpin app" : "Pin app") { store.togglePin(app.id) }
+        .accessibilityAction(named: app.preference.isPinned ? String(localized: "Unpin app") : String(localized: "Pin app")) { store.togglePin(app.id) }
         .accessibilityAction(named: "Reset volume") { store.reset(app.id) }
     }
 
@@ -575,7 +575,7 @@ private struct MixerConnectionView: View {
                 .foregroundStyle(.white.opacity(0.6))
                 .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: 14) {
-                Button(store.isConnecting ? "Connecting…" : "Allow audio access") { store.connect() }
+                Button(store.isConnecting ? String(localized: "Connecting…") : String(localized: "Allow audio access")) { store.connect() }
                     .buttonStyle(.plain)
                     .font(.system(size: 12.5, weight: .semibold))
                     .foregroundStyle(.black)
@@ -623,7 +623,7 @@ struct MixerSettingsPane: View {
                 SettingsRow(
                     "Mute microphone",
                     symbol: "mic.slash",
-                    subtitle: micShortcutDetail,
+                    subtitle: "\(micShortcutDetail)",
                     subtitleIsWarning: viewModel.mixerMicMuteHotkeyError != nil || micShortcutClashes
                 ) {
                     if settings.mixerMicMuteHotkeyEnabled {
@@ -641,7 +641,7 @@ struct MixerSettingsPane: View {
                             }
                         } label: {
                             Text(hotkeyCapture.isCapturing
-                                 ? "Recording…"
+                                 ? String(localized: "Recording…")
                                  : settings.mixerMicMuteHotkey.displayString)
                                 .font(.system(size: 12, weight: .medium, design: .rounded))
                                 .frame(minWidth: 64)
@@ -656,12 +656,12 @@ struct MixerSettingsPane: View {
             SettingsSection("Audio access", footer: "Audio is adjusted live in memory. Nothing is recorded or sent.") {
                 SettingsRow("System audio",
                             subtitle: store.isConfigured
-                                ? "Connected"
-                                : "Not connected · macOS asks the first time") {
+                                ? LocalizedStringResource("Connected")
+                                : LocalizedStringResource("Not connected · macOS asks the first time")) {
                     if store.isConfigured {
                         Button("Privacy Settings") { store.openAudioPrivacy() }.controlSize(.small)
                     } else {
-                        Button(store.isConnecting ? "Connecting…" : "Allow audio access") { store.connect() }
+                        Button(store.isConnecting ? String(localized: "Connecting…") : String(localized: "Allow audio access")) { store.connect() }
                             .controlSize(.small)
                             .disabled(store.isConnecting || !settings.isEnabled(.mixer))
                     }
@@ -701,14 +701,14 @@ struct MixerSettingsPane: View {
     }
 
     private var micShortcutDetail: String {
-        if hotkeyCapture.isCapturing { return "Press the new shortcut. Esc cancels." }
+        if hotkeyCapture.isCapturing { return String(localized: "Press the new shortcut. Esc cancels.") }
         if let error = viewModel.mixerMicMuteHotkeyError { return error }
         if micShortcutClashes {
             return settings.mixerMicMuteHotkey == settings.voiceDictationHotkey
-                ? "Same as the dictation shortcut. Pick a different one so both work."
-                : "Same as the Cue shortcut. Pick a different one so both work."
+                ? String(localized: "Same as the dictation shortcut. Pick a different one so both work.")
+                : String(localized: "Same as the Cue shortcut. Pick a different one so both work.")
         }
-        return "Mutes every microphone, anywhere"
+        return String(localized: "Mutes every microphone, anywhere")
     }
 
     private func adjustedRow(_ app: MixerApp) -> some View {
@@ -736,7 +736,7 @@ struct MixerSettingsPane: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .help(app.preference.isPinned ? "Unpin \(app.name)" : "Pin \(app.name)")
+            .help(app.preference.isPinned ? String(localized: "Unpin \(app.name)") : String(localized: "Pin \(app.name)"))
             Button("Reset") { store.reset(app.id) }.controlSize(.small)
         }
         .padding(.horizontal, 12)
@@ -745,12 +745,12 @@ struct MixerSettingsPane: View {
     }
 
     private func subtitle(for app: MixerApp) -> String {
-        var parts = [app.preference.isMuted ? "Muted" : "\(Int((app.preference.volume * 100).rounded()))%"]
+        var parts = [app.preference.isMuted ? String(localized: "Muted") : "\(Int((app.preference.volume * 100).rounded()))%"]
         if let uid = app.preference.outputUID,
            let output = store.outputs.first(where: { $0.uid == uid }) {
             parts.append("→ \(output.name)")
         }
-        if app.preference.isPinned { parts.append("Pinned") }
+        if app.preference.isPinned { parts.append(String(localized: "Pinned")) }
         return parts.joined(separator: " · ")
     }
 }

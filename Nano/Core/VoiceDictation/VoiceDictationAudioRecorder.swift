@@ -19,10 +19,10 @@ enum VoiceDictationMicrophoneAuthorization: Equatable, Sendable {
 
     var title: String {
         switch self {
-        case .authorized: "Allowed"
-        case .notDetermined: "Not requested"
-        case .denied: "Denied"
-        case .restricted: "Restricted"
+        case .authorized: String(localized: "Allowed")
+        case .notDetermined: String(localized: "Not requested")
+        case .denied: String(localized: "Denied")
+        case .restricted: String(localized: "Restricted")
         }
     }
 }
@@ -107,7 +107,7 @@ final class VoiceDictationAudioRecorder: ObservableObject {
             channels: 1,
             interleaved: false
         ), let converter = AVAudioConverter(from: inputFormat, to: targetFormat) else {
-            throw VoiceDictationError.audioCaptureFailed("The input format could not be converted to 16 kHz mono.")
+            throw VoiceDictationError.audioCaptureFailed(String(localized: "The input format could not be converted to 16 kHz mono."))
         }
 
         sink.reset(

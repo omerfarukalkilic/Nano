@@ -167,7 +167,7 @@ final class SystemEventMonitor {
     private func handleBluetooth(_ device: IOBluetoothDevice, connected: Bool) {
         guard enabled.contains(.bluetooth) else { return }
         let name = (device.nameOrAddress as String?)?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let resolved = (name?.isEmpty == false ? name : nil) ?? "Bluetooth device"
+        let resolved = (name?.isEmpty == false ? name : nil) ?? String(localized: "Bluetooth device")
         let address = device.addressString ?? resolved
         let category = BluetoothAccessoryCategory.classify(
             name: resolved,

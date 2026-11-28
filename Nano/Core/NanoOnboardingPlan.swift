@@ -22,23 +22,23 @@ struct NanoSetupChecklist: Equatable {
 
         var title: String {
             switch self {
-            case .connectAgents: "Connect your agents"
-            case .allowMicrophone: "Allow the microphone"
-            case .downloadVoiceModel: "Download a voice model"
-            case .allowFullDiskAccess: "Allow Full Disk Access"
-            case .allowSessionJump: "Jump into sessions"
-            case .allowAutoPaste: "Paste dictation automatically"
+            case .connectAgents: String(localized: "Connect your agents")
+            case .allowMicrophone: String(localized: "Allow the microphone")
+            case .downloadVoiceModel: String(localized: "Download a voice model")
+            case .allowFullDiskAccess: String(localized: "Allow Full Disk Access")
+            case .allowSessionJump: String(localized: "Jump into sessions")
+            case .allowAutoPaste: String(localized: "Paste dictation automatically")
             }
         }
 
         var detail: String {
             switch self {
-            case .connectAgents: "Hooks send approvals and questions to the island."
-            case .allowMicrophone: "Dictation cannot listen until macOS allows it."
-            case .downloadVoiceModel: "Transcription runs on this Mac once a model is on disk."
-            case .allowFullDiskAccess: "Nano reads Notification Center to mirror your notifications."
-            case .allowSessionJump: "Accessibility lets a click on a session open its window."
-            case .allowAutoPaste: "Accessibility pastes text for you. The clipboard works without it."
+            case .connectAgents: String(localized: "Hooks send approvals and questions to the island.")
+            case .allowMicrophone: String(localized: "Dictation cannot listen until macOS allows it.")
+            case .downloadVoiceModel: String(localized: "Transcription runs on this Mac once a model is on disk.")
+            case .allowFullDiskAccess: String(localized: "Nano reads Notification Center to mirror your notifications.")
+            case .allowSessionJump: String(localized: "Accessibility lets a click on a session open its window.")
+            case .allowAutoPaste: String(localized: "Accessibility pastes text for you. The clipboard works without it.")
             }
         }
 

@@ -23,11 +23,11 @@ enum VoiceDictationAppContext: String, Codable, Sendable {
 
     var title: String {
         switch self {
-        case .general: "Prose"
-        case .terminal: "Developer Mode"
-        case .chat: "Chat"
-        case .email: "Email"
-        case .agent: "Agent prompt"
+        case .general: String(localized: "Prose")
+        case .terminal: String(localized: "Developer Mode")
+        case .chat: String(localized: "Chat")
+        case .email: String(localized: "Email")
+        case .agent: String(localized: "Agent prompt")
         }
     }
 

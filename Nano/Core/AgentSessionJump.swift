@@ -55,7 +55,7 @@ enum AgentSessionJump {
             case .codex: "Codex"
             case .terminal: "Terminal"
             case .folder: "Finder"
-            case .app: "App"
+            case .app: String(localized: "App")
             }
         }
     }

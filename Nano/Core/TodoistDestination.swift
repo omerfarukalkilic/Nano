@@ -27,11 +27,11 @@ final class TodoistDestination: TaskDestination {
 
         var errorDescription: String? {
             switch self {
-            case .unauthorized: "Todoist didn't accept the API token. Copy it again from Todoist's Settings > Integrations > Developer."
-            case .rateLimited: "Todoist asked Nano to slow down. Sync will try again shortly."
-            case let .http(code): "Todoist answered with HTTP \(code)."
-            case let .command(message): "Todoist refused a change: \(message)"
-            case .badResponse: "Todoist's reply wasn't understood."
+            case .unauthorized: String(localized: "Todoist didn't accept the API token. Copy it again from Todoist's Settings > Integrations > Developer.")
+            case .rateLimited: String(localized: "Todoist asked Nano to slow down. Sync will try again shortly.")
+            case let .http(code): String(localized: "Todoist answered with HTTP \(code).")
+            case let .command(message): String(localized: "Todoist refused a change: \(message)")
+            case .badResponse: String(localized: "Todoist's reply wasn't understood.")
             }
         }
     }

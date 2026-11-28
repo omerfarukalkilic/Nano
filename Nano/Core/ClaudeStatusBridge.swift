@@ -14,9 +14,9 @@ struct ClaudeStatusBridge {
 
         var errorDescription: String? {
             switch self {
-            case .invalidSettings: "Claude settings could not be read."
-            case .missingOriginalState: "Nano's saved Claude status-line state is missing."
-            case .settingsChanged: "Claude settings changed while Nano was updating them. Please try again."
+            case .invalidSettings: String(localized: "Claude settings could not be read.")
+            case .missingOriginalState: String(localized: "Nano's saved Claude status-line state is missing.")
+            case .settingsChanged: String(localized: "Claude settings changed while Nano was updating them. Please try again.")
             }
         }
     }
@@ -447,10 +447,10 @@ enum ClaudeLocalUsageCache {
 
     static func ageLabel(since date: Date, now: Date = Date()) -> String {
         let seconds = max(0, Int(now.timeIntervalSince(date)))
-        if seconds < 60 { return "now" }
-        if seconds < 3_600 { return "\(seconds / 60)m ago" }
-        if seconds < 86_400 { return "\(seconds / 3_600)h ago" }
-        return "\(seconds / 86_400)d ago"
+        if seconds < 60 { return String(localized: "now") }
+        if seconds < 3_600 { return String(localized: "\(seconds / 60)m ago") }
+        if seconds < 86_400 { return String(localized: "\(seconds / 3_600)h ago") }
+        return String(localized: "\(seconds / 86_400)d ago")
     }
 }
 

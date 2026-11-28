@@ -329,8 +329,8 @@ final class NanoPanel: NSPanel {
 
 /// Status-item twins for a right-click on the open island.
 enum IslandContextMenu {
-    static let settingsTitle = "Settings…"
-    static let quitTitle = "Quit Nano"
+    static let settingsTitle = String(localized: "Settings…")
+    static let quitTitle = String(localized: "Quit Nano")
 
     static func isAvailable(phase: IslandPhase) -> Bool {
         phase.showsDashboard

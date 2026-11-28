@@ -332,7 +332,7 @@ final class CueSyncEngine: ObservableObject {
     private func pass(_ destination: TaskDestination) async {
         let id = destination.id
         guard !store.libraryIsUnreadable else {
-            statuses[id, default: Status()].error = "Cue's library couldn't be read, so sync is paused."
+            statuses[id, default: Status()].error = String(localized: "Cue's library couldn't be read, so sync is paused.")
             return
         }
         // Apps Cue can only send to have nothing to pull.
@@ -363,7 +363,7 @@ final class CueSyncEngine: ObservableObject {
 
         if !batch.missingProjectIDs.isEmpty {
             for link in state.folderLinks where link.destinationID == id && batch.missingProjectIDs.contains(link.projectID) {
-                notices.append("\u{201C}\(link.projectName)\u{201D} no longer exists, so its folder stopped syncing.")
+                notices.append(String(localized: "\u{201C}\(link.projectName)\u{201D} no longer exists, so its folder stopped syncing."))
             }
             state.folderLinks.removeAll { $0.destinationID == id && batch.missingProjectIDs.contains($0.projectID) }
         }
@@ -754,7 +754,7 @@ final class CueSyncEngine: ObservableObject {
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             try encoder.encode(state).write(to: stateURL, options: .atomic)
         } catch {
-            notices.append("Sync couldn't save its state: \(error.localizedDescription)")
+            notices.append(String(localized: "Sync couldn't save its state: \(error.localizedDescription)"))
         }
     }
 }

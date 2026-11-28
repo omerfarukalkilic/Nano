@@ -87,7 +87,7 @@ final class TrayStore: ObservableObject {
 
         items.append(contentsOf: accepted.map(TrayItem.init))
         // The shelf growing is the confirmation; only a drop that added nothing says so.
-        if accepted.isEmpty { say("Already in the tray") }
+        if accepted.isEmpty { say(String(localized: "Already in the tray")) }
         save()
         return accepted.count
     }
@@ -116,7 +116,7 @@ final class TrayStore: ObservableObject {
     func pasteFromClipboard() {
         let urls = holdables(on: .general, into: clippingsDirectory)
         if urls.isEmpty {
-            say("Nothing on the clipboard to hold")
+            say(String(localized: "Nothing on the clipboard to hold"))
         } else {
             hold(urls)
         }
@@ -153,7 +153,7 @@ final class TrayStore: ObservableObject {
     }
 
     func remove(_ item: TrayItem) {
-        discard([item.id], message: "Removed \(item.name)")
+        discard([item.id], message: String(localized: "Removed \(item.name)"))
     }
 
     /// The trash button: the selection, or everything.
@@ -162,7 +162,7 @@ final class TrayStore: ObservableObject {
             clear()
         } else {
             let count = selection.count
-            discard(selection, message: count == 1 ? "Removed 1 item" : "Removed \(count) items")
+            discard(selection, message: count == 1 ? String(localized: "Removed 1 item") : String(localized: "Removed \(count) items"))
         }
     }
 
@@ -176,7 +176,7 @@ final class TrayStore: ObservableObject {
 
     func clear() {
         let count = items.count
-        discard(Set(items.map(\.id)), message: count == 1 ? "Cleared 1 item" : "Cleared \(count) items")
+        discard(Set(items.map(\.id)), message: count == 1 ? String(localized: "Cleared 1 item") : String(localized: "Cleared \(count) items"))
     }
 
     /// Clippings exist nowhere else, so a removal waits a few seconds behind
@@ -249,15 +249,15 @@ final class TrayStore: ObservableObject {
             if succeeded {
                 hold([destination])
             } else {
-                say("Couldn't compress")
+                say(String(localized: "Couldn't compress"))
             }
         }
     }
 
     /// "Report.zip" for one item, "Swans and 2 more.zip" for several.
     nonisolated static func zipName(for urls: [URL]) -> String {
-        let first = urls.first.map { $0.deletingPathExtension().lastPathComponent } ?? "Archive"
-        return urls.count == 1 ? "\(first).zip" : "\(first) and \(urls.count - 1) more.zip"
+        let first = urls.first.map { $0.deletingPathExtension().lastPathComponent } ?? String(localized: "Archive")
+        return urls.count == 1 ? "\(first).zip" : String(localized: "\(first) and \(urls.count - 1) more.zip")
     }
 
     /// `name`, or "name 2", "name 3"… if taken.
@@ -339,7 +339,7 @@ final class TrayStore: ObservableObject {
     func copy(_ item: TrayItem) {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.writeObjects([item.url as NSURL])
-        say("Copied \(item.name)")
+        say(String(localized: "Copied \(item.name)"))
     }
 
     /// Shares exactly `urls`, or everything held when nil. The AirDrop picker
@@ -351,13 +351,13 @@ final class TrayStore: ObservableObject {
               let service = NSSharingService(named: .sendViaAirDrop),
               service.canPerform(withItems: files)
         else {
-            say("AirDrop is unavailable")
+            say(String(localized: "AirDrop is unavailable"))
             return false
         }
 
         NSApp.activate(ignoringOtherApps: true)
         service.perform(withItems: files)
-        say("Opening AirDrop")
+        say(String(localized: "Opening AirDrop"))
         return true
     }
 
@@ -422,7 +422,7 @@ final class TrayStore: ObservableObject {
 
     /// A `.webloc`, so Finder, Safari, and every other app open it as the link.
     nonisolated static func writeLink(_ url: URL, into directory: URL) -> URL? {
-        let base = url.host(percentEncoded: false) ?? "Link"
+        let base = url.host(percentEncoded: false) ?? String(localized: "Link")
         let plist = ["URL": url.absoluteString]
         guard let data = try? PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
         else { return nil }
@@ -432,7 +432,7 @@ final class TrayStore: ObservableObject {
     /// Stored as PNG whatever it arrived as, so every app can read it.
     nonisolated static func writeImage(_ data: Data, into directory: URL) -> URL? {
         let png = NSBitmapImageRep(data: data)?.representation(using: .png, properties: [:]) ?? data
-        return write(png, name: "Image \(stamp())", extension: "png", into: directory)
+        return write(png, name: String(localized: "Image \(stamp())"), extension: "png", into: directory)
     }
 
     /// Named after its first line, so it can be told apart in the tray.
@@ -443,7 +443,7 @@ final class TrayStore: ObservableObject {
         if firstLine.count > 40, let space = base.lastIndex(of: " ") {
             base = String(base[..<space])
         }
-        base = base.nilIfBlank ?? "Text \(stamp())"
+        base = base.nilIfBlank ?? String(localized: "Text \(stamp())")
         return write(Data(text.utf8), name: base, extension: "txt", into: directory)
     }
 

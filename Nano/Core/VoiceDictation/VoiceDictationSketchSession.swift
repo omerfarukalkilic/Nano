@@ -31,10 +31,10 @@ enum VoiceDictationSketchDrawKey: String, CaseIterable, Identifiable, Codable, S
 
     var title: String {
         switch self {
-        case .shift: "Shift ⇧"
-        case .option: "Option ⌥"
-        case .control: "Control ⌃"
-        case .command: "Command ⌘"
+        case .shift: String(localized: "Shift ⇧")
+        case .option: String(localized: "Option ⌥")
+        case .control: String(localized: "Control ⌃")
+        case .command: String(localized: "Command ⌘")
         case .function: "fn"
         }
     }
@@ -810,7 +810,7 @@ struct VoiceDictationSketchPillView: View {
                     .background(state.isPenOn ? Color.red : Color.white.opacity(0.1), in: Capsule())
             }
             .buttonStyle(.plain)
-            .help(state.isPenOn ? "Drag to draw. Click to go back to using the screen." : "Turn on to draw by dragging")
+            .help(state.isPenOn ? String(localized: "Drag to draw. Click to go back to using the screen.") : String(localized: "Turn on to draw by dragging"))
 
             Text(hint)
                 .font(.system(size: 12))
@@ -843,7 +843,7 @@ struct VoiceDictationSketchPillView: View {
                     .background(Color.accentColor, in: Capsule())
             }
             .buttonStyle(.plain)
-            .help(state.finishShortcut.isEmpty ? "Finish" : "Finish (\(state.finishShortcut))")
+            .help(state.finishShortcut.isEmpty ? String(localized: "Finish") : String(localized: "Finish (\(state.finishShortcut))"))
         }
         .foregroundStyle(.white)
         .padding(.horizontal, 11)
@@ -854,9 +854,13 @@ struct VoiceDictationSketchPillView: View {
     }
 
     private var hint: String {
-        if state.isPenOn { return "Drag to draw" }
-        let marks = state.marks == 0 ? "" : " · \(state.marks) mark\(state.marks == 1 ? "" : "s")"
-        return "Hold \(state.drawKey.symbol) and move to draw\(marks)"
+        if state.isPenOn { return String(localized: "Drag to draw") }
+        let key = state.drawKey.symbol
+        switch state.marks {
+        case 0: return String(localized: "Hold \(key) and move to draw")
+        case 1: return String(localized: "Hold \(key) and move to draw · 1 mark")
+        default: return String(localized: "Hold \(key) and move to draw · \(state.marks) marks")
+        }
     }
 }
 

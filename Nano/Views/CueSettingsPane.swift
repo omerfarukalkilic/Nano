@@ -12,10 +12,10 @@ enum CueSettingsTab: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .overview: "Overview"
-        case .folders: "Folders"
-        case .capture: "Capture"
-        case .sync: "Sync"
+        case .overview: String(localized: "Overview")
+        case .folders: String(localized: "Folders")
+        case .capture: String(localized: "Capture")
+        case .sync: String(localized: "Sync")
         }
     }
 }
@@ -154,8 +154,8 @@ private struct CueOverviewTab: View {
                 .foregroundStyle(SettingsChrome.accent)
             Text("No cues yet")
                 .font(.system(size: 14, weight: .semibold))
-            Text(settings.cueCaptureGesture.map { "\($0) in any app to save a to-do, prompt, or screenshot. This page fills in as you go." }
-                ?? "Save a to-do, prompt, or screenshot from the island. This page fills in as you go.")
+            Text(settings.cueCaptureShortcut.map { String(localized: "Press \($0) in any app to save a to-do, prompt, or screenshot. This page fills in as you go.") }
+                ?? String(localized: "Save a to-do, prompt, or screenshot from the island. This page fills in as you go."))
                 .font(.system(size: 12))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -169,17 +169,18 @@ private struct CueOverviewTab: View {
     private var headline: some View {
         let projectCount = Set(open.map(\.folderID)).count
         let finished = store.items.filter { ($0.completedAt ?? .distantPast) >= startOfWeek }.count
-        return (Text("\(open.count) open").foregroundColor(SettingsChrome.accent)
-            + Text(" across \(projectCount) \(projectCount == 1 ? "place" : "places"). You finished ")
-            + Text("\(finished)").foregroundColor(SettingsChrome.accent)
-            + Text(" this week."))
+        let openText = Text("\(open.count) open").foregroundColor(SettingsChrome.accent)
+        let finishedText = Text("\(finished)").foregroundColor(SettingsChrome.accent)
+        return (projectCount == 1
+            ? Text("\(openText) across 1 place. You finished \(finishedText) this week.")
+            : Text("\(openText) across \(projectCount) places. You finished \(finishedText) this week."))
             .font(.system(size: 15, weight: .semibold))
     }
 
     private var projectsCard: some View {
         let rows: [(name: String, color: Color, open: Int)] = store.folders.map {
             ($0.name, $0.color, store.openCount(in: .folder($0.id)))
-        } + [("Inbox", Color.secondary, store.openCount(in: .inbox))]
+        } + [(String(localized: "Inbox"), Color.secondary, store.openCount(in: .inbox))]
         let top = max(rows.map(\.open).max() ?? 1, 1)
 
         return VStack(alignment: .leading, spacing: 10) {
@@ -221,10 +222,12 @@ private struct CueOverviewTab: View {
             .sorted { $0.value.count > $1.value.count }
             .prefix(2)
             .map(\.key)
-        let detail = sources.isEmpty
-            ? "This month"
-            : "This month, mostly from " + sources.joined(separator: " and ")
-        return stat("Captured", value: month.count.formatted(), detail: detail)
+        let detail = switch sources.count {
+        case 0: String(localized: "This month")
+        case 1: String(localized: "This month, mostly from \(sources[0])")
+        default: String(localized: "This month, mostly from \(sources[0]) and \(sources[1])")
+        }
+        return stat(String(localized: "Captured"), value: month.count.formatted(), detail: detail)
     }
 
     private var kindsCard: some View {
@@ -252,12 +255,21 @@ private struct CueOverviewTab: View {
             .padding(.top, 4)
             FlowLegend(items: shares.filter { $0.1 > 0 }.map { share in
                 let index = CueKind.allCases.firstIndex(of: share.0) ?? 0
-                return (Self.shade(index), "\(share.0.title)s \(Int((Double(share.1) / Double(total) * 100).rounded()))%")
+                return (Self.shade(index), Self.shareLabel(share.0, percent: Int((Double(share.1) / Double(total) * 100).rounded())))
             })
         }
         .padding(13)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .settingsGroupBackground()
+    }
+
+    private static func shareLabel(_ kind: CueKind, percent: Int) -> String {
+        switch kind {
+        case .todo: String(localized: "To-dos \(percent)%")
+        case .prompt: String(localized: "Prompts \(percent)%")
+        case .idea: String(localized: "Ideas \(percent)%")
+        case .link: String(localized: "Links \(percent)%")
+        }
     }
 
     /// One hue, stepped by order, so the kinds read as parts of one whole.
@@ -340,7 +352,7 @@ private struct CueFoldersTab: View {
                 }
             }
             Button {
-                _ = store.addFolder(named: "New Folder", section: .stash)
+                _ = store.addFolder(named: String(localized: "New Folder"), section: .stash)
             } label: {
                 Label("New stash folder", systemImage: "plus")
             }
@@ -446,7 +458,7 @@ private struct CueFolderRow: View {
                             .lineLimit(1)
                             .truncationMode(.head)
                     } else {
-                        Text(folder.linkedDisplayPath ?? "Not linked to a project folder")
+                        Text(folder.linkedDisplayPath ?? String(localized: "Not linked to a project folder"))
                             .font(.system(size: 11, design: folder.linkedPath == nil ? .default : .monospaced))
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
@@ -462,7 +474,7 @@ private struct CueFolderRow: View {
                 .foregroundStyle(.secondary)
 
             if linkIsMissing || (folder.section == .project && folder.linkedPath == nil) {
-                Button(linkIsMissing ? "Relink…" : "Link…") {
+                Button(linkIsMissing ? String(localized: "Relink…") : String(localized: "Link…")) {
                     CueRecentProjects.chooseDirectory { store.linkFolder(folder.id, to: $0) }
                 }
                 .controlSize(.small)
@@ -487,12 +499,12 @@ private struct CueFolderRow: View {
                 }
                 Menu("Color") {
                     ForEach(CueFolder.palette.indices, id: \.self) { index in
-                        Button(["Blue", "Orange", "Green", "Purple", "Red", "Teal"][index]) {
+                        Button([String(localized: "Blue"), String(localized: "Orange"), String(localized: "Green"), String(localized: "Purple"), String(localized: "Red"), String(localized: "Teal")][index]) {
                             store.setFolderColor(folder.id, index: index)
                         }
                     }
                 }
-                Button(folder.section == .project ? "Move to Stash" : "Move to Projects") {
+                Button(folder.section == .project ? String(localized: "Move to Stash") : String(localized: "Move to Projects")) {
                     store.setFolderSection(folder.id, section: folder.section == .project ? .stash : .project)
                 }
                 Button("Move Up") { store.moveFolder(folder.id, by: -1) }
@@ -535,9 +547,9 @@ private struct CueFolderRow: View {
     private var counts: String {
         let open = store.openCount(in: .folder(folder.id))
         if folder.section == .stash {
-            return "\(open) saved"
+            return String(localized: "\(open) saved")
         }
-        return "\(open) open, \(store.doneCount(in: .folder(folder.id))) done"
+        return String(localized: "\(open) open, \(store.doneCount(in: .folder(folder.id))) done")
     }
 }
 
@@ -558,7 +570,7 @@ private struct CueCaptureTab: View {
                 SettingsRow(
                     "Keyboard shortcut",
                     symbol: "keyboard",
-                    subtitle: shortcutDetail,
+                    subtitle: "\(shortcutDetail)",
                     subtitleIsWarning: viewModel.cueQuickCaptureError != nil || shortcutClashes
                 ) {
                     if settings.cueQuickCaptureEnabled {
@@ -575,18 +587,20 @@ private struct CueCaptureTab: View {
                                 }
                             }
                         } label: {
-                            Text(hotkeyCapture.isCapturing ? "Recording…" : settings.cueQuickCaptureHotkey.displayString)
+                            Text(hotkeyCapture.isCapturing ? String(localized: "Recording…") : settings.cueQuickCaptureHotkey.displayString)
                                 .font(.system(size: 12, weight: .medium, design: .rounded))
                                 .frame(minWidth: 64)
                         }
                         .controlSize(.small)
                     }
-                    switchFor($settings.cueQuickCaptureEnabled, "Keyboard shortcut")
+                    switchFor($settings.cueQuickCaptureEnabled, String(localized: "Keyboard shortcut"))
                 }
                 SettingsRow(
                     "Start with the selected text",
                     symbol: "textformat",
-                    subtitle: accessibilityTrusted ? "Whatever you had selected becomes the cue" : "Needs Accessibility to read the selected text",
+                    subtitle: accessibilityTrusted
+                        ? LocalizedStringResource("Whatever you had selected becomes the cue")
+                        : LocalizedStringResource("Needs Accessibility to read the selected text"),
                     subtitleIsWarning: !accessibilityTrusted && settings.cuePullsSelection
                 ) {
                     if settings.cuePullsSelection, !accessibilityTrusted {
@@ -597,7 +611,7 @@ private struct CueCaptureTab: View {
                         }
                         .controlSize(.small)
                     }
-                    switchFor($settings.cuePullsSelection, "Start with the selected text")
+                    switchFor($settings.cuePullsSelection, String(localized: "Start with the selected text"))
                 }
             }
 
@@ -607,14 +621,16 @@ private struct CueCaptureTab: View {
                     symbol: "number.circle",
                     subtitle: "When nothing else is playing or running"
                 ) {
-                    switchFor($settings.cueShowsCompactCount, "Show open cues on the closed island")
+                    switchFor($settings.cueShowsCompactCount, String(localized: "Show open cues on the closed island"))
                 }
             }
 
             SettingsSection("Library") {
                 SettingsRow(
-                    "\(store.totalOpenCount) open, \(store.doneCount) done, \(store.folders.count) folder\(store.folders.count == 1 ? "" : "s")",
-                    subtitle: librarySize.map { ByteCountFormatter.string(fromByteCount: $0, countStyle: .file) + " including screenshots" }
+                    verbatim: store.folders.count == 1
+                        ? String(localized: "\(store.totalOpenCount) open, \(store.doneCount) done, 1 folder")
+                        : String(localized: "\(store.totalOpenCount) open, \(store.doneCount) done, \(store.folders.count) folders"),
+                    subtitle: librarySize.map { String(localized: "\(ByteCountFormatter.string(fromByteCount: $0, countStyle: .file)) including screenshots") }
                 ) {
                     Button("Show in Finder") { store.reveal() }
                         .controlSize(.small)
@@ -623,7 +639,7 @@ private struct CueCaptureTab: View {
                         .disabled(store.doneCount == 0)
                 }
                 if let error = store.errorMessage {
-                    SettingsRow(error, symbol: "exclamationmark.triangle")
+                    SettingsRow(verbatim: error, symbol: "exclamationmark.triangle")
                         .foregroundStyle(.orange)
                 }
             }
@@ -634,7 +650,9 @@ private struct CueCaptureTab: View {
             accessibilityTrusted = AXIsProcessTrusted()
         }
         .confirmationDialog(
-            "Delete \(store.doneCount) finished \(store.doneCount == 1 ? "cue" : "cues")?",
+            store.doneCount == 1
+                ? String(localized: "Delete 1 finished cue?")
+                : String(localized: "Delete \(store.doneCount) finished cues?"),
             isPresented: $confirmsClear
         ) {
             Button("Delete", role: .destructive) {
@@ -657,10 +675,10 @@ private struct CueCaptureTab: View {
     }
 
     private var shortcutDetail: String {
-        if hotkeyCapture.isCapturing { return "Press the new shortcut. Esc cancels." }
+        if hotkeyCapture.isCapturing { return String(localized: "Press the new shortcut. Esc cancels.") }
         if let error = viewModel.cueQuickCaptureError { return error }
-        if shortcutClashes { return "Same as the dictation shortcut. Pick a different one so both work." }
-        return "Works without Accessibility"
+        if shortcutClashes { return String(localized: "Same as the dictation shortcut. Pick a different one so both work.") }
+        return String(localized: "Works without Accessibility")
     }
 
     private func measureLibrary() {

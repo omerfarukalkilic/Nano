@@ -10,11 +10,11 @@ enum MixerAudioError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case let .operation(operation, status):
-            "\(operation) failed (\(status)). Check Nano's system audio access, then retry."
+            String(localized: "\(operation) failed (\(status)). Check Nano's system audio access, then retry.")
         case .unsupportedFormat:
-            "This output's audio format isn't supported. Choose a stereo output, then retry."
+            String(localized: "This output's audio format isn't supported. Choose a stereo output, then retry.")
         case .noOutput:
-            "No output device is available. Connect speakers or headphones, then retry."
+            String(localized: "No output device is available. Connect speakers or headphones, then retry.")
         }
     }
 }
@@ -36,7 +36,7 @@ enum MixerAudio {
         let status = withUnsafeMutablePointer(to: &result) {
             AudioObjectGetPropertyData(id, &property, 0, nil, &size, $0)
         }
-        try check(status, "Reading audio device")
+        try check(status, String(localized: "Reading audio device"))
         return result
     }
 
@@ -63,8 +63,8 @@ enum MixerAudio {
         return value as String?
     }
 
-    static func check(_ status: OSStatus, _ operation: String) throws {
-        guard status == noErr else { throw MixerAudioError.operation(operation, status) }
+    static func check(_ status: OSStatus, _ operation: @autoclosure () -> String) throws {
+        guard status == noErr else { throw MixerAudioError.operation(operation(), status) }
     }
 
     static func isSettable(_ id: AudioObjectID, _ selector: AudioObjectPropertySelector,
@@ -79,7 +79,7 @@ enum MixerAudio {
         var property = address(selector, scope: scope)
         var value = value
         try check(AudioObjectSetPropertyData(id, &property, 0, nil,
-            UInt32(MemoryLayout<T>.size), &value), "Writing audio device")
+            UInt32(MemoryLayout<T>.size), &value), String(localized: "Writing audio device"))
     }
 
     static func transport(_ id: AudioObjectID) -> UInt32 {
@@ -133,7 +133,7 @@ final class MixerEngine {
         description.name = "Nano Mixer"
         description.isPrivate = true
         description.muteBehavior = .mutedWhenTapped
-        try MixerAudio.check(AudioHardwareCreateProcessTap(description, &tapID), "Opening app audio")
+        try MixerAudio.check(AudioHardwareCreateProcessTap(description, &tapID), String(localized: "Opening app audio"))
 
         let format = try MixerAudio.read(tapID, kAudioTapPropertyFormat, default: AudioStreamBasicDescription())
         guard Self.supports(format) else { throw MixerAudioError.unsupportedFormat }
@@ -154,7 +154,7 @@ final class MixerEngine {
             ]],
             kAudioAggregateDeviceTapAutoStartKey: true,
         ]
-        try MixerAudio.check(AudioHardwareCreateAggregateDevice(specification as CFDictionary, &deviceID), "Preparing audio output")
+        try MixerAudio.check(AudioHardwareCreateAggregateDevice(specification as CFDictionary, &deviceID), String(localized: "Preparing audio output"))
 
         // Never guess at physical-input offsets: this aggregate must contain
         // only the tap as input. In particular, do not capture a headset mic.
@@ -177,8 +177,8 @@ final class MixerEngine {
         let renderGain = gain
         try MixerAudio.check(AudioDeviceCreateIOProcIDWithBlock(&ioProc, deviceID, ioQueue) { _, input, _, output, _ in
             renderGain.render(input: input, output: output)
-        }, "Preparing app volume")
-        try MixerAudio.check(AudioDeviceStart(deviceID, ioProc), "Starting app volume")
+        }, String(localized: "Preparing app volume"))
+        try MixerAudio.check(AudioDeviceStart(deviceID, ioProc), String(localized: "Starting app volume"))
     }
 
     static func supports(_ format: AudioStreamBasicDescription) -> Bool {

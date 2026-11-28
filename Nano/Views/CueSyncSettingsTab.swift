@@ -30,7 +30,7 @@ struct CueSyncSettingsTab: View {
                 )
             }
             ForEach(sync.notices, id: \.self) { notice in
-                SettingsBanner(title: "Sync changed", detail: notice, action: "OK") {
+                SettingsBanner(title: "Sync changed", detail: "\(notice)", action: "OK") {
                     sync.dismissNotice(notice)
                 }
             }
@@ -39,9 +39,9 @@ struct CueSyncSettingsTab: View {
                 SettingsSection("Connected") {
                     ForEach(sync.connectedDestinations) { record in
                         SettingsRow(
-                            record.name,
+                            "\(record.name)",
                             symbol: Self.symbol(for: record),
-                            subtitle: statusLine(for: record),
+                            subtitle: "\(statusLine(for: record))",
                             subtitleIsWarning: sync.statuses[record.id]?.error != nil
                         ) {
                             Button("Disconnect") {
@@ -54,14 +54,14 @@ struct CueSyncSettingsTab: View {
                 }
             }
 
-            SettingsSection("Add an app", footer: showsServerForm || showsTodoistForm ? nil : connectError) {
+            SettingsSection("Add an app", footer: showsServerForm || showsTodoistForm ? nil : connectError.map { "\($0)" }) {
                 if !remindersConnected {
                     SettingsRow(
                         "Apple Reminders",
                         symbol: Self.symbol(for: RemindersDestination.record),
                         subtitle: "Two-way sync with Reminders lists, and your iPhone through iCloud."
                     ) {
-                        Button(isConnecting ? "Connecting…" : "Connect") { connectReminders() }
+                        Button(isConnecting ? String(localized: "Connecting…") : String(localized: "Connect")) { connectReminders() }
                             .controlSize(.small)
                             .disabled(isConnecting)
                     }
@@ -95,7 +95,7 @@ struct CueSyncSettingsTab: View {
                         subtitle: "Your own app, or any app with tasks. Give its developer or coding agent the setup guide, then connect it here."
                     ) {
                         HStack(spacing: 6) {
-                            Button(copiedGuide ? "Copied" : "Copy Setup Guide") { copyGuide() }
+                            Button(copiedGuide ? String(localized: "Copied") : String(localized: "Copy Setup Guide")) { copyGuide() }
                                 .help("Copies a Markdown guide that tells a coding agent how to add Cue sync to an app")
                                 .disabled(CueSyncGuide.text == nil)
                             if !showsServerForm {
@@ -119,7 +119,7 @@ struct CueSyncSettingsTab: View {
                     "Folders",
                     footer: "To-dos sync with every app. Apps that take them also get prompts, ideas, links and images; with the rest, use Send to… on the cue."
                 ) {
-                    folderRow(name: "Inbox", folderID: nil, color: .secondary)
+                    folderRow(name: String(localized: "Inbox"), folderID: nil, color: .secondary)
                     ForEach(store.folders) { folder in
                         folderRow(name: folder.name, folderID: folder.id, color: folder.color)
                     }
@@ -136,9 +136,9 @@ struct CueSyncSettingsTab: View {
     private func folderRow(name: String, folderID: UUID?, color: Color) -> some View {
         let link = sync.folderLink(for: folderID)
         let label = link.map { link in
-            let app = sync.connectedDestinations.first { $0.id == link.destinationID }?.name ?? "App"
+            let app = sync.connectedDestinations.first { $0.id == link.destinationID }?.name ?? String(localized: "App")
             return "\(app) › \(link.projectName)"
-        } ?? "Not synced"
+        } ?? String(localized: "Not synced")
         return HStack(spacing: 11) {
             Circle().fill(color).frame(width: 9, height: 9)
             Text(name)
@@ -167,8 +167,8 @@ struct CueSyncSettingsTab: View {
     private var serverForm: some View {
         SyncConnectForm(
             note: waitsForSignIn
-                ? "Finish signing in in your browser, then come back here."
-                : "No token? Leave it empty. If the app asks you to sign in, your browser opens.",
+                ? String(localized: "Finish signing in in your browser, then come back here.")
+                : String(localized: "No token? Leave it empty. If the app asks you to sign in, your browser opens."),
             error: connectError,
             isConnecting: isConnecting,
             canConnect: !serverURL.trimmingCharacters(in: .whitespaces).isEmpty,
@@ -178,14 +178,14 @@ struct CueSyncSettingsTab: View {
             },
             connect: connectServer
         ) {
-            SyncFormField(label: "Address", prompt: "http://localhost:8765/mcp", text: $serverURL, focusesOnAppear: true)
-            SyncFormField(label: "Token", prompt: "Optional", text: $serverToken, isSecure: true)
+            SyncFormField(label: String(localized: "Address"), prompt: "http://localhost:8765/mcp", text: $serverURL, focusesOnAppear: true)
+            SyncFormField(label: String(localized: "Token"), prompt: String(localized: "Optional"), text: $serverToken, isSecure: true)
         }
     }
 
     private var todoistForm: some View {
         SyncConnectForm(
-            note: "Find it in Todoist under Settings > Integrations > Developer.",
+            note: String(localized: "Find it in Todoist under Settings > Integrations > Developer."),
             link: URL(string: "https://app.todoist.com/app/settings/integrations/developer"),
             error: connectError,
             isConnecting: isConnecting,
@@ -196,7 +196,7 @@ struct CueSyncSettingsTab: View {
             },
             connect: connectTodoist
         ) {
-            SyncFormField(label: "API token", prompt: "Paste your token", text: $todoistToken, isSecure: true, focusesOnAppear: true)
+            SyncFormField(label: String(localized: "API token"), prompt: String(localized: "Paste your token"), text: $todoistToken, isSecure: true, focusesOnAppear: true)
         }
     }
 
@@ -233,7 +233,7 @@ struct CueSyncSettingsTab: View {
     private func connectServer() {
         connectError = nil
         guard let url = URL(string: serverURL.trimmingCharacters(in: .whitespaces)), url.host != nil else {
-            connectError = "That isn't a server address."
+            connectError = String(localized: "That isn't a server address.")
             return
         }
         do {
@@ -295,11 +295,11 @@ struct CueSyncSettingsTab: View {
         let status = sync.statuses[record.id]
         if let error = status?.error { return error }
         let twoWay = status?.info?.twoWay ?? true
-        var parts = [twoWay ? "Two-way" : "Send only"]
+        var parts = [twoWay ? String(localized: "Two-way") : String(localized: "Send only")]
         switch (status?.info?.acceptsAllKinds ?? false, status?.info?.acceptsImages ?? false) {
-        case (true, true): parts.append("Prompts and images too")
-        case (true, false): parts.append("Prompts too")
-        case (false, true): parts.append("Images too")
+        case (true, true): parts.append(String(localized: "Prompts and images too"))
+        case (true, false): parts.append(String(localized: "Prompts too"))
+        case (false, true): parts.append(String(localized: "Images too"))
         case (false, false): break
         }
         if record.kind == MCPTaskDestination.kind,
@@ -307,18 +307,18 @@ struct CueSyncSettingsTab: View {
             parts.append(url.port.map { "\(host):\($0)" } ?? host)
         }
         if twoWay, !sync.state.folderLinks.contains(where: { $0.destinationID == record.id }) {
-            parts.append("Link a folder below to start syncing")
+            parts.append(String(localized: "Link a folder below to start syncing"))
         } else if status?.isSyncing == true {
-            parts.append("Syncing…")
+            parts.append(String(localized: "Syncing…"))
         } else if let last = status?.lastSync {
-            parts.append("Synced \(Self.relative(last))")
+            parts.append(String(localized: "Synced \(Self.relative(last))"))
         }
         return parts.joined(separator: " · ")
     }
 
     private static func relative(_ date: Date) -> String {
         let now = Date()
-        if now.timeIntervalSince(date) < 60 { return "just now" }
+        if now.timeIntervalSince(date) < 60 { return String(localized: "just now") }
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
         return formatter.localizedString(for: min(date, now), relativeTo: now)
@@ -334,7 +334,7 @@ struct CueSyncSettingsTab: View {
                 if try await reminders.requestAccess() {
                     sync.connect(RemindersDestination.record, destination: reminders)
                 } else {
-                    connectError = "Nano isn't allowed to use Reminders. Turn it on in System Settings > Privacy & Security > Reminders."
+                    connectError = String(localized: "Nano isn't allowed to use Reminders. Turn it on in System Settings > Privacy & Security > Reminders.")
                     if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Reminders") {
                         NSWorkspace.shared.open(url)
                     }
@@ -386,7 +386,7 @@ struct SyncConnectForm<Fields: View>: View {
                 Spacer()
                 Button("Cancel", action: cancel)
                     .keyboardShortcut(.cancelAction)
-                Button(isConnecting ? "Connecting…" : "Connect", action: connect)
+                Button(isConnecting ? String(localized: "Connecting…") : String(localized: "Connect"), action: connect)
                     .keyboardShortcut(.defaultAction)
                     .disabled(isConnecting || !canConnect)
             }

@@ -66,21 +66,21 @@ enum VoiceDictationCompactLayout {
     /// legible there; Settings retains the full title and recovery detail.
     static func notchedFailureTitle(for error: VoiceDictationError?) -> String {
         switch error {
-        case .featureDisabled: "Quill is off"
-        case .microphoneDenied: "Microphone denied"
-        case .microphoneUnavailable: "No microphone"
-        case .audioCaptureFailed: "Recording failed"
-        case .modelMissing: "Download engine"
-        case .modelLoadFailed: "Engine failed to load"
-        case .recognitionFailed: "Recognition failed"
-        case .cleanupFailed: "Cleanup failed"
-        case .clipboardFailed: "Clipboard failed"
-        case .cancelled: "Dictation cancelled"
-        case .noSpeech: "Nothing to transcribe"
-        case .busy: "Already transcribing"
-        case .screenRecordingDenied: "Allow Screen Recording"
-        case .screenCaptureFailed: "Screenshot failed"
-        case nil: "Failed"
+        case .featureDisabled: String(localized: "Quill is off")
+        case .microphoneDenied: String(localized: "Microphone denied")
+        case .microphoneUnavailable: String(localized: "No microphone")
+        case .audioCaptureFailed: String(localized: "Recording failed")
+        case .modelMissing: String(localized: "Download engine")
+        case .modelLoadFailed: String(localized: "Engine failed to load")
+        case .recognitionFailed: String(localized: "Recognition failed")
+        case .cleanupFailed: String(localized: "Cleanup failed")
+        case .clipboardFailed: String(localized: "Clipboard failed")
+        case .cancelled: String(localized: "Dictation cancelled")
+        case .noSpeech: String(localized: "Nothing to transcribe")
+        case .busy: String(localized: "Already transcribing")
+        case .screenRecordingDenied: String(localized: "Allow Screen Recording")
+        case .screenCaptureFailed: String(localized: "Screenshot failed")
+        case nil: String(localized: "Failed")
         }
     }
 }
@@ -149,7 +149,7 @@ struct VoiceDictationCompactLeading: View {
 
     private var title: String {
         switch controller.phase {
-        case .failed: controller.lastError?.title ?? "Failed"
+        case .failed: controller.lastError?.title ?? String(localized: "Failed")
         default: controller.deliveryTitle
         }
     }
@@ -583,11 +583,11 @@ struct VoiceDictationModuleView: View {
         switch controller.phase {
         case .idle:
             switch controller.readiness {
-            case .ready: "Ready · \(controller.settings.voiceDictationEngine.title)"
-            case .disabled: "Off"
-            case .missingModels: "Engine not downloaded"
-            case .microphoneDenied: "Microphone access denied"
-            case .microphoneUndetermined: "Microphone access needed"
+            case .ready: String(localized: "Ready · \(controller.settings.voiceDictationEngine.title)")
+            case .disabled: String(localized: "Off")
+            case .missingModels: String(localized: "Engine not downloaded")
+            case .microphoneDenied: String(localized: "Microphone access denied")
+            case .microphoneUndetermined: String(localized: "Microphone access needed")
             }
         default:
             controller.phase == .completed ? (controller.lastPasteOutcome?.detail ?? controller.deliveryTitle) : controller.phase.title
@@ -671,7 +671,7 @@ struct VoiceDictationChromeSlot<Surface: View>: View {
         switch controller.phase {
         case .recording:
             HStack(spacing: 0) {
-                circleButton("xmark", help: "Cancel dictation", filled: false) { controller.cancel() }
+                circleButton("xmark", help: String(localized: "Cancel dictation"), filled: false) { controller.cancel() }
                 Spacer(minLength: 4)
                 HStack(spacing: 7) {
                     Circle()
@@ -681,14 +681,14 @@ struct VoiceDictationChromeSlot<Surface: View>: View {
                     VoiceDictationFlowWaveform(recorder: controller.recorder, width: 84, height: 20)
                 }
                 Spacer(minLength: 4)
-                circleButton("checkmark", help: "Finish dictation", filled: true) { controller.finishRecording() }
+                circleButton("checkmark", help: String(localized: "Finish dictation"), filled: true) { controller.finishRecording() }
             }
         case .transcribing, .cleaning:
             HStack(spacing: 8) {
                 Circle()
                     .fill(.white.opacity(0.45))
                     .frame(width: 7, height: 7)
-                Text(controller.phase == .cleaning ? "Cleaning up" : "Transcribing")
+                Text(controller.phase == .cleaning ? String(localized: "Cleaning up") : String(localized: "Transcribing"))
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.75))
                 Spacer(minLength: 0)
@@ -732,8 +732,8 @@ struct VoiceDictationChromeSlot<Surface: View>: View {
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(VoiceDictationCancelMotion.tint)
                 Text(controller.phase == .cancelled
-                    ? "Cancelled"
-                    : (controller.lastError?.title ?? "Dictation failed"))
+                    ? String(localized: "Cancelled")
+                    : (controller.lastError?.title ?? String(localized: "Dictation failed")))
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.8))
                     .lineLimit(1)

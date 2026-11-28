@@ -31,7 +31,7 @@ final class QuickCaptureHotkey {
         if registeredHotkey == hotkey, hotKeyRef != nil { return true }
         unregister()
         guard hotkey.isUsable else {
-            registrationError = "Add ⌃, ⌥ or ⌘ to the shortcut."
+            registrationError = String(localized: "Add ⌃, ⌥ or ⌘ to the shortcut.")
             return false
         }
         installHandlerIfNeeded()
@@ -48,8 +48,8 @@ final class QuickCaptureHotkey {
         )
         guard status == noErr, let reference else {
             registrationError = status == OSStatus(eventHotKeyExistsErr)
-                ? "\(hotkey.displayString) is already used by another app. Choose a different shortcut."
-                : "The shortcut could not be registered (error \(status))."
+                ? String(localized: "\(hotkey.displayString) is already used by another app. Choose a different shortcut.")
+                : String(localized: "The shortcut could not be registered (error \(status)).")
             return false
         }
         hotKeyRef = reference

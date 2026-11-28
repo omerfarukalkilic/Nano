@@ -25,33 +25,33 @@ enum NanoPermissionKind: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .accessibility: "Accessibility"
-        case .calendar: "Calendar"
-        case .camera: "Camera"
-        case .microphone: "Microphone"
-        case .location: "Location"
-        case .bluetooth: "Bluetooth"
-        case .automation: "Automation"
-        case .fullDisk: "Full Disk Access"
-        case .contacts: "Contacts"
-        case .screenRecording: "Screen Recording"
-        case .reminders: "Reminders"
+        case .accessibility: String(localized: "Accessibility")
+        case .calendar: String(localized: "Calendar")
+        case .camera: String(localized: "Camera")
+        case .microphone: String(localized: "Microphone")
+        case .location: String(localized: "Location")
+        case .bluetooth: String(localized: "Bluetooth")
+        case .automation: String(localized: "Automation")
+        case .fullDisk: String(localized: "Full Disk Access")
+        case .contacts: String(localized: "Contacts")
+        case .screenRecording: String(localized: "Screen Recording")
+        case .reminders: String(localized: "Reminders")
         }
     }
 
     var detail: String {
         switch self {
-        case .accessibility: "Paste dictation, jump to an agent session, and hide macOS banners the island already shows."
-        case .calendar: "Upcoming events from Apple Calendar in the island."
-        case .camera: "A private live preview. Nano never records it."
-        case .microphone: "Voice dictation while the shortcut is held. Audio stays on this Mac."
-        case .location: "Local weather in the island."
-        case .bluetooth: "AirPods and accessory connect alerts."
-        case .automation: "Music, Spotify, iMessage replies, and jumping into Cursor or T3 Code."
-        case .fullDisk: "macOS notifications in the island, from iMessage, calls, Mail, and every app."
-        case .contacts: "Sender photos on iMessage cards."
-        case .screenRecording: "Sketch captures what you mark on the screen."
-        case .reminders: "Cue syncs with the Reminders lists you link."
+        case .accessibility: String(localized: "Paste dictation, jump to an agent session, and hide macOS banners the island already shows.")
+        case .calendar: String(localized: "Upcoming events from Apple Calendar in the island.")
+        case .camera: String(localized: "A private live preview. Nano never records it.")
+        case .microphone: String(localized: "Voice dictation while the shortcut is held. Audio stays on this Mac.")
+        case .location: String(localized: "Local weather in the island.")
+        case .bluetooth: String(localized: "AirPods and accessory connect alerts.")
+        case .automation: String(localized: "Music, Spotify, iMessage replies, and jumping into Cursor or T3 Code.")
+        case .fullDisk: String(localized: "macOS notifications in the island, from iMessage, calls, Mail, and every app.")
+        case .contacts: String(localized: "Sender photos on iMessage cards.")
+        case .screenRecording: String(localized: "Sketch captures what you mark on the screen.")
+        case .reminders: String(localized: "Cue syncs with the Reminders lists you link.")
         }
     }
 
@@ -136,9 +136,9 @@ final class NanoPermissionMonitor: ObservableObject {
         let unavailable = states.filter { $0 == .unavailable }.count
         let unchecked = states.filter { $0 == .unknown }.count
         let granted = states.filter { $0 == .granted }.count
-        var text = "\(granted) of \(states.count - unavailable - unchecked) granted"
-        if unavailable > 0 { text += ", \(unavailable) unavailable" }
-        if unchecked > 0 { text += ", \(unchecked) not checked yet" }
+        var text = String(localized: "\(granted) of \(states.count - unavailable - unchecked) granted")
+        if unavailable > 0 { text += String(localized: ", \(unavailable) unavailable") }
+        if unchecked > 0 { text += String(localized: ", \(unchecked) not checked yet") }
         return text
     }
 
@@ -356,9 +356,9 @@ struct PermissionsSettingsPane: View {
             symbol: "hand.raised",
             subtitle: "What Nano can reach on this Mac. Nothing it reads leaves it."
         ) {
-            SettingsSection(trailing: monitor.summary) {
+            SettingsSection(trailing: "\(monitor.summary)") {
                 ForEach(monitor.rows, id: \.kind) { row in
-                    SettingsRow(row.kind.title, symbol: row.kind.symbol, subtitle: row.kind.detail) {
+                    SettingsRow(verbatim: row.kind.title, symbol: row.kind.symbol, subtitle: row.kind.detail) {
                         status(row.kind, row.state)
                     }
                     .opacity(row.state == .unavailable ? 0.5 : 1)
@@ -374,7 +374,7 @@ struct PermissionsSettingsPane: View {
 
     /// Automation is granted per app, and macOS only answers for an app that
     /// is running.
-    private static let automationUnchecked = "Checked when the app is open"
+    private static let automationUnchecked = String(localized: "Checked when the app is open")
 
     @ViewBuilder
     private func status(_ kind: NanoPermissionKind, _ state: NanoPermissionState) -> some View {
@@ -388,7 +388,7 @@ struct PermissionsSettingsPane: View {
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
-            .help("Open \(kind.title) in System Settings")
+            .help(String(localized: "Open \(kind.title) in System Settings"))
         case .needsGrant:
             Button("Grant") { monitor.handle(kind) }
                 .buttonStyle(.borderedProminent)
@@ -404,7 +404,7 @@ struct PermissionsSettingsPane: View {
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
-            .help("Open \(kind.title) in System Settings")
+            .help(String(localized: "Open \(kind.title) in System Settings"))
         case .partial, .unknown:
             Button(label(state)) { monitor.handle(kind) }
                 .controlSize(.small)
@@ -413,11 +413,11 @@ struct PermissionsSettingsPane: View {
 
     private func label(_ state: NanoPermissionState) -> String {
         switch state {
-        case .granted: "Granted"
-        case .needsGrant: "Not granted"
-        case .unavailable: "Unavailable"
-        case .partial: "Some granted"
-        case .unknown: "Check"
+        case .granted: String(localized: "Granted")
+        case .needsGrant: String(localized: "Not granted")
+        case .unavailable: String(localized: "Unavailable")
+        case .partial: String(localized: "Some granted")
+        case .unknown: String(localized: "Check")
         }
     }
 }
@@ -760,7 +760,7 @@ private struct NanoDraggableAppIcon: NSViewRepresentable {
             self.app = app
             icon = NSWorkspace.shared.icon(forFile: app.path)
             super.init(frame: .zero)
-            toolTip = "Drag into the Full Disk Access list"
+            toolTip = String(localized: "Drag into the Full Disk Access list")
         }
 
         required init?(coder: NSCoder) { nil }

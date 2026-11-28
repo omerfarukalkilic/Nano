@@ -52,7 +52,7 @@ struct AgentActivityEntry: Identifiable, Equatable, Sendable {
         for entry in newestFirst {
             if entry.kind == .read, var previous = grouped.last, previous.kind == .read {
                 grouped.removeLast()
-                previous.detail = "Read files"
+                previous.detail = String(localized: "Read files")
                 previous.target = nil
                 previous.repeatCount += entry.repeatCount
                 grouped.append(previous)
@@ -178,8 +178,12 @@ struct AgentSubagentEntry: Identifiable, Equatable, Sendable {
         case .done, .failed, .stopped:
             guard let endedAt else { return nil }
             let age = AgentSession.age(since: endedAt, now: now)
-            let word = status == .done ? "done" : status == .failed ? "failed" : "stopped"
-            let when = age == "now" ? "\(word) just now" : "\(word) \(age) ago"
+            let justNow = age == "now"
+            let when = switch status {
+            case .done: justNow ? String(localized: "done just now") : String(localized: "done \(age) ago")
+            case .failed: justNow ? String(localized: "failed just now") : String(localized: "failed \(age) ago")
+            default: justNow ? String(localized: "stopped just now") : String(localized: "stopped \(age) ago")
+            }
             // A call that returned at once (a background launch, a refusal)
             // has no run time worth printing.
             guard let startedAt, endedAt.timeIntervalSince(startedAt) >= 1 else { return when }
@@ -191,12 +195,13 @@ struct AgentSubagentEntry: Identifiable, Equatable, Sendable {
     /// width as the seconds roll over.
     static func duration(from start: Date, to end: Date, padded: Bool) -> String {
         let seconds = max(Int(end.timeIntervalSince(start)), 0)
-        if seconds < 60 { return "\(seconds)s" }
+        if seconds < 60 { return String(localized: "\(seconds)s") }
         if seconds < 3600 {
             let rest = seconds % 60
-            return "\(seconds / 60)m \(padded && rest < 10 ? "0" : "")\(rest)s"
+            let restText = padded && rest < 10 ? "0\(rest)" : "\(rest)"
+            return String(localized: "\(seconds / 60)m \(restText)s")
         }
-        return "\(seconds / 3600)h \((seconds % 3600) / 60)m"
+        return String(localized: "\(seconds / 3600)h \((seconds % 3600) / 60)m")
     }
 }
 
@@ -324,7 +329,7 @@ struct AgentSubagent: Identifiable, Equatable, Sendable {
            brief.caseInsensitiveCompare("Delegated work") != .orderedSame {
             return Self.clamped(brief, limit: 72)
         }
-        return Self.readableType(type) ?? "Subagent"
+        return Self.readableType(type) ?? String(localized: "Subagent")
     }
 
     /// A compact role shown only when it adds information beside the name.
@@ -353,9 +358,9 @@ struct AgentSubagent: Identifiable, Equatable, Sendable {
         else { return nil }
 
         switch normalized.lowercased() {
-        case "general purpose": return "General"
-        case "explore": return "Research"
-        case "plan": return "Planning"
+        case "general purpose": return String(localized: "General")
+        case "explore": return String(localized: "Research")
+        case "plan": return String(localized: "Planning")
         default:
             let acronyms = Set(["api", "cli", "cpu", "gpu", "hud", "ui", "ux"])
             return normalized.split(whereSeparator: \.isWhitespace).map { word in
@@ -384,26 +389,26 @@ enum AgentToolLabel {
         let kind: AgentActivityEntry.Kind
         var verb: String
         switch tool {
-        case "Read", "NotebookRead", "read", "read_file": kind = .read; verb = "Read"
+        case "Read", "NotebookRead", "read", "read_file": kind = .read; verb = String(localized: "Read")
         case "Edit", "MultiEdit", "NotebookEdit", "StrReplace", "apply_patch", "edit",
              "search_replace":
-            kind = .edit; verb = "Edited"
-        case "Write", "write": kind = .edit; verb = "Wrote"
+            kind = .edit; verb = String(localized: "Edited")
+        case "Write", "write": kind = .edit; verb = String(localized: "Wrote")
         case "Grep", "Glob", "Search", "grep", "glob", "search", "search_tool", "list_dir":
-            kind = .search; verb = "Searched"
+            kind = .search; verb = String(localized: "Searched")
         case "Bash", "Shell", "shell", "bash", "exec", "exec_command", "shell_command",
              "run_terminal_command":
-            kind = .command; verb = "Ran"
+            kind = .command; verb = String(localized: "Ran")
         case "WebFetch", "WebSearch", "web_fetch", "web_search", "fetch":
-            kind = .web; verb = "Fetched"
-        case "TodoWrite", "update_plan", "todo": kind = .message; verb = "Updated todos"
+            kind = .web; verb = String(localized: "Fetched")
+        case "TodoWrite", "update_plan", "todo": kind = .message; verb = String(localized: "Updated todos")
         case "Agent", "Task", "spawn_agent", "send_message", "followup_task":
-            kind = .subagent; verb = "Delegated"
+            kind = .subagent; verb = String(localized: "Delegated")
         default: kind = .message; verb = tool
         }
 
         if ["Agent", "Task", "spawn_agent", "send_message", "followup_task"].contains(tool) {
-            let described = (input["description"] as? String).map { "Delegated \($0)" } ?? verb
+            let described = (input["description"] as? String).map { String(localized: "Delegated \($0)") } ?? verb
             let target = (input["subagent_type"] as? String)
                 ?? (input["task_name"] as? String)
                 ?? (input["target"] as? String)
@@ -678,7 +683,7 @@ struct AgentSession: Identifiable, Equatable, Sendable {
         if let text = title?.text, !text.isEmpty { return text }
         if let lastUserPrompt, !lastUserPrompt.isEmpty { return lastUserPrompt }
         if let focusLabel, !focusLabel.isEmpty { return focusLabel }
-        return "Session"
+        return String(localized: "Session")
     }
 
     /// The project to show: the repository the working folder belongs to
@@ -766,15 +771,15 @@ struct AgentSession: Identifiable, Equatable, Sendable {
     /// "Needs you", "Working", "Done 4m ago", "Idle".
     func statusWord(now: Date = Date()) -> String {
         switch phase {
-        case .needsYou: return "Needs you"
-        case .working: return "Working"
+        case .needsYou: return String(localized: "Needs you")
+        case .working: return String(localized: "Working")
         case .done:
             // ACP stubs mark "finished" as the distant past; the last write is
             // the honest age for those.
             let finished = finishedAt.map { $0 > .distantPast.addingTimeInterval(1) ? $0 : lastActivityAt } ?? lastActivityAt
             let age = Self.age(since: finished, now: now)
-            return age == "now" ? "Done just now" : "Done \(age) ago"
-        case .idle: return "Idle"
+            return age == "now" ? String(localized: "Done just now") : String(localized: "Done \(age) ago")
+        case .idle: return String(localized: "Idle")
         }
     }
 
@@ -782,7 +787,7 @@ struct AgentSession: Identifiable, Equatable, Sendable {
     /// or waits, how long it has been quiet when idle.
     func statusDetail(now: Date = Date()) -> String? {
         switch phase {
-        case .needsYou: return currentActivity ?? "waiting for your answer"
+        case .needsYou: return currentActivity ?? String(localized: "waiting for your answer")
         case .working: return currentActivity
         case .done: return nil
         case .idle:
@@ -791,13 +796,14 @@ struct AgentSession: Identifiable, Equatable, Sendable {
         }
     }
 
-    /// Compact age: "now", "4m", "2h", "3d".
+    /// Compact age: "now", "4m", "2h", "3d". "now" is a marker callers swap
+    /// for their own wording, so only the counted forms are translated.
     static func age(since date: Date, now: Date = Date()) -> String {
         let seconds = Int(now.timeIntervalSince(date))
         if seconds < 45 { return "now" }
-        if seconds < 3600 { return "\(seconds / 60)m" }
-        if seconds < 86_400 { return "\(seconds / 3600)h" }
-        return "\(seconds / 86_400)d"
+        if seconds < 3600 { return String(localized: "\(seconds / 60)m") }
+        if seconds < 86_400 { return String(localized: "\(seconds / 3600)h") }
+        return String(localized: "\(seconds / 86_400)d")
     }
 
     /// Needs you, then Working, then Done, then Idle; newest first in each.

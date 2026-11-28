@@ -88,10 +88,10 @@ enum NanoTokenWindow: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .today: "Today"
-        case .week: "This Week"
-        case .month: "This Month"
-        case .lifetime: "Lifetime"
+        case .today: String(localized: "Today")
+        case .week: String(localized: "This Week")
+        case .month: String(localized: "This Month")
+        case .lifetime: String(localized: "Lifetime")
         }
     }
 }

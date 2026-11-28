@@ -21,7 +21,7 @@ struct AgentAlertSettingsSections: View {
                     isOn: $settings.agentAlerts.soundsEnabled
                 )
                 ForEach(Self.soundEvents) { event in
-                    SettingsRow(event.title) {
+                    SettingsRow(verbatim: event.title) {
                         soundControls(for: event)
                     }
                     .disabled(!settings.agentAlerts.soundsEnabled)
@@ -36,9 +36,9 @@ struct AgentAlertSettingsSections: View {
                 SettingsToggleRow("Quiet hours", isOn: $settings.agentAlerts.quietSchedule.isEnabled)
                 SettingsRow("Hours") {
                     HStack(spacing: 6) {
-                        timePicker("From", minutes: $settings.agentAlerts.quietSchedule.startMinute)
+                        timePicker(String(localized: "From"), minutes: $settings.agentAlerts.quietSchedule.startMinute)
                         Text("to").foregroundStyle(.secondary)
-                        timePicker("To", minutes: $settings.agentAlerts.quietSchedule.endMinute)
+                        timePicker(String(localized: "To"), minutes: $settings.agentAlerts.quietSchedule.endMinute)
                     }
                 }
                 .disabled(!settings.agentAlerts.quietSchedule.isEnabled)
@@ -78,7 +78,7 @@ struct AgentAlertSettingsSections: View {
                         "Tell me when it resets",
                         isOn: $settings.agentAlerts.usageResetAlerts
                     )
-                    SettingsRow(AgentAlertEvent.usage.title) {
+                    SettingsRow(verbatim: AgentAlertEvent.usage.title) {
                         soundControls(for: .usage)
                     }
                     .disabled(!settings.agentAlerts.soundsEnabled)
@@ -148,7 +148,7 @@ struct AgentAlertSettingsSections: View {
         panel.allowedContentTypes = [.audio]
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = false
-        panel.message = "Choose a sound for “\(event.title)”"
+        panel.message = String(localized: "Choose a sound for “\(event.title)”")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         set(.file(url.path), for: event)
     }

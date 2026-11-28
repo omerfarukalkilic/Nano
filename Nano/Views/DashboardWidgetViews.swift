@@ -225,10 +225,10 @@ enum DashboardStyle {
     static func elapsed(since date: Date?, now: Date = Date()) -> String? {
         guard let date else { return nil }
         let minutes = max(Int(now.timeIntervalSince(date) / 60), 0)
-        if minutes < 1 { return "now" }
-        if minutes < 60 { return "\(minutes)m" }
+        if minutes < 1 { return String(localized: "now") }
+        if minutes < 60 { return String(localized: "\(minutes)m") }
         let hours = minutes / 60
-        return hours < 24 ? "\(hours)h" : "\(hours / 24)d"
+        return hours < 24 ? String(localized: "\(hours)h") : String(localized: "\(hours / 24)d")
     }
 }
 
@@ -407,8 +407,8 @@ struct DashboardWidget: View {
             DashboardLauncherWidget(
                 slot: slot,
                 symbol: "camera.fill",
-                title: "Camera",
-                subtitle: "Mirror check"
+                title: String(localized: "Camera"),
+                subtitle: String(localized: "Mirror check")
             )
         default:
             DashboardLauncherWidget(
@@ -512,7 +512,7 @@ struct DashboardMusicWidget: View {
     }
 
     private var stripTitle: some View {
-        Text(controller.nowPlaying?.title ?? controller.lastPlayed?.title ?? "Nothing playing")
+        Text(controller.nowPlaying?.title ?? controller.lastPlayed?.title ?? String(localized: "Nothing playing"))
             .font(.system(size: 12.5, weight: .semibold))
             .opacity(controller.nowPlaying == nil && controller.lastPlayed != nil ? 0.75 : 1)
     }
@@ -525,7 +525,7 @@ struct DashboardMusicWidget: View {
 
     private var subtitle: String {
         controller.nowPlaying?.artist ?? controller.lastPlayed?.artist
-            ?? controller.automationNote ?? "Spotify or Apple Music"
+            ?? controller.automationNote ?? String(localized: "Spotify or Apple Music")
     }
 
     private var medium: some View {
@@ -540,11 +540,11 @@ struct DashboardMusicWidget: View {
                 }
             }
             Spacer(minLength: 6)
-            Text(controller.nowPlaying?.title ?? controller.lastPlayed?.title ?? "Nothing playing")
+            Text(controller.nowPlaying?.title ?? controller.lastPlayed?.title ?? String(localized: "Nothing playing"))
                 .font(.system(size: 14, weight: .semibold))
                 .opacity(controller.nowPlaying == nil && controller.lastPlayed != nil ? 0.75 : 1)
                 .lineLimit(1)
-            Text(controller.nowPlaying?.artist ?? controller.lastPlayed?.artist ?? "Spotify or Apple Music")
+            Text(controller.nowPlaying?.artist ?? controller.lastPlayed?.artist ?? String(localized: "Spotify or Apple Music"))
                 .font(.system(size: 11))
                 .foregroundStyle(DashboardStyle.secondary)
                 .lineLimit(1)
@@ -558,7 +558,7 @@ struct DashboardMusicWidget: View {
                     DashboardCircleButton(
                         symbol: controller.nowPlaying?.isPlaying == true ? "pause.fill" : "play.fill",
                         size: 34,
-                        help: "Play or pause",
+                        help: String(localized: "Play or pause"),
                         action: controller.playPause
                     )
                     Spacer()
@@ -591,18 +591,18 @@ struct DashboardMusicWidget: View {
 enum NanoEventTiming {
     /// The large label on the next event: "in 20m", "Tomorrow", "Thu", "Oct 12".
     static func countdown(start: Date, isAllDay: Bool, now: Date, calendar: Calendar = .current) -> String {
-        if start <= now { return isAllDay ? "Today" : "Now" }
+        if start <= now { return isAllDay ? String(localized: "Today") : String(localized: "Now") }
         if !isAllDay {
             let minutes = Int(start.timeIntervalSince(now) / 60)
-            if minutes < 60 { return "in \(max(minutes, 1))m" }
-            if calendar.isDate(start, inSameDayAs: now) { return "in \(minutes / 60)h" }
+            if minutes < 60 { return String(localized: "in \(max(minutes, 1))m") }
+            if calendar.isDate(start, inSameDayAs: now) { return String(localized: "in \(minutes / 60)h") }
         }
         return day(start, now: now, calendar: calendar)
     }
 
     /// A smaller row: the time on today's events, the day in front otherwise.
     static func listLine(start: Date, isAllDay: Bool, now: Date, calendar: Calendar = .current) -> String {
-        let time = isAllDay ? "All day" : start.formatted(date: .omitted, time: .shortened)
+        let time = isAllDay ? String(localized: "All day") : start.formatted(date: .omitted, time: .shortened)
         guard start > now, !calendar.isDate(start, inSameDayAs: now) else { return time }
         return "\(day(start, now: now, calendar: calendar)) · \(time)"
     }
@@ -613,8 +613,8 @@ enum NanoEventTiming {
             [.day], from: calendar.startOfDay(for: now), to: calendar.startOfDay(for: date)
         ).day ?? 0
         switch days {
-        case ...0: return "Today"
-        case 1: return "Tomorrow"
+        case ...0: return String(localized: "Today")
+        case 1: return String(localized: "Tomorrow")
         case 2..<7: return date.formatted(.dateTime.weekday(.abbreviated))
         default: return date.formatted(.dateTime.month(.abbreviated).day())
         }
@@ -648,7 +648,7 @@ private struct DashboardNextEventWidget: View {
     }
 
     private func time(_ event: NanoCalendarEvent) -> String {
-        guard !event.isAllDay else { return "All day" }
+        guard !event.isAllDay else { return String(localized: "All day") }
         let start = event.startDate.formatted(date: .omitted, time: .shortened)
         let end = event.endDate.formatted(date: .omitted, time: .shortened)
         return "\(start) – \(end)"
@@ -659,7 +659,7 @@ private struct DashboardNextEventWidget: View {
         let events = upcoming(now: now)
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                DashboardStyle.label("Calendar", symbol: "calendar")
+                DashboardStyle.label(String(localized: "Calendar"), symbol: "calendar")
                 Spacer()
                 Text(now.formatted(.dateTime.weekday(.abbreviated).day()))
                     .font(.system(size: 10, weight: .medium))
@@ -779,14 +779,14 @@ private struct DashboardWeatherWidget: View {
 
     /// Why there is no forecast, when that is known.
     private var waitingTitle: String {
-        if needsCurrentLocation, service.locationAccessIsOff { return "Location is off" }
-        return service.shortFailureReason ?? "No forecast yet"
+        if needsCurrentLocation, service.locationAccessIsOff { return String(localized: "Location is off") }
+        return service.shortFailureReason ?? String(localized: "No forecast yet")
     }
 
     private var place: String {
         if let name = snapshot?.placeName, !name.isEmpty { return name }
         let trimmed = locationName.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmed.isEmpty ? "Set a location" : trimmed
+        return trimmed.isEmpty ? String(localized: "Set a location") : trimmed
     }
 
     private var highLow: String? {
@@ -808,7 +808,7 @@ private struct DashboardWeatherWidget: View {
     /// failure, named when the reason is known.
     private var waiting: some View {
         VStack(alignment: .leading, spacing: 0) {
-            DashboardStyle.label("Weather", symbol: "cloud.sun.fill")
+            DashboardStyle.label(String(localized: "Weather"), symbol: "cloud.sun.fill")
             VStack(spacing: 6) {
                 symbol(nil, size: 26)
                 Text(waitingTitle)
@@ -833,7 +833,7 @@ private struct DashboardWeatherWidget: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(spacing: 4) {
-                        DashboardStyle.label("Weather", symbol: "cloud.sun.fill")
+                        DashboardStyle.label(String(localized: "Weather"), symbol: "cloud.sun.fill")
                         Text("· \(place)")
                             .font(.system(size: 9.5))
                             .foregroundStyle(DashboardStyle.tertiary)
@@ -845,7 +845,7 @@ private struct DashboardWeatherWidget: View {
                                 .font(.system(size: 48, weight: .semibold, design: .rounded))
                         }
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(snapshot?.condition ?? "No forecast yet")
+                            Text(snapshot?.condition ?? String(localized: "No forecast yet"))
                                 .font(.system(size: 13, weight: .semibold))
                             if let highLow {
                                 Text(highLow)
@@ -866,14 +866,14 @@ private struct DashboardWeatherWidget: View {
     private var medium: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top) {
-                DashboardStyle.label("Weather", symbol: "cloud.sun.fill")
+                DashboardStyle.label(String(localized: "Weather"), symbol: "cloud.sun.fill")
                 Spacer()
                 symbol(snapshot?.symbolName, size: 26)
             }
             Spacer(minLength: 4)
-            Text(snapshot == nil ? "Weather" : temperature)
+            Text(snapshot == nil ? String(localized: "Weather") : temperature)
                 .font(.system(size: snapshot == nil ? 22 : 44, weight: .semibold, design: .rounded))
-            Text(snapshot?.condition ?? "No forecast yet")
+            Text(snapshot?.condition ?? String(localized: "No forecast yet"))
                 .font(.system(size: 13, weight: .semibold))
                 .lineLimit(1)
             Text(highLow ?? place)
@@ -893,7 +893,7 @@ private struct DashboardWeatherWidget: View {
                     .font(.system(size: 19, weight: .semibold, design: .rounded))
             }
             VStack(alignment: .leading, spacing: 2) {
-                Text(snapshot?.condition ?? "Weather")
+                Text(snapshot?.condition ?? String(localized: "Weather"))
                     .font(.system(size: 11.5, weight: .semibold))
                     .lineLimit(1)
                 Text(highLow ?? place)
@@ -1164,16 +1164,20 @@ private struct DashboardAgentsWidget: View {
             sessions.first { $0.id == request.sessionID }
         }) {
             let others = sessions.filter { $0.isActive && $0.id != waiting.id }.count
-            return others > 0 ? "\(waiting.projectName) · \(others) working" : waiting.projectName
+            return others > 0 ? String(localized: "\(waiting.projectName) · \(others) working") : waiting.projectName
         }
         if let first = runningSessions.first {
             return "\(first.projectName) · \(activity(first))"
         }
         if let usagePercent, let usage {
-            let base = "\(usage.provider.title) \(Int(usagePercent.rounded()))% \(settings.usageDisplayMode == .used ? "used" : "left")"
-            return usage.window.resetCountdown.map { "\(base), resets \($0)" } ?? base
+            let provider = usage.provider.title
+            let percent = Int(usagePercent.rounded())
+            let base = settings.usageDisplayMode == .used
+                ? String(localized: "\(provider) \(percent)% used")
+                : String(localized: "\(provider) \(percent)% left")
+            return usage.window.resetCountdown.map { String(localized: "\(base), resets \($0)") } ?? base
         }
-        return "Start an agent to see it here"
+        return String(localized: "Start an agent to see it here")
     }
 
     // Quick: one ring segment per session.
@@ -1279,19 +1283,19 @@ private struct DashboardTimerWidget: View {
     private var status: String {
         switch store.state {
         case .running:
-            "Ends \(Date().addingTimeInterval(store.remaining).formatted(date: .omitted, time: .shortened))"
-        case .paused: "Paused"
-        case .completed: store.mode == .rest ? "Break's over" : "Session done"
-        case .idle: "Ready · \(Int(store.configuredDuration / 60)) min"
+            String(localized: "Ends \(Date().addingTimeInterval(store.remaining).formatted(date: .omitted, time: .shortened))")
+        case .paused: String(localized: "Paused")
+        case .completed: store.mode == .rest ? String(localized: "Break's over") : String(localized: "Session done")
+        case .idle: String(localized: "Ready · \(Int(store.configuredDuration / 60)) min")
         }
     }
 
     /// The current goal, or what comes after.
     private var nextLabel: String {
         if let cue = store.cue { return cue.title }
-        if store.mode == .rest { return "Then back to it" }
+        if store.mode == .rest { return String(localized: "Then back to it") }
         if let goal = store.nextTask { return goal.title }
-        return "Then a \(Int(store.suggestedBreak / 60)) min break"
+        return String(localized: "Then a \(Int(store.suggestedBreak / 60)) min break")
     }
 
     var body: some View {
@@ -1318,7 +1322,7 @@ private struct DashboardTimerWidget: View {
             symbol: store.isAwaitingCueDecision ? "arrow.up.right" : (isRunning ? "pause.fill" : "play.fill"),
             size: slot == .strip ? 28 : (slot == .wide ? 34 : 32),
             prominent: slot != .strip,
-            help: store.isAwaitingCueDecision ? "Open Timer" : (isRunning ? "Pause" : "Start"),
+            help: store.isAwaitingCueDecision ? String(localized: "Open Timer") : (isRunning ? String(localized: "Pause") : String(localized: "Start")),
             action: toggle
         )
     }
@@ -1327,7 +1331,7 @@ private struct DashboardTimerWidget: View {
     private var wide: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                DashboardStyle.label("Timer · \(store.mode.title)", symbol: "timer")
+                DashboardStyle.label(String(localized: "Timer · \(store.mode.title)"), symbol: "timer")
                 Spacer()
                 if store.cue == nil, !store.tasks.isEmpty {
                     Text("\(store.completedTaskCount) of \(store.tasks.count) goals")
@@ -1361,13 +1365,13 @@ private struct DashboardTimerWidget: View {
             HStack(spacing: 6) {
                 playButton
                 if store.canUndoReset {
-                    DashboardPillButton(title: "Undo reset") { store.undoReset() }
+                    DashboardPillButton(title: String(localized: "Undo reset")) { store.undoReset() }
                 } else if !store.isAwaitingCueDecision {
-                    DashboardPillButton(title: "+5 min") { store.addTime(300) }
+                    DashboardPillButton(title: String(localized: "+5 min")) { store.addTime(300) }
                         .help("Add five minutes")
                 }
                 Spacer()
-                DashboardCircleButton(symbol: "stop.fill", size: 28, prominent: false, help: "Stop") {
+                DashboardCircleButton(symbol: "stop.fill", size: 28, prominent: false, help: String(localized: "Stop")) {
                     store.reset()
                 }
             }
@@ -1391,7 +1395,7 @@ private struct DashboardTimerWidget: View {
     private var medium: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                DashboardStyle.label("Timer", symbol: "timer")
+                DashboardStyle.label(String(localized: "Timer"), symbol: "timer")
                 Spacer()
                 Text(store.mode.title)
                     .font(.system(size: 10))
@@ -1550,7 +1554,7 @@ private struct DashboardTrayWidget: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                DashboardStyle.label("Tray", symbol: "tray.full.fill")
+                DashboardStyle.label(String(localized: "Tray"), symbol: "tray.full.fill")
                 Spacer()
                 if store.canUndo, let message = store.message {
                     HStack(spacing: 6) {
@@ -1563,7 +1567,7 @@ private struct DashboardTrayWidget: View {
                     .font(.system(size: 10, weight: .semibold))
                     .lineLimit(1)
                 } else {
-                    Text(store.items.isEmpty ? "Empty" : "\(store.items.count) item\(store.items.count == 1 ? "" : "s")")
+                    Text(store.items.isEmpty ? String(localized: "Empty") : store.items.count == 1 ? String(localized: "1 item") : String(localized: "\(store.items.count) items"))
                         .font(.system(size: 10))
                         .foregroundStyle(DashboardStyle.tertiary)
                 }
@@ -1614,7 +1618,7 @@ private struct DashboardTrayWidget: View {
                     }
                     Spacer(minLength: 0)
                     VStack(spacing: 6) {
-                        DashboardCircleButton(symbol: "dot.radiowaves.left.and.right", size: 30, prominent: false, help: "AirDrop everything") {
+                        DashboardCircleButton(symbol: "dot.radiowaves.left.and.right", size: 30, prominent: false, help: String(localized: "AirDrop everything")) {
                             store.sendViaAirDrop()
                         }
                         dragAll
@@ -1688,10 +1692,10 @@ private struct DashboardBatteryWidget: View {
     }
 
     private func detail(_ battery: BatterySnapshot) -> String {
-        if battery.isCharging { return "Charging" }
-        if battery.isPluggedIn { return "Plugged in" }
-        guard let minutes = battery.timeRemainingMinutes, minutes > 0 else { return "On battery" }
-        return "\(minutes / 60)h \(minutes % 60)m left"
+        if battery.isCharging { return String(localized: "Charging") }
+        if battery.isPluggedIn { return String(localized: "Plugged in") }
+        guard let minutes = battery.timeRemainingMinutes, minutes > 0 else { return String(localized: "On battery") }
+        return String(localized: "\(minutes / 60)h \(minutes % 60)m left")
     }
 }
 
@@ -1763,13 +1767,13 @@ enum DashboardWidgetOptions {
         if !feature.isEmpty { sections.append(feature) }
         if includesCommon {
             sections.append([
-                DashboardWidgetOption(title: "Open \(module.dashboardTitle)", kind: .action) {
+                DashboardWidgetOption(title: String(localized: "Open \(module.dashboardTitle)"), kind: .action) {
                     viewModel.openModule(module)
                 },
-                DashboardWidgetOption(title: "Edit Dashboard…", kind: .action) {
+                DashboardWidgetOption(title: String(localized: "Edit Dashboard…"), kind: .action) {
                     NotificationCenter.default.post(name: .nanoOpenSettings, object: SettingsDestination.dashboard.rawValue)
                 },
-                DashboardWidgetOption(title: "Remove from Dashboard", kind: .destructive) {
+                DashboardWidgetOption(title: String(localized: "Remove from Dashboard"), kind: .destructive) {
                     settings.setDashboardFeature(nil, in: area)
                 },
             ])
@@ -1784,26 +1788,26 @@ enum DashboardWidgetOptions {
     ) -> [DashboardWidgetOption] {
         switch module {
         case .music:
-            let players: [(String, MediaPlayerKind?)] = [("Automatic", nil)] + MediaPlayerKind.allCases.map { ($0.title, $0) }
-            return [DashboardWidgetOption(title: "Player", kind: .header)] + players.map { title, player in
+            let players: [(String, MediaPlayerKind?)] = [(String(localized: "Automatic"), nil)] + MediaPlayerKind.allCases.map { ($0.title, $0) }
+            return [DashboardWidgetOption(title: String(localized: "Player"), kind: .header)] + players.map { title, player in
                 DashboardWidgetOption(title: title, kind: .toggle(settings.preferredMediaPlayer == player)) {
                     settings.preferredMediaPlayer = player
                 }
             } + [
-                DashboardWidgetOption(title: "Show Song Changes", kind: .toggle(settings.musicAnnouncesTrackChanges)) {
+                DashboardWidgetOption(title: String(localized: "Show Song Changes"), kind: .toggle(settings.musicAnnouncesTrackChanges)) {
                     settings.musicAnnouncesTrackChanges.toggle()
                 },
             ]
         case .calendar:
             let calendars = viewModel.calendarService.eventCalendars
-            var options: [DashboardWidgetOption] = [DashboardWidgetOption(title: "View", kind: .header)]
+            var options: [DashboardWidgetOption] = [DashboardWidgetOption(title: String(localized: "View"), kind: .header)]
             options += CalendarLayout.allCases.map { layout in
                 DashboardWidgetOption(title: layout.title, kind: .toggle(settings.calendarLayout == layout)) {
                     settings.calendarLayout = layout
                 }
             }
             if !calendars.isEmpty {
-                options.append(DashboardWidgetOption(title: "Show Events From", kind: .header))
+                options.append(DashboardWidgetOption(title: String(localized: "Show Events From"), kind: .header))
                 options += calendars.map { calendar in
                     DashboardWidgetOption(
                         title: calendar.title,
@@ -1819,52 +1823,52 @@ enum DashboardWidgetOptions {
                     }
                 }
             }
-            options.append(DashboardWidgetOption(title: "All-Day Events", kind: .toggle(settings.calendarShowsAllDay)) {
+            options.append(DashboardWidgetOption(title: String(localized: "All-Day Events"), kind: .toggle(settings.calendarShowsAllDay)) {
                 settings.calendarShowsAllDay.toggle()
             })
             return options
         case .timer:
             let store = viewModel.timerStore
-            var options = [DashboardWidgetOption(title: "Timer", kind: .header)]
+            var options = [DashboardWidgetOption(title: String(localized: "Timer"), kind: .header)]
             if store.cue == nil {
                 options += [25, 50, 90].map { minutes in
-                    DashboardWidgetOption(title: "Start \(minutes) Minute Session", kind: .action) {
+                    DashboardWidgetOption(title: String(localized: "Start \(minutes) Minute Session"), kind: .action) {
                         store.startFocus(minutes: minutes)
                     }
                 }
             }
-            options.append(DashboardWidgetOption(title: "Reset Timer", kind: .action) { store.reset() })
+            options.append(DashboardWidgetOption(title: String(localized: "Reset Timer"), kind: .action) { store.reset() })
             return options
         case .agents:
-            return [DashboardWidgetOption(title: "Show Quota As", kind: .header)] + UsageDisplayMode.allCases.map { mode in
+            return [DashboardWidgetOption(title: String(localized: "Show Quota As"), kind: .header)] + UsageDisplayMode.allCases.map { mode in
                 DashboardWidgetOption(title: mode.title, kind: .toggle(settings.usageDisplayMode == mode)) {
                     settings.usageDisplayMode = mode
                 }
             } + [
-                DashboardWidgetOption(title: "Agent Hooks…", kind: .action) {
+                DashboardWidgetOption(title: String(localized: "Agent Hooks…"), kind: .action) {
                     viewModel.requestsHookReview = true
                     NotificationCenter.default.post(name: .nanoOpenSettings, object: SettingsDestination.agents.rawValue)
                 },
             ]
         case .weather:
-            return [DashboardWidgetOption(title: "Refresh Weather", kind: .action) {
+            return [DashboardWidgetOption(title: String(localized: "Refresh Weather"), kind: .action) {
                 viewModel.refreshWeather()
             }]
         case .tray:
             let store = viewModel.trayStore
             return [
-                DashboardWidgetOption(title: "Tray", kind: .header),
-                DashboardWidgetOption(title: "Paste", kind: .action) { store.pasteFromClipboard() },
-                DashboardWidgetOption(title: "AirDrop All", kind: .action) { store.sendViaAirDrop() },
+                DashboardWidgetOption(title: String(localized: "Tray"), kind: .header),
+                DashboardWidgetOption(title: String(localized: "Paste"), kind: .action) { store.pasteFromClipboard() },
+                DashboardWidgetOption(title: String(localized: "AirDrop All"), kind: .action) { store.sendViaAirDrop() },
                 DashboardWidgetOption(
-                    title: store.selection.isEmpty ? "Compress All to ZIP" : "Compress Selected to ZIP",
+                    title: store.selection.isEmpty ? String(localized: "Compress All to ZIP") : String(localized: "Compress Selected to ZIP"),
                     kind: .action
                 ) { store.compressToZip(store.selectedURLs) },
-                DashboardWidgetOption(title: "Clear Tray", kind: .destructive) { store.clear() },
-                DashboardWidgetOption(title: "Remove Files After Dragging Out", kind: .toggle(settings.trayRemovesAfterDragOut)) {
+                DashboardWidgetOption(title: String(localized: "Clear Tray"), kind: .destructive) { store.clear() },
+                DashboardWidgetOption(title: String(localized: "Remove Files After Dragging Out"), kind: .toggle(settings.trayRemovesAfterDragOut)) {
                     settings.trayRemovesAfterDragOut.toggle()
                 },
-                DashboardWidgetOption(title: "Show Count on the Island", kind: .toggle(settings.trayShowsCompactCount)) {
+                DashboardWidgetOption(title: String(localized: "Show Count on the Island"), kind: .toggle(settings.trayShowsCompactCount)) {
                     settings.trayShowsCompactCount.toggle()
                 },
             ]

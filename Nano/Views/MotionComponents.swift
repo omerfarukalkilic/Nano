@@ -248,7 +248,7 @@ extension EnvironmentValues {
 
 struct NanoLoadingRing: View {
     var size: CGFloat = 16
-    var label = "Loading"
+    var label = String(localized: "Loading")
     var isActive = true
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion

@@ -146,7 +146,7 @@ enum MessagesReplySender {
                 if let error {
                     let message = (error[NSAppleScript.errorMessage] as? String)
                         ?? (error[NSAppleScript.errorBriefMessage] as? String)
-                        ?? "Messages did not accept the reply."
+                        ?? String(localized: "Messages did not accept the reply.")
                     continuation.resume(returning: .failure(.scriptError(message)))
                 } else {
                     continuation.resume(returning: .success(()))
@@ -315,11 +315,11 @@ final class NativeBannerSuppressor: ObservableObject {
     func configureDesktopBanners(for issue: Issue, storeReady: Bool) async {
         guard !setupInProgress else { return }
         guard storeReady, AXIsProcessTrusted(), issue.bundleID != "ax.unknown" else {
-            setupStatus = "Nano needs notification store access, Accessibility, and an identified app before automatic setup."
+            setupStatus = String(localized: "Nano needs notification store access, Accessibility, and an identified app before automatic setup.")
             return
         }
         setupInProgress = true
-        setupStatus = "Opening notification settings for \(issue.appName)…"
+        setupStatus = String(localized: "Opening notification settings for \(issue.appName)…")
         defer { setupInProgress = false }
         openSettings(for: issue)
         var selectedApp = false
@@ -337,12 +337,12 @@ final class NativeBannerSuppressor: ObservableObject {
                           let allow = Self.findElement(in: window, identifier: "allow-notifications"),
                           let center = Self.findElement(in: window, identifier: "notification-presence-notificationCenter"),
                           Self.checked(allow) == true, Self.checked(center) == true else {
-                        setupStatus = "Setup stopped because this app's notification delivery settings could not be verified."
+                        setupStatus = String(localized: "Setup stopped because this app's notification delivery settings could not be verified.")
                         return
                     }
                     if Self.checked(desktop) == false {
                         issues.removeAll { $0.id == issue.id }
-                        setupStatus = "Desktop banners are off for \(issue.appName). Notifications remain enabled for Nano to receive."
+                        setupStatus = String(localized: "Desktop banners are off for \(issue.appName). Notifications remain enabled for Nano to receive.")
                         return
                     }
                     if Self.checked(desktop) == true, !pressedDesktop {
@@ -356,7 +356,7 @@ final class NativeBannerSuppressor: ObservableObject {
                 }
             }
         }
-        setupStatus = "Automatic setup could not verify the app's Desktop setting. You can finish in notification settings."
+        setupStatus = String(localized: "Automatic setup could not verify the app's Desktop setting. You can finish in notification settings.")
     }
 
     private static func checked(_ element: AXUIElement) -> Bool? {
@@ -610,9 +610,9 @@ struct IncomingCallBanner: Equatable, Sendable {
 
         var label: String {
             switch self {
-            case .faceTimeVideo: "FaceTime Video"
-            case .faceTimeAudio: "FaceTime Audio"
-            case .phone: "Call"
+            case .faceTimeVideo: String(localized: "FaceTime Video")
+            case .faceTimeAudio: String(localized: "FaceTime Audio")
+            case .phone: String(localized: "Call")
             }
         }
 
@@ -620,7 +620,7 @@ struct IncomingCallBanner: Equatable, Sendable {
             self == .phone ? "com.apple.mobilephone" : "com.apple.facetime"
         }
 
-        var appName: String { self == .phone ? "Phone" : "FaceTime" }
+        var appName: String { self == .phone ? String(localized: "Phone") : "FaceTime" }
     }
 
     let caller: String
@@ -657,7 +657,7 @@ struct IncomingCallBanner: Equatable, Sendable {
             if low == "unknown caller" || low == "no caller id" { return true }
             let words = Set(low.split(whereSeparator: { !$0.isLetter }).map(String.init))
             return words.isDisjoint(with: descriptors)
-        } ?? cleaned.first ?? "Unknown Caller"
+        } ?? cleaned.first ?? String(localized: "Unknown Caller")
         return IncomingCallBanner(caller: caller, kind: kind)
     }
 }

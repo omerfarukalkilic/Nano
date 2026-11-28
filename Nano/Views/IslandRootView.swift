@@ -176,7 +176,7 @@ struct IslandRootView: View {
         .accessibilityElement(children: viewModel.phase.isExpanded || exposesCompactCueFocus ? .contain : .combine)
         .accessibilityLabel(
             viewModel.phase.showsDashboard
-                ? "Nano dashboard"
+                ? String(localized: "Nano dashboard")
                 : viewModel.phase == .transientHUD
                     ? (viewModel.notificationCenter.current?.title ?? "Nano")
                     : "Nano"
@@ -204,7 +204,7 @@ struct IslandRootView: View {
             }
             IslandChromeBar(
                 homeSymbol: inSession ? "chevron.left" : "house.fill",
-                homeHelp: inSession ? "Back to sessions" : "Dashboard",
+                homeHelp: inSession ? String(localized: "Back to sessions") : String(localized: "Dashboard"),
                 homeSelected: onDashboard,
                 homeEnabled: !onDashboard,
                 cueSelected: viewModel.activeModule == .cue,
@@ -577,7 +577,7 @@ private struct CompactIslandView: View {
                 .lineLimit(1)
                 .transition(.nanoSwap(anchor: .leading, reduceMotion: reduceMotion))
                 .accessibilityElement(children: .combine)
-                .accessibilityLabel("Now playing: \(peek.title), \(peek.artist)")
+                .accessibilityLabel(String(localized: "Now playing: \(peek.title), \(peek.artist)"))
             }
         }
     }
@@ -626,7 +626,7 @@ private struct CompactIslandView: View {
                 .animation(.easeOut(duration: 0.3), value: musicIsPlaying)
                 .id(media.nowPlaying?.trackID)
                 .transition(.nanoSwap(scale: 0.94, reduceMotion: reduceMotion))
-                .accessibilityLabel(media.nowPlaying.map { "Now playing: \($0.title)" } ?? "Music")
+                .accessibilityLabel(media.nowPlaying.map { String(localized: "Now playing: \($0.title)") } ?? String(localized: "Music"))
         }
     }
 
@@ -646,8 +646,8 @@ private struct CompactIslandView: View {
                 .foregroundStyle(.orange)
                 .transition(.nanoSwap(reduceMotion: reduceMotion))
                 .accessibilityLabel(waitingRequestCount == 1
-                    ? "An agent is waiting for your answer"
-                    : "\(waitingRequestCount) agents are waiting for your answer")
+                    ? String(localized: "An agent is waiting for your answer")
+                    : String(localized: "\(waitingRequestCount) agents are waiting for your answer"))
         } else if timer.state != .idle {
             Text(timer.formattedRemaining)
                 .font(.system(size: 12, weight: .semibold, design: .monospaced))
@@ -679,7 +679,7 @@ private struct CompactIslandView: View {
         } else if cueCount > 0 || trayCount > 0 {
             CompactCountsPill(
                 cueCount: cueCount,
-                cueHelp: "\(cueCount) open in \(viewModel.cueStore.title(for: viewModel.cueStore.scope))",
+                cueHelp: String(localized: "\(cueCount) open in \(viewModel.cueStore.title(for: viewModel.cueStore.scope))"),
                 trayCount: trayCount
             )
             .transition(.nanoSwap(reduceMotion: reduceMotion))
@@ -723,14 +723,14 @@ private struct CompactIslandView: View {
         } else if waitingRequestCount > 0 {
             NanoActivityChip(
                 symbol: "exclamationmark.circle.fill",
-                text: waitingRequestCount == 1 ? "Needs you" : "\(waitingRequestCount) need you",
+                text: waitingRequestCount == 1 ? String(localized: "Needs you") : String(localized: "\(waitingRequestCount) need you"),
                 tint: .orange,
                 maxWidth: sideZoneWidth
             )
             .transition(.nanoSwap(reduceMotion: reduceMotion))
             .accessibilityLabel(waitingRequestCount == 1
-                ? "An agent is waiting for your answer"
-                : "\(waitingRequestCount) agents are waiting for your answer")
+                ? String(localized: "An agent is waiting for your answer")
+                : String(localized: "\(waitingRequestCount) agents are waiting for your answer"))
         } else if timer.state != .idle {
             Text(timer.formattedRemaining)
                 .font(.system(size: 14, weight: .semibold, design: .monospaced))
@@ -744,7 +744,7 @@ private struct CompactIslandView: View {
                   let first = activity.providers.first {
             NanoActivityChip(
                 symbol: "sparkle",
-                text: "Working",
+                text: String(localized: "Working"),
                 tint: first.provider.accentColor,
                 rimPalette: NanoActivityChipPalette.multiSession,
                 maxWidth: sideZoneWidth
@@ -762,7 +762,7 @@ private struct CompactIslandView: View {
         } else if cueCount > 0 || trayCount > 0 {
             CompactCountsPill(
                 cueCount: cueCount,
-                cueHelp: "\(cueCount) open in \(viewModel.cueStore.title(for: viewModel.cueStore.scope))",
+                cueHelp: String(localized: "\(cueCount) open in \(viewModel.cueStore.title(for: viewModel.cueStore.scope))"),
                 trayCount: trayCount
             )
             .transition(.nanoSwap(reduceMotion: reduceMotion))
@@ -801,13 +801,43 @@ private struct CompactIslandView: View {
         let providers = activity.providers.map { item in
             item.sessionCount == 1
                 ? item.provider.title
-                : "\(item.provider.title), \(item.sessionCount) sessions"
+                : String(localized: "\(item.provider.title), \(item.sessionCount) sessions")
         }.joined(separator: ", ")
-        return "\(activity.totalSessions) active sessions. \(providers)"
+        return String(localized: "\(activity.totalSessions) active sessions. \(providers)")
     }
 
     private func activityLabel(_ snapshot: AgentProviderSnapshot) -> String {
-        snapshot.activityDetail ?? "Working"
+        snapshot.activityDetail.map(Self.localizedActivity) ?? String(localized: "Working")
+    }
+
+    /// Activity details stay English in the model because the symbol above is
+    /// picked from their verb, so they are translated only for display.
+    static func localizedActivity(_ detail: String) -> String {
+        switch detail {
+        case "Editing files": return String(localized: "Editing files")
+        case "Reading files": return String(localized: "Reading files")
+        case "Searching files": return String(localized: "Searching files")
+        case "Searching the web": return String(localized: "Searching the web")
+        case "Running a command": return String(localized: "Running a command")
+        case "Using a tool": return String(localized: "Using a tool")
+        case "Delegating to a subagent": return String(localized: "Delegating to a subagent")
+        case "Thinking": return String(localized: "Thinking")
+        case "Writing a response": return String(localized: "Writing a response")
+        default: break
+        }
+        let verbs: [(String, (String) -> String)] = [
+            ("Editing ", { String(localized: "Editing \($0)") }),
+            ("Reading ", { String(localized: "Reading \($0)") }),
+            ("Running ", { String(localized: "Running \($0)") }),
+            ("Searching ", { String(localized: "Searching \($0)") }),
+            ("Using ", { String(localized: "Using \($0)") }),
+            ("Delegating ", { String(localized: "Delegating \($0)") }),
+            ("Writing ", { String(localized: "Writing \($0)") }),
+        ]
+        for (prefix, format) in verbs where detail.hasPrefix(prefix) {
+            return format(String(detail.dropFirst(prefix.count)))
+        }
+        return detail
     }
 
     private func activitySymbol(_ snapshot: AgentProviderSnapshot) -> String {
@@ -826,10 +856,10 @@ private struct CompactIslandView: View {
 
     private var timerStateLabel: String {
         switch timer.state {
-        case .idle: "Ready"
-        case .running: "Focus session"
-        case .paused: "Paused"
-        case .completed: "Time is up"
+        case .idle: String(localized: "Ready")
+        case .running: String(localized: "Focus session")
+        case .paused: String(localized: "Paused")
+        case .completed: String(localized: "Time is up")
         }
     }
 }
@@ -855,7 +885,7 @@ private struct CompactCountsPill: View {
             }
             if trayCount > 0 {
                 segment(symbol: "tray.full.fill", count: trayCount, tint: .white.opacity(0.82))
-                    .help(trayCount == 1 ? "1 file in the tray" : "\(trayCount) files in the tray")
+                    .help(trayCount == 1 ? String(localized: "1 file in the tray") : String(localized: "\(trayCount) files in the tray"))
             }
         }
         .frame(height: 20)
@@ -881,8 +911,8 @@ private struct CompactCountsPill: View {
 
     private var accessibilityText: String {
         var parts: [String] = []
-        if cueCount > 0 { parts.append(cueCount == 1 ? "1 open cue" : "\(cueCount) open cues") }
-        if trayCount > 0 { parts.append(trayCount == 1 ? "1 file in the tray" : "\(trayCount) files in the tray") }
+        if cueCount > 0 { parts.append(cueCount == 1 ? String(localized: "1 open cue") : String(localized: "\(cueCount) open cues")) }
+        if trayCount > 0 { parts.append(trayCount == 1 ? String(localized: "1 file in the tray") : String(localized: "\(trayCount) files in the tray")) }
         return parts.joined(separator: ", ")
     }
 }
@@ -999,8 +1029,8 @@ struct CompactAgentLogoGroup: View {
         _ item: CompactAgentActivitySummary.ProviderActivity
     ) -> String {
         item.sessionCount == 1
-            ? "\(item.provider.title) · 1 active session"
-            : "\(item.provider.title) · \(item.sessionCount) active sessions"
+            ? String(localized: "\(item.provider.title) · 1 active session")
+            : String(localized: "\(item.provider.title) · \(item.sessionCount) active sessions")
     }
 }
 
@@ -1316,10 +1346,10 @@ struct DashboardCalendarWidget: View {
 
             Spacer(minLength: 2)
 
-            navButton(symbol: "chevron.left", label: "Previous month") {
+            navButton(symbol: "chevron.left", label: String(localized: "Previous month")) {
                 moveMonth(by: -1)
             }
-            navButton(symbol: "chevron.right", label: "Next month") {
+            navButton(symbol: "chevron.right", label: String(localized: "Next month")) {
                 moveMonth(by: 1)
             }
         }
@@ -1562,7 +1592,7 @@ struct DashboardCalendarWidget: View {
     }
 
     private func timeRange(_ event: NanoCalendarEvent) -> String {
-        guard !event.isAllDay else { return "All day" }
+        guard !event.isAllDay else { return String(localized: "All day") }
 
         if Calendar.current.isDate(event.startDate, inSameDayAs: event.endDate) {
             let start = event.startDate.formatted(date: .omitted, time: .shortened)
@@ -1597,7 +1627,7 @@ struct DashboardCalendarWidget: View {
 /// share of the capsule clickable, not just its 32 pt icon.
 struct IslandChromeBar: View {
     var homeSymbol = "house.fill"
-    var homeHelp = "Dashboard"
+    var homeHelp = String(localized: "Dashboard")
     var homeSelected = false
     var homeEnabled = true
     var cueSelected = false
@@ -1730,8 +1760,8 @@ private struct IslandUtilityBar: View {
                     .contentTransition(.symbolEffect(.replace))
             }
             .buttonStyle(.nanoPress)
-            .help(isPinned ? "Unpin island" : "Pin island")
-            .accessibilityLabel(isPinned ? "Unpin island" : "Pin island")
+            .help(isPinned ? String(localized: "Unpin island") : String(localized: "Pin island"))
+            .accessibilityLabel(isPinned ? String(localized: "Unpin island") : String(localized: "Pin island"))
         }
         .padding(.horizontal, 8)
         .foregroundStyle(.white)
@@ -1825,14 +1855,14 @@ struct DashboardMusicView: View {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 2) {
                         NanoMarqueeText(
-                            text: controller.nowPlaying?.title ?? controller.lastPlayed?.title ?? "Nothing playing",
+                            text: controller.nowPlaying?.title ?? controller.lastPlayed?.title ?? String(localized: "Nothing playing"),
                             fontSize: 15,
                             weight: .semibold,
                             height: 19,
                             autoScrolls: true
                         )
                         .opacity(controller.nowPlaying == nil && controller.lastPlayed != nil ? 0.75 : 1)
-                        Text(controller.nowPlaying?.artist ?? controller.lastPlayed?.artist ?? "Songs from Spotify or Apple Music show here")
+                        Text(controller.nowPlaying?.artist ?? controller.lastPlayed?.artist ?? String(localized: "Songs from Spotify or Apple Music show here"))
                             .font(.system(size: 10))
                             .foregroundStyle(.white.opacity(0.5))
                             .lineLimit(1)
@@ -1848,7 +1878,7 @@ struct DashboardMusicView: View {
                                 color: track.player.accentColor,
                                 isActive: track.isPlaying
                             )
-                            Text(track.isPlaying ? "Playing" : "Paused")
+                            Text(track.isPlaying ? String(localized: "Playing") : String(localized: "Paused"))
                                 .font(.system(size: 10, weight: .medium))
                                 .foregroundStyle(playbackTint(track))
                         }
