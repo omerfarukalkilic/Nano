@@ -557,6 +557,13 @@ struct AgentConversationTurn: Equatable, Sendable {
     }
 
     /// Parsers collect raw text; only the turns that are kept get cleaned.
+    /// The newest reply as lines, for reading in full on the session.
+    static let readableReplyLimit = 4000
+
+    static func readableReply(_ raw: String?) -> String? {
+        raw.flatMap { AgentSessionPromptSummary.agentExcerpt($0, limit: readableReplyLimit, separator: "\n") }
+    }
+
     static func finalized(_ turns: [AgentConversationTurn]) -> [AgentConversationTurn] {
         let kept = turns.suffix(limit)
         return kept.enumerated().compactMap { index, turn in
@@ -6088,7 +6095,9 @@ enum AgentSessionPromptSummary {
 
     /// The agent's reply as a short, readable excerpt: markdown chrome and code
     /// blocks dropped, whitespace collapsed.
-    static func agentExcerpt(_ text: String, limit: Int = 280) -> String? {
+    /// Markdown stripped to plain lines. `separator` " " runs them into one
+    /// paragraph for rows and cards; "\n" keeps them as lines for reading.
+    static func agentExcerpt(_ text: String, limit: Int = 280, separator: String = " ") -> String? {
         var lines: [String] = []
         var inFence = false
         for raw in decodingEntities(text).split(separator: "\n", omittingEmptySubsequences: false) {
@@ -6101,7 +6110,7 @@ enum AgentSessionPromptSummary {
                 .replacingOccurrences(of: "`", with: "")
             if !stripped.isEmpty { lines.append(stripped) }
         }
-        let joined = lines.joined(separator: " ")
+        let joined = lines.joined(separator: separator)
         guard !joined.isEmpty else { return nil }
         return joined.count <= limit ? joined : String(joined.prefix(limit - 1)) + "\u{2026}"
     }
