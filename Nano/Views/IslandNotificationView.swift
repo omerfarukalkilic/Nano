@@ -709,6 +709,10 @@ private struct AgentNotificationCard: View {
     let revealed: Bool
     let reduceMotion: Bool
     @State private var selectedOptionID: Int?
+    /// The answer or plan note typed into the card's written-reply field.
+    @State private var writtenText = ""
+    @State private var writing = false
+    @FocusState private var writtenFocused: Bool
 
     init(
         attention: IslandAgentAttention,
@@ -734,6 +738,15 @@ private struct AgentNotificationCard: View {
                     .modifier(AgentNotificationRevealStage(revealed: revealed, delay: 0.02, reduceMotion: reduceMotion))
                 planContent(plan)
                     .modifier(AgentNotificationRevealStage(revealed: revealed, delay: 0.06, reduceMotion: reduceMotion))
+                if attention.takesWrittenReply {
+                    writtenField(
+                        String(localized: "Tell \(attention.providerName) what to change"),
+                        height: 28
+                    )
+                    .padding(.bottom, IslandAgentAttention.writtenReplyRowHeight - 28)
+                    .disabled(outcome != nil)
+                    .modifier(AgentNotificationRevealStage(revealed: revealed, delay: 0.08, reduceMotion: reduceMotion))
+                }
                 Group {
                     Rectangle()
                         .fill(.white.opacity(0.085))
@@ -771,6 +784,13 @@ private struct AgentNotificationCard: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
+        .onChange(of: writing) { _, now in
+            guard now else { return }
+            // The island is not the key window until it asks; keystrokes
+            // would otherwise go to the app in front.
+            NotificationCenter.default.post(name: .nanoIslandWantsKeyboard, object: nil)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { writtenFocused = true }
+        }
         // IslandRootView owns the shared, settings-driven HUD background.
         // Keep agent cards transparent so glass, hybrid and custom colors show through.
 
@@ -983,7 +1003,89 @@ private struct AgentNotificationCard: View {
                 ))
                 .accessibilityAddTraits(selectedOptionID == option.id ? .isSelected : [])
             }
+            if attention.takesWrittenReply {
+                let selected = selectedOptionID == AgentHookBridge.writtenChoice
+                HStack(spacing: 9) {
+                    Image(systemName: selected ? "checkmark.circle.fill" : "pencil.circle")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(selected ? providerTint : .white.opacity(0.32))
+                        .contentTransition(.symbolEffect(.replace))
+                    writtenInput(String(localized: "Type your own answer"))
+                }
+                .padding(.horizontal, 10)
+                .frame(maxWidth: .infinity, minHeight: 34, maxHeight: 34, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(selected ? providerTint.opacity(0.16) : .white.opacity(0.05))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(selected ? providerTint.opacity(0.55) : .white.opacity(0.08), lineWidth: 0.75)
+                )
+                .contentShape(Rectangle())
+                .onTapGesture { startWriting() }
+                .accessibilityAddTraits(selected ? .isSelected : [])
+            }
         }
+    }
+
+    /// A field for the user's own words. It shows as a prompt until tapped,
+    /// because a text field in a panel that is not key takes no typing.
+    private func writtenField(_ prompt: String, height: CGFloat) -> some View {
+        writtenInput(prompt)
+            .padding(.horizontal, 10)
+            .frame(maxWidth: .infinity, minHeight: height, maxHeight: height, alignment: .leading)
+            .background(.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+            .contentShape(Rectangle())
+            .onTapGesture { startWriting() }
+    }
+
+    @ViewBuilder
+    private func writtenInput(_ prompt: String) -> some View {
+        if writing {
+            TextField(prompt, text: $writtenText)
+                .textFieldStyle(.plain)
+                .font(.system(size: 11.5))
+                .foregroundStyle(.white)
+                .focused($writtenFocused)
+                .onSubmit(sendWritten)
+                .onExitCommand {
+                    writing = false
+                    writtenText = ""
+                    if selectedOptionID == AgentHookBridge.writtenChoice {
+                        selectedOptionID = attention.options.first?.id
+                    }
+                }
+        } else {
+            HStack(spacing: 0) {
+                Text(prompt)
+                    .font(.system(size: 11.5))
+                    .foregroundStyle(.white.opacity(0.45))
+                    .lineLimit(1)
+                Spacer(minLength: 0)
+            }
+        }
+    }
+
+    private var hasWrittenText: Bool {
+        !writtenText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private func startWriting() {
+        guard outcome == nil else { return }
+        if attention.kind == .question {
+            withAnimation(.easeOut(duration: 0.15)) { selectedOptionID = AgentHookBridge.writtenChoice }
+        }
+        if writing {
+            writtenFocused = true
+        } else {
+            writing = true
+        }
+    }
+
+    private func sendWritten() {
+        guard hasWrittenText else { return }
+        viewModel.hookBridge.reply(to: attention.requestID, text: writtenText)
     }
 
     @ViewBuilder
@@ -1017,12 +1119,17 @@ private struct AgentNotificationCard: View {
             case .question where attention.respondsThroughBridge:
                 actionButton(String(localized: "Send"), prominent: true, symbol: "arrow.right") {
                     guard let selectedOptionID else { return }
+                    if selectedOptionID == AgentHookBridge.writtenChoice {
+                        sendWritten()
+                        return
+                    }
                     viewModel.hookBridge.respond(
                         to: attention.requestID,
                         choice: selectedOptionID
                     )
                 }
-                .disabled(selectedOptionID == nil)
+                .disabled(selectedOptionID == nil
+                    || (selectedOptionID == AgentHookBridge.writtenChoice && !hasWrittenText))
                 openButton()
 
             case .permission, .question:
@@ -1151,16 +1258,23 @@ private struct AgentNotificationCard: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
             } else if attention.respondsThroughBridge {
                 if let deny = attention.options.first(where: { $0.id == 0 }) {
-                    actionButton(String(localized: "Keep planning")) {
-                        viewModel.hookBridge.respond(to: attention.requestID, choice: deny.id)
+                    if hasWrittenText {
+                        actionButton(String(localized: "Send feedback"), symbol: "arrow.up") { sendWritten() }
+                            .help(String(localized: "Send the plan back to \(attention.providerName) with your note"))
+                    } else {
+                        actionButton(String(localized: "Keep planning")) {
+                            viewModel.hookBridge.respond(to: attention.requestID, choice: deny.id)
+                        }
+                        .help(String(localized: "Send the plan back to \(attention.providerName)"))
                     }
-                    .help(String(localized: "Send the plan back to \(attention.providerName)"))
                 }
                 if let allow = attention.options.first(where: { $0.id == 1 }) ?? attention.options.last {
                     actionButton(String(localized: "Approve plan"), prominent: true) {
                         viewModel.hookBridge.respond(to: attention.requestID, choice: allow.id)
                     }
-                    .keyboardShortcut(.defaultAction)
+                    // Return in the note field sends the note; it must never
+                    // approve the plan instead.
+                    .keyboardShortcut(writing ? nil : .defaultAction)
                 }
             }
         }

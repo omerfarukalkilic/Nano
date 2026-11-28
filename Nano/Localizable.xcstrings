@@ -15366,6 +15366,16 @@
         }
       }
     },
+    "Send feedback": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notu gönder"
+          }
+        }
+      }
+    },
     "Send feedback or request a feature on GitHub": {
       "localizations": {
         "tr": {
@@ -15402,6 +15412,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Planı %@ agent'ına geri gönder"
+          }
+        }
+      }
+    },
+    "Send the plan back to %@ with your note": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planı notunla birlikte %@ agent'ına geri gönder"
           }
         }
       }
@@ -17086,6 +17106,16 @@
         }
       }
     },
+    "Tell %@ what to change": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ neyi değiştirsin, yaz"
+          }
+        }
+      }
+    },
     "Tell me about new versions": {
       "localizations": {
         "tr": {
@@ -18272,6 +18302,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yukarıya bir test cümlesi yaz."
+          }
+        }
+      }
+    },
+    "Type your own answer": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kendi cevabını yaz"
           }
         }
       }
