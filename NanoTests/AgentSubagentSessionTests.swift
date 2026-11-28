@@ -516,3 +516,34 @@ final class AgentSubagentSessionTests: XCTestCase {
         XCTAssertEqual(AgentSubagentEntry.duration(from: start, to: start.addingTimeInterval(724), padded: false), "12m 4s")
     }
 }
+
+/// Claude Code writes its suggested next prompt through an unnamed subagent
+/// right after a turn ends, under the parent's session ID. That message must
+/// not replace the session's real reply.
+final class AgentSubagentReplyTests: XCTestCase {
+    @MainActor
+    private func send(_ bridge: AgentHookBridge, _ event: [String: Any]) async throws {
+        let payload: [String: Any] = ["source": "claude", "event": event]
+        _ = await bridge.handle(try JSONSerialization.data(withJSONObject: payload))
+    }
+
+    @MainActor
+    func testASuggestionSubagentDoesNotReplaceTheReply() async throws {
+        let bridge = AgentHookBridge()
+        try await send(bridge, ["hook_event_name": "UserPromptSubmit", "session_id": "s", "cwd": "/tmp", "prompt": "hi"])
+        try await send(bridge, ["hook_event_name": "Stop", "session_id": "s", "cwd": "/tmp",
+                                "last_assistant_message": "Fixed #91; the conflict was in WORKLOG.md."])
+        try await send(bridge, ["hook_event_name": "SubagentStop", "session_id": "s", "cwd": "/tmp",
+                                "agent_id": "af49275e29184f2ef", "agent_type": "",
+                                "last_assistant_message": "devam"])
+        XCTAssertEqual(bridge.sessionStates["s"]?.lastAgentMessage, "Fixed #91; the conflict was in WORKLOG.md.")
+    }
+
+    func testSubagentEventsAreRecognised() {
+        XCTAssertTrue(AgentHookBridge.isSubagentEvent(name: "SubagentStop", event: [:]))
+        XCTAssertTrue(AgentHookBridge.isSubagentEvent(name: "subagent_stop", event: [:]))
+        XCTAssertTrue(AgentHookBridge.isSubagentEvent(name: "Stop", event: ["agent_id": "x"]))
+        XCTAssertFalse(AgentHookBridge.isSubagentEvent(name: "Stop", event: [:]))
+        XCTAssertFalse(AgentHookBridge.isSubagentEvent(name: "AfterAgent", event: [:]))
+    }
+}
