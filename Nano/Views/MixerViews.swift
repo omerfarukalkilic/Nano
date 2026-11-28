@@ -623,7 +623,7 @@ struct MixerSettingsPane: View {
                 SettingsRow(
                     "Mute microphone",
                     symbol: "mic.slash",
-                    subtitle: micShortcutDetail,
+                    subtitle: "\(micShortcutDetail)",
                     subtitleIsWarning: viewModel.mixerMicMuteHotkeyError != nil || micShortcutClashes
                 ) {
                     if settings.mixerMicMuteHotkeyEnabled {

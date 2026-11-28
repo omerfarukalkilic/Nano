@@ -731,7 +731,7 @@ private struct GeneralSettingsPane: View {
             if !permissions.missing.isEmpty {
                 SettingsBanner(
                     title: "\(permissions.missing.count) permission\(permissions.missing.count == 1 ? "" : "s") not granted",
-                    detail: blockedDetail,
+                    detail: "\(blockedDetail)",
                     action: "Review"
                 ) { open(.permissions) }
             }
@@ -783,7 +783,7 @@ private struct GeneralSettingsPane: View {
 
             SettingsSection("Add-ons", footer: "Each add-on gets its own page in the sidebar while it's on.") {
                 ForEach(addOns, id: \.self) { module in
-                    SettingsRow(module.title, symbol: module.symbol, subtitle: module.featureDescription) {
+                    SettingsRow(verbatim: module.title, symbol: module.symbol, subtitle: module.featureDescription) {
                         if settings.isEnabled(module), let page = page(for: module) {
                             Button("Settings…") { open(page) }
                                 .controlSize(.small)
@@ -816,11 +816,11 @@ private struct GeneralSettingsPane: View {
         let noCamera = module == .camera && permissions.state(for: .camera) == .unavailable
 
         SettingsRow(
-            module.title,
+            "\(module.title)",
             symbol: module.symbol,
             subtitle: noCamera
                 ? "No camera is connected to this Mac."
-                : (blocker.map { "Needs \($0.title) access" } ?? module.featureDescription),
+                : (blocker.map { "Needs \($0.title) access" } ?? "\(module.featureDescription)"),
             subtitleIsWarning: blocker != nil
         ) {
             if let blocker {
@@ -1024,7 +1024,7 @@ private struct IslandSettingsPane: View {
                         if let target, Self.advancedAnchors.contains(target) { showsAdvanced = true }
                     }
 
-                    SettingsSection(settings.appearance.title) {
+                    SettingsSection(verbatim: settings.appearance.title) {
                         colorRow("Surface color", value: $settings.surfaceColor, focus: .surfaceColor)
                             .settingsAnchor("island.surfaceColor")
                         if settings.appearance != .solidBlack {
@@ -1059,7 +1059,7 @@ private struct IslandSettingsPane: View {
     }
 
     private func colorRow(_ title: String, value: Binding<NanoColorValue>, focus target: IslandPreviewFocus) -> some View {
-        SettingsRow(title) {
+        SettingsRow(verbatim: title) {
             ColorPicker(title, selection: Binding(
                 get: { value.wrappedValue.color },
                 set: { value.wrappedValue = NanoColorValue(color: $0) }
@@ -1075,7 +1075,7 @@ private struct IslandSettingsPane: View {
         range: ClosedRange<Double>,
         focus target: IslandPreviewFocus
     ) -> some View {
-        SettingsRow(title) {
+        SettingsRow(verbatim: title) {
             Slider(value: value, in: range) { editing in
                 if editing { focus = target }
             }
@@ -1098,7 +1098,7 @@ private struct IslandSettingsPane: View {
         range: ClosedRange<CGFloat>,
         focus target: IslandPreviewFocus
     ) -> some View {
-        SettingsRow(title) {
+        SettingsRow(verbatim: title) {
             Slider(value: value, in: range, step: 1) { editing in
                 if editing { focus = target }
             }
@@ -1354,9 +1354,9 @@ private struct NotificationSettingsPane: View {
                 ForEach(visibleSources, id: \.self) { source in
                     let needsAccess = source == .system && permissions.missing.contains(.fullDisk)
                     SettingsRow(
-                        source.title,
+                        "\(source.title)",
                         symbol: source.symbol,
-                        subtitle: needsAccess ? "Needs Full Disk Access" : summary(source),
+                        subtitle: needsAccess ? "Needs Full Disk Access" : "\(summary(source))",
                         subtitleIsWarning: needsAccess
                     ) {
                         previewButton(source)
@@ -2360,7 +2360,7 @@ private struct LoginItemRow: View {
     var body: some View {
         SettingsRow(
             "Open at login",
-            subtitle: subtitle,
+            subtitle: "\(subtitle)",
             subtitleIsWarning: loginItem.needsApproval || loginItem.errorMessage != nil
         ) {
             if loginItem.needsApproval {
@@ -2423,7 +2423,7 @@ private struct UpdateStatusRow: View {
     @ObservedObject var checker: NanoUpdateChecker
 
     var body: some View {
-        SettingsRow(title, subtitle: subtitle, subtitleIsWarning: isFailure) {
+        SettingsRow(verbatim: title, subtitle: subtitle, subtitleIsWarning: isFailure) {
             if checker.available != nil {
                 Button("Notes", action: checker.openNotes)
                     .controlSize(.small)

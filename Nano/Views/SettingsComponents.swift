@@ -13,17 +13,18 @@ struct SettingsPage<Content: View>: View {
     var trailing: AnyView?
     @ViewBuilder let content: Content
 
+    /// Literal titles and subtitles are localized (String Catalog).
     init(
-        title: String = "",
+        title: LocalizedStringResource = "",
         symbol: String? = nil,
-        subtitle: String? = nil,
+        subtitle: LocalizedStringResource? = nil,
         link: (title: String, url: URL)? = nil,
         trailing: AnyView? = nil,
         @ViewBuilder content: () -> Content
     ) {
-        self.title = title
+        self.title = String(localized: title)
         self.symbol = symbol
-        self.subtitle = subtitle
+        self.subtitle = subtitle.map { String(localized: $0) }
         self.link = link
         self.trailing = trailing
         self.content = content()
@@ -75,7 +76,20 @@ struct SettingsSection<Content: View>: View {
     @ViewBuilder let content: Content
 
     init(
-        _ title: String? = nil,
+        _ title: LocalizedStringResource? = nil,
+        trailing: LocalizedStringResource? = nil,
+        footer: LocalizedStringResource? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.title = title.map { String(localized: $0) }
+        self.trailing = trailing.map { String(localized: $0) }
+        self.footer = footer.map { String(localized: $0) }
+        self.content = content()
+    }
+
+    /// For text that is already localized or never is (names, counts).
+    init(
+        verbatim title: String?,
         trailing: String? = nil,
         footer: String? = nil,
         @ViewBuilder content: () -> Content
@@ -165,7 +179,24 @@ struct SettingsRow<Trailing: View>: View {
     @ViewBuilder let trailing: Trailing
 
     init(
-        _ title: String,
+        _ title: LocalizedStringResource,
+        symbol: String? = nil,
+        subtitle: LocalizedStringResource? = nil,
+        subtitleIsWarning: Bool = false,
+        @ViewBuilder trailing: () -> Trailing = { EmptyView() }
+    ) {
+        self.init(
+            verbatim: String(localized: title),
+            symbol: symbol,
+            subtitle: subtitle.map { String(localized: $0) },
+            subtitleIsWarning: subtitleIsWarning,
+            trailing: trailing
+        )
+    }
+
+    /// For text that is already localized or never is (names, counts).
+    init(
+        verbatim title: String,
         symbol: String? = nil,
         subtitle: String? = nil,
         subtitleIsWarning: Bool = false,
@@ -212,7 +243,24 @@ struct SettingsToggleRow: View {
     @Binding var isOn: Bool
 
     init(
-        _ title: String,
+        _ title: LocalizedStringResource,
+        symbol: String? = nil,
+        subtitle: LocalizedStringResource? = nil,
+        subtitleIsWarning: Bool = false,
+        isOn: Binding<Bool>
+    ) {
+        self.init(
+            verbatim: String(localized: title),
+            symbol: symbol,
+            subtitle: subtitle.map { String(localized: $0) },
+            subtitleIsWarning: subtitleIsWarning,
+            isOn: isOn
+        )
+    }
+
+    /// For text that is already localized or never is (names, counts).
+    init(
+        verbatim title: String,
         symbol: String? = nil,
         subtitle: String? = nil,
         subtitleIsWarning: Bool = false,
@@ -226,7 +274,7 @@ struct SettingsToggleRow: View {
     }
 
     var body: some View {
-        SettingsRow(title, symbol: symbol, subtitle: subtitle, subtitleIsWarning: subtitleIsWarning) {
+        SettingsRow(verbatim: title, symbol: symbol, subtitle: subtitle, subtitleIsWarning: subtitleIsWarning) {
             Toggle(title, isOn: $isOn)
                 .labelsHidden()
                 .toggleStyle(HeroSwitchToggleStyle(showsLabel: false))
@@ -257,9 +305,9 @@ struct SettingsIconTile: View {
 
 /// Attention strip at the top of a page, for something that blocks features.
 struct SettingsBanner: View {
-    let title: String
-    let detail: String
-    let action: String
+    let title: LocalizedStringResource
+    let detail: LocalizedStringResource
+    let action: LocalizedStringResource
     let perform: () -> Void
 
     var body: some View {

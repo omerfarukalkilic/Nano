@@ -13,10 +13,10 @@ enum AgentAlertEvent: String, CaseIterable, Codable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .approval: "Needs approval"
-        case .question: "Asks a question"
-        case .completion: "Finished"
-        case .usage: "Usage alert"
+        case .approval: String(localized: "Needs approval")
+        case .question: String(localized: "Asks a question")
+        case .completion: String(localized: "Finished")
+        case .usage: String(localized: "Usage alert")
         }
     }
 

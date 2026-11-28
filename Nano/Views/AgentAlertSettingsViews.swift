@@ -21,7 +21,7 @@ struct AgentAlertSettingsSections: View {
                     isOn: $settings.agentAlerts.soundsEnabled
                 )
                 ForEach(Self.soundEvents) { event in
-                    SettingsRow(event.title) {
+                    SettingsRow(verbatim: event.title) {
                         soundControls(for: event)
                     }
                     .disabled(!settings.agentAlerts.soundsEnabled)
@@ -78,7 +78,7 @@ struct AgentAlertSettingsSections: View {
                         "Tell me when it resets",
                         isOn: $settings.agentAlerts.usageResetAlerts
                     )
-                    SettingsRow(AgentAlertEvent.usage.title) {
+                    SettingsRow(verbatim: AgentAlertEvent.usage.title) {
                         soundControls(for: .usage)
                     }
                     .disabled(!settings.agentAlerts.soundsEnabled)

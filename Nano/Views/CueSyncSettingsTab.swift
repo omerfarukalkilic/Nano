@@ -30,7 +30,7 @@ struct CueSyncSettingsTab: View {
                 )
             }
             ForEach(sync.notices, id: \.self) { notice in
-                SettingsBanner(title: "Sync changed", detail: notice, action: "OK") {
+                SettingsBanner(title: "Sync changed", detail: "\(notice)", action: "OK") {
                     sync.dismissNotice(notice)
                 }
             }
@@ -39,9 +39,9 @@ struct CueSyncSettingsTab: View {
                 SettingsSection("Connected") {
                     ForEach(sync.connectedDestinations) { record in
                         SettingsRow(
-                            record.name,
+                            "\(record.name)",
                             symbol: Self.symbol(for: record),
-                            subtitle: statusLine(for: record),
+                            subtitle: "\(statusLine(for: record))",
                             subtitleIsWarning: sync.statuses[record.id]?.error != nil
                         ) {
                             Button("Disconnect") {
@@ -54,7 +54,7 @@ struct CueSyncSettingsTab: View {
                 }
             }
 
-            SettingsSection("Add an app", footer: showsServerForm || showsTodoistForm ? nil : connectError) {
+            SettingsSection("Add an app", footer: showsServerForm || showsTodoistForm ? nil : connectError.map { "\($0)" }) {
                 if !remindersConnected {
                     SettingsRow(
                         "Apple Reminders",

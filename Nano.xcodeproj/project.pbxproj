@@ -161,6 +161,7 @@
 		D5000000000000000000000023 /* LlamaRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = D5000000000000000000000022 /* LlamaRuntime */; };
 		D1000000000000000000000025 /* VoiceDictationBenchmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000000000000000000000025 /* VoiceDictationBenchmark.swift */; };
 		E10000000000000000000001 /* DeviceAnimations in Resources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* DeviceAnimations */; };
+		LOC10000000000000000000001 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC20000000000000000000001 /* Localizable.xcstrings */; };
 		F10000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* Assets.xcassets */; };
 		F10000000000000000000002 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* AppIcon.icon */; };
 		MX10000000000000000000001 /* MixerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = MX20000000000000000000001 /* MixerEngine.swift */; };
@@ -348,6 +349,7 @@
 		D2000000000000000000000024 /* VoiceDictationControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VoiceDictationControllerTests.swift"; sourceTree = "<group>"; };
 		D2000000000000000000000025 /* VoiceDictationBenchmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VoiceDictationBenchmark.swift"; sourceTree = "<group>"; };
 		E20000000000000000000001 /* DeviceAnimations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DeviceAnimations; sourceTree = "<group>"; };
+		LOC20000000000000000000001 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		F20000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F20000000000000000000002 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		MX20000000000000000000001 /* MixerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixerEngine.swift; sourceTree = "<group>"; };
@@ -382,6 +384,7 @@
 				QL2000000000000000000000007 /* Info.plist */,
 				F20000000000000000000001 /* Assets.xcassets */,
 				F20000000000000000000002 /* AppIcon.icon */,
+				LOC20000000000000000000001 /* Localizable.xcstrings */,
 				A20000000000000000000014 /* Nano.entitlements */,
 				A90000000000000000000003 /* App */,
 				A90000000000000000000004 /* Core */,
@@ -445,7 +448,7 @@
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
-			knownRegions = (en, Base, );
+			knownRegions = (en, Base, tr, );
 			mainGroup = A90000000000000000000001;
 			packageReferences = (D5000000000000000000000001 /* XCLocalSwiftPackageReference "Nano/Packages/FluidAudio" */, D5000000000000000000000011 /* XCLocalSwiftPackageReference "Nano/Packages/NanoSpeechRuntimes" */, );
 			productRefGroup = A90000000000000000000008 /* Products */;
@@ -456,7 +459,7 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		AC0000000000000000000001 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (SK1000000000000000000000003 /* silero-vad-unified-256ms-v6.2.1.mlmodelc in Resources */, F10000000000000000000001 /* Assets.xcassets in Resources */, F10000000000000000000002 /* AppIcon.icon in Resources */, E10000000000000000000001 /* DeviceAnimations in Resources */, 0B30000000000000000000A1 /* Onboarding in Resources */, BF0000000000000000000001 /* nano-opencode-plugin.js in Resources */, BF0000000000000000000014 /* nano-pi-extension.ts in Resources */, BF0000000000000000000010 /* nano-cursor-jump-package.json in Resources */, BF0000000000000000000012 /* nano-cursor-jump-extension.js in Resources */, B30000000000000000000000 /* agent-claude.png in Resources */, B30000000000000000000001 /* agent-codex.png in Resources */, B30000000000000000000002 /* agent-cursor.png in Resources */, B30000000000000000000004 /* agent-kimi.png in Resources */, B30000000000000000000005 /* agent-gemini.png in Resources */, B30000000000000000000006 /* agent-grok.png in Resources */, B30000000000000000000007 /* agent-opencode.png in Resources */, B30000000000000000000008 /* agent-pi.png in Resources */, B50000000000000000000009 /* agent-devin.png in Resources */, B5000000000000000000000A /* agent-cline.png in Resources */, B5000000000000000000000B /* agent-qwen.png in Resources */, B5000000000000000000000C /* agent-kilo.png in Resources */, B5000000000000000000000D /* agent-goose.png in Resources */, CS100000000000000000000B /* cue-sync.md in Resources */, ); runOnlyForDeploymentPostprocessing = 0; };
+		AC0000000000000000000001 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (LOC10000000000000000000001 /* Localizable.xcstrings in Resources */, SK1000000000000000000000003 /* silero-vad-unified-256ms-v6.2.1.mlmodelc in Resources */, F10000000000000000000001 /* Assets.xcassets in Resources */, F10000000000000000000002 /* AppIcon.icon in Resources */, E10000000000000000000001 /* DeviceAnimations in Resources */, 0B30000000000000000000A1 /* Onboarding in Resources */, BF0000000000000000000001 /* nano-opencode-plugin.js in Resources */, BF0000000000000000000014 /* nano-pi-extension.ts in Resources */, BF0000000000000000000010 /* nano-cursor-jump-package.json in Resources */, BF0000000000000000000012 /* nano-cursor-jump-extension.js in Resources */, B30000000000000000000000 /* agent-claude.png in Resources */, B30000000000000000000001 /* agent-codex.png in Resources */, B30000000000000000000002 /* agent-cursor.png in Resources */, B30000000000000000000004 /* agent-kimi.png in Resources */, B30000000000000000000005 /* agent-gemini.png in Resources */, B30000000000000000000006 /* agent-grok.png in Resources */, B30000000000000000000007 /* agent-opencode.png in Resources */, B30000000000000000000008 /* agent-pi.png in Resources */, B50000000000000000000009 /* agent-devin.png in Resources */, B5000000000000000000000A /* agent-cline.png in Resources */, B5000000000000000000000B /* agent-qwen.png in Resources */, B5000000000000000000000C /* agent-kilo.png in Resources */, B5000000000000000000000D /* agent-goose.png in Resources */, CS100000000000000000000B /* cue-sync.md in Resources */, ); runOnlyForDeploymentPostprocessing = 0; };
 		AC0000000000000000000002 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXResourcesBuildPhase section */
 

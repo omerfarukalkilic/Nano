@@ -475,7 +475,7 @@ struct VoiceDictationSettingsPane: View {
         case .missingModels where currentTab == .setup:
             EmptyView()
         case .missingModels:
-            SettingsBanner(title: readinessTitle, detail: "Download it in Setup, or pick another engine", action: "Open Setup") {
+            SettingsBanner(title: "\(readinessTitle)", detail: "Download it in Setup, or pick another engine", action: "Open Setup") {
                 tab = .setup
                 engineExpandedChoice = true
             }
@@ -484,14 +484,14 @@ struct VoiceDictationSettingsPane: View {
                 controller.requestMicrophoneAccess()
             }
         case .microphoneDenied:
-            SettingsBanner(title: readinessTitle, detail: "Turn on Nano in Privacy & Security, Microphone", action: "Open Settings") {
+            SettingsBanner(title: "\(readinessTitle)", detail: "Turn on Nano in Privacy & Security, Microphone", action: "Open Settings") {
                 if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone") {
                     NSWorkspace.shared.open(url)
                 }
             }
         case .ready, .disabled:
             if let problem = controller.hotkeyProblem {
-                SettingsBanner(title: "The shortcut isn't working", detail: problem, action: "Open Setup") { tab = .setup }
+                SettingsBanner(title: "The shortcut isn't working", detail: "\(problem)", action: "Open Setup") { tab = .setup }
             } else if !controller.canPasteAutomatically {
                 SettingsBanner(
                     title: "Quill copies but can't paste",
@@ -517,7 +517,7 @@ struct VoiceDictationSettingsPane: View {
                 ? "S1-mini cleans English. If cleanup would drop a “not” or invent a number, Quill keeps your words."
                 : "\(settings.voiceDictationEngine.title) writes text as heard. Styles need Parakeet + S1-mini."
         ) {
-            SettingsRow("Cleanup", symbol: "wand.and.stars", subtitle: settings.voiceDictationCleanupLevel.shortDetail) {
+            SettingsRow("Cleanup", symbol: "wand.and.stars", subtitle: "\(settings.voiceDictationCleanupLevel.shortDetail)") {
                 Picker("Cleanup", selection: $settings.voiceDictationCleanupLevel) {
                     ForEach(VoiceDictationCleanupLevel.allCases) { level in
                         Text(level.title).tag(level)
@@ -1018,7 +1018,7 @@ struct VoiceDictationSettingsPane: View {
                     SettingsRow(
                         "Start and finish",
                         symbol: "record.circle",
-                        subtitle: sketchHotkeyCapture.isCapturing ? "Press the new shortcut, or Esc to cancel" : controller.sketchHotkeyProblem,
+                        subtitle: sketchHotkeyCapture.isCapturing ? LocalizedStringResource("Press the new shortcut, or Esc to cancel") : controller.sketchHotkeyProblem.map { "\($0)" },
                         subtitleIsWarning: controller.sketchHotkeyProblem != nil
                     ) {
                         shortcutButton(sketchHotkeyCapture, value: settings.voiceDictationSketchHotkey, defaultValue: .sketchDefault) {
@@ -1137,7 +1137,7 @@ struct VoiceDictationSettingsPane: View {
                     settings.voiceDictationHotkey = $0
                 }
             }
-            SettingsRow("Mode", symbol: "hand.tap", subtitle: settings.voiceDictationActivationMode.detail) {
+            SettingsRow("Mode", symbol: "hand.tap", subtitle: "\(settings.voiceDictationActivationMode.detail)") {
                 Picker("Mode", selection: $settings.voiceDictationActivationMode) {
                     ForEach(VoiceDictationActivationMode.allCases) { mode in
                         Text(mode.title).tag(mode)
@@ -1157,7 +1157,7 @@ struct VoiceDictationSettingsPane: View {
 
     private var engineSection: some View {
         SettingsSection("Engine", footer: "Nothing downloads until you ask. Every file is checked against a pinned checksum.") {
-            SettingsRow(settings.voiceDictationEngine.title, symbol: "waveform", subtitle: engineStatus) {
+            SettingsRow(verbatim: settings.voiceDictationEngine.title, symbol: "waveform", subtitle: engineStatus) {
                 if controller.readiness == .ready, controller.loadedEngine != settings.voiceDictationEngine, !controller.isLoadingEngine {
                     Button("Load now") { controller.warmEngineIfNeeded() }
                         .controlSize(.small)
@@ -1172,7 +1172,7 @@ struct VoiceDictationSettingsPane: View {
                 .controlSize(.small)
             }
             if let error = controller.modelManagementError {
-                SettingsRow(error, symbol: "exclamationmark.triangle", subtitleIsWarning: true)
+                SettingsRow(verbatim: error, symbol: "exclamationmark.triangle", subtitleIsWarning: true)
             }
             if isEngineExpanded {
                 VStack(alignment: .leading, spacing: 0) {

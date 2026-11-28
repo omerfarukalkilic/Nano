@@ -1,0 +1,865 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    " " : {
+
+    },
+    " %@ times. Leave it out from now on?" : {
+
+    },
+    " %@ times. Remember it?" : {
+
+    },
+    " across %@ %@. You finished " : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : " across %1$@ %2$@. You finished "
+          }
+        }
+      }
+    },
+    " and deleted what came before it %@ times. Treat it as changing your mind?" : {
+
+    },
+    " and saved " : {
+
+    },
+    " of typing." : {
+
+    },
+    " this week." : {
+
+    },
+    " to " : {
+
+    },
+    "·" : {
+
+    },
+    "· %@" : {
+
+    },
+    "· %@ from Nano" : {
+
+    },
+    "· worktree" : {
+
+    },
+    "“%@”" : {
+
+    },
+    "“%@” means a change of mind" : {
+
+    },
+    "\"hooks\": {" : {
+
+    },
+    "\"Make this button the main one\"" : {
+
+    },
+    "\"Remind me to tag the release\"" : {
+
+    },
+    "[Sketch 0:42 · video and screenshots in ~/Library/Caches/Nano/Sketches/…]\n- #1 (0:03) “This button is misaligned.”\n- #2 (0:09) [clicked] “Now the menu opens under it.”\n- #3 (0:15) “[1] This header [2] and this one should be bold.”" : {
+
+    },
+    "}" : {
+
+    },
+    "%@" : {
+
+    },
+    "%@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@ (has a microphone)" : {
+
+    },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "%@ active" : {
+
+    },
+    "%@ done" : {
+
+    },
+    "%@ effort levels" : {
+
+    },
+    "%@ hidden · Show" : {
+
+    },
+    "%@ is new on this Mac" : {
+
+    },
+    "%@ min" : {
+
+    },
+    "%@ min in" : {
+
+    },
+    "%@ more" : {
+
+    },
+    "%@ more %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ more %2$@"
+          }
+        }
+      }
+    },
+    "%@ of %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ of %2$@"
+          }
+        }
+      }
+    },
+    "%@ of %@ added" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ of %2$@ added"
+          }
+        }
+      }
+    },
+    "%@ of %@ goals" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ of %2$@ goals"
+          }
+        }
+      }
+    },
+    "%@ open" : {
+
+    },
+    "%@ options" : {
+
+    },
+    "%@ pt" : {
+
+    },
+    "%@ tokens" : {
+
+    },
+    "%@ unpriced" : {
+
+    },
+    "%@ words" : {
+
+    },
+    "%@ working" : {
+
+    },
+    "%@." : {
+
+    },
+    "%@. It keeps going after setup." : {
+
+    },
+    "%@/%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@/%2$@"
+          }
+        }
+      }
+    },
+    "%@%%" : {
+
+    },
+    "%@%% used" : {
+
+    },
+    "↑↓ to move, ↩ to open" : {
+
+    },
+    "↩" : {
+
+    },
+    "+" : {
+
+    },
+    "+ Nano's hook, next to your own entries" : {
+
+    },
+    "+%@" : {
+
+    },
+    "+%@ more" : {
+
+    },
+    "+%@ more step%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "+%1$@ more step%2$@"
+          }
+        }
+      }
+    },
+    "×%@" : {
+
+    },
+    "−%@" : {
+
+    },
+    "⌃⌥C captures a to-do, prompt, or screenshot" : {
+
+    },
+    "⌃⌥C to capture" : {
+
+    },
+    "$ " : {
+
+    },
+    "1 of %@" : {
+
+    },
+    "3 left" : {
+
+    },
+    "41%" : {
+
+    },
+    "84%" : {
+
+    },
+    "A one-time tip on Ko-fi helps me keep building Nano and the other tools I make. It's never needed, and Nano works exactly the same either way, but every tip is greatly appreciated." : {
+
+    },
+    "A project's own Claude settings can replace this status line." : {
+
+    },
+    "A short setup. Pick what you want, skip the rest." : {
+
+    },
+    "A test request is waiting in the %@. Press Allow or Deny. Nothing will run." : {
+
+    },
+    "Add app…" : {
+
+    },
+    "Adding hook…" : {
+
+    },
+    "Adds Nano's hooks to %@" : {
+
+    },
+    "Agent updates stay for six seconds. Approvals and questions stay until you answer." : {
+
+    },
+    "Agents Nano didn't find on this Mac aren't listed. Codex may ask you to approve new hooks with /hooks before it sends events." : {
+
+    },
+    "AirPods Pro" : {
+
+    },
+    "All" : {
+
+    },
+    "ALL DAY" : {
+
+    },
+    "Also heard as (optional)" : {
+
+    },
+    "An entry for one app overrides an all-apps entry with the same phrase there." : {
+
+    },
+    "API" : {
+
+    },
+    "API-equivalent estimate, not your subscription bill." : {
+
+    },
+    "Applies in" : {
+
+    },
+    "APPS" : {
+
+    },
+    "Automatic" : {
+
+    },
+    "Banner setup needed for %@" : {
+
+    },
+    "Battery" : {
+
+    },
+    "Battery status is available on portable Macs." : {
+
+    },
+    "Calls" : {
+
+    },
+    "Changed %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Changed %1$@ %2$@"
+          }
+        }
+      }
+    },
+    "Charging" : {
+
+    },
+    "Claude configuration folder" : {
+
+    },
+    "Claude finished" : {
+
+    },
+    "Claude usage" : {
+
+    },
+    "Click a highlighted slot to place %@." : {
+
+    },
+    "Connect agents to Nano" : {
+
+    },
+    "Connect it to see its sessions, usage, and approvals on the island." : {
+
+    },
+    "Connect them to answer approvals and questions from the notch." : {
+
+    },
+    "Connect…" : {
+
+    },
+    "Connected" : {
+
+    },
+    "Connected." : {
+
+    },
+    "Details" : {
+
+    },
+    "Dismiss" : {
+
+    },
+    "Download stopped" : {
+
+    },
+    "Drag a file to the notch" : {
+
+    },
+    "Drag a file, link, or image onto the notch" : {
+
+    },
+    "Drag Nano into the list" : {
+
+    },
+    "Drag to reorder" : {
+
+    },
+    "Drop a project folder here to link it, or" : {
+
+    },
+    "Drop to save as a cue" : {
+
+    },
+    "empty" : {
+
+    },
+    "Enable Calendar" : {
+
+    },
+    "Every app comes through. Mute an app here or from a card in the Notifications history." : {
+
+    },
+    "Every app that plays sound gets its own slider" : {
+
+    },
+    "FaceTime and iPhone calls show who is ringing while the macOS banner is up. Answer or decline on that banner; macOS gives no other way to do it. Tap the card to open FaceTime. Add FaceTime or Phone to Muted apps below to turn this off." : {
+
+    },
+    "Features" : {
+
+    },
+    "Features only appear in the slot sizes they're designed for. To remove one, click its ×." : {
+
+    },
+    "File   Edit   View" : {
+
+    },
+    "Finder" : {
+
+    },
+    "Finish" : {
+
+    },
+    "Focus done" : {
+
+    },
+    "Free and open source. No account, no analytics." : {
+
+    },
+    "Give every app its own volume" : {
+
+    },
+    "Heard “%@”" : {
+
+    },
+    "Hold %@ and speak. Nano counts words and time, never the words themselves." : {
+
+    },
+    "Hover me anytime." : {
+
+    },
+    "Hover me to start" : {
+
+    },
+    "Hover the %@ to see how much of each agent's limit is left and when it resets." : {
+
+    },
+    "If Nano saves you time, you can buy me a coffee" : {
+
+    },
+    "iMessage" : {
+
+    },
+    "In the last 7 days you spoke " : {
+
+    },
+    "Included" : {
+
+    },
+    "Insights keep counts only: words, seconds, and the app you dictated into. Never your words. Stored on this Mac." : {
+
+    },
+    "Insights start with your first dictation" : {
+
+    },
+    "It waits here until you need it" : {
+
+    },
+    "Its cues move to the Inbox. The folder's name, color and project link are lost." : {
+
+    },
+    "ko-fi.com/valenxi" : {
+
+    },
+    "Language" : {
+
+    },
+    "Last 14 days" : {
+
+    },
+    "Last call: %@ · %@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Last call: %1$@ · %2$@ · %3$@"
+          }
+        }
+      }
+    },
+    "Last played on %@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Last played on %1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "Last transcript" : {
+
+    },
+    "Leave out “%@”" : {
+
+    },
+    "Less" : {
+
+    },
+    "Linked folder not found: %@" : {
+
+    },
+    "List API rates — plans already cover this." : {
+
+    },
+    "Longest %@" : {
+
+    },
+    "Look up. Try it." : {
+
+    },
+    "macOS notifications, volume, brightness, Bluetooth, charging, and agents appear here after they land on the island." : {
+
+    },
+    "macOS will ask to let Nano access system audio. Audio is adjusted live in memory and never saved or sent." : {
+
+    },
+    "Maya: dinner at 8?" : {
+
+    },
+    "Microphone" : {
+
+    },
+    "More" : {
+
+    },
+    "Mute" : {
+
+    },
+    "Muted" : {
+
+    },
+    "Muted apps" : {
+
+    },
+    "nano" : {
+
+    },
+    "Nano" : {
+
+    },
+    "Nano %@ is available" : {
+
+    },
+    "Nano adds a small hook to each agent's settings so approvals, questions, and finished turns reach the island. Nothing else in these files changes, and shared files are backed up first." : {
+
+    },
+    "Nano adds a status line to %@. If you already have one, it keeps running. Turn Claude usage off to remove Nano's." : {
+
+    },
+    "Nano backs up each file first. Disconnect removes these lines." : {
+
+    },
+    "Nano couldn't write these files. Check they aren't read-only, then try again." : {
+
+    },
+    "Nano notices the change by itself." : {
+
+    },
+    "Nano removes only its own entries and plugins. Running agents may need restarting. Sessions are still found without hooks." : {
+
+    },
+    "Nano removes only its own hook for %@. A running session may need restarting. It's still found without the hook." : {
+
+    },
+    "Nano works with Claude Code, Codex, Cursor, Gemini and others. Install one and it shows up here." : {
+
+    },
+    "Needs you" : {
+
+    },
+    "No agents found on this Mac" : {
+
+    },
+    "No app matches." : {
+
+    },
+    "No battery" : {
+
+    },
+    "No call banner seen yet" : {
+
+    },
+    "No cues yet" : {
+
+    },
+    "No goals were set for this session." : {
+
+    },
+    "No settings match “%@”." : {
+
+    },
+    "No supported agents found on this Mac yet. Connect one later from Settings › Agents." : {
+
+    },
+    "No token history for this range" : {
+
+    },
+    "No tokens banked for this range." : {
+
+    },
+    "None of the agents Nano supports are installed on this Mac yet." : {
+
+    },
+    "Not installed yet? Connect later from Settings › Agents." : {
+
+    },
+    "Nothing dictated in the last 7 days." : {
+
+    },
+    "Nothing held" : {
+
+    },
+    "Nothing queued" : {
+
+    },
+    "Nothing running" : {
+
+    },
+    "Nothing scheduled" : {
+
+    },
+    "Nothing yet this month." : {
+
+    },
+    "now" : {
+
+    },
+    "One term per line or separated by commas. Write “spoken → written” to change how a phrase comes out, like “cloud code → Claude Code”." : {
+
+    },
+    "Only features that are turned on appear here." : {
+
+    },
+    "Only for widgets you added" : {
+
+    },
+    "Open at login" : {
+
+    },
+    "Open by folder" : {
+
+    },
+    "Open the full view to grant local access." : {
+
+    },
+    "Optional" : {
+
+    },
+    "Pages" : {
+
+    },
+    "Partial" : {
+
+    },
+    "Paste a list" : {
+
+    },
+    "Play something and it shows up here." : {
+
+    },
+    "Quill can get better" : {
+
+    },
+    "Quill download" : {
+
+    },
+    "Quill, optional" : {
+
+    },
+    "Ready" : {
+
+    },
+    "Recent" : {
+
+    },
+    "Recently seen" : {
+
+    },
+    "Redo as" : {
+
+    },
+    "Requests from these agents show up in the %@, the same way as the test." : {
+
+    },
+    "resets %@" : {
+
+    },
+    "Right now" : {
+
+    },
+    "Scroll for the rest" : {
+
+    },
+    "Session Goals" : {
+
+    },
+    "Set up later keeps a checklist in Settings, with Replay setup." : {
+
+    },
+    "Shows your 5-hour and weekly limits. Nano reads them from Claude Code's status line, or signs in with your Claude Code credentials and asks Anthropic. It stores only the percentages and reset times." : {
+
+    },
+    "Snippet text" : {
+
+    },
+    "Start an agent and it shows up here." : {
+
+    },
+    "Subagent of %@" : {
+
+    },
+    "System output (%@)" : {
+
+    },
+    "Term" : {
+
+    },
+    "Test" : {
+
+    },
+    "The current output device does not expose a master volume." : {
+
+    },
+    "Their images are deleted too. Open cues aren't touched." : {
+
+    },
+    "Then turn it on. Nano reopens when macOS asks." : {
+
+    },
+    "This month" : {
+
+    },
+    "Thu 9:41" : {
+
+    },
+    "Tip: in System Settings → Notifications, set an app's alert style to None but keep Allow Notifications on. macOS still records it, so it reaches the island without a second banner." : {
+
+    },
+    "to" : {
+
+    },
+    "Today" : {
+
+    },
+    "Totals, streaks, and app counts are cleared. Your dictionary and settings stay." : {
+
+    },
+    "Trigger phrase" : {
+
+    },
+    "Unavailable" : {
+
+    },
+    "Unpriced" : {
+
+    },
+    "Up next" : {
+
+    },
+    "Usage limits too" : {
+
+    },
+    "Verifying…" : {
+
+    },
+    "Version %@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Version %1$@ (%2$@)"
+          }
+        }
+      }
+    },
+    "Volume is set on the device" : {
+
+    },
+    "Waiting for your answer" : {
+
+    },
+    "What you save" : {
+
+    },
+    "Where should Nano live?" : {
+
+    },
+    "Where you dictate" : {
+
+    },
+    "Won't fit here" : {
+
+    },
+    "Worked out from your cues on this Mac. Nothing is uploaded." : {
+
+    },
+    "You changed " : {
+
+    },
+    "You changed “%@” to “%@” %@. Write it that way from now on?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "You changed “%1$@” to “%2$@” %3$@. Write it that way from now on?"
+          }
+        }
+      }
+    },
+    "You deleted " : {
+
+    },
+    "You deleted “%@” %@. Leave it out from now on?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "You deleted “%1$@” %2$@. Leave it out from now on?"
+          }
+        }
+      }
+    },
+    "You said " : {
+
+    },
+    "You said “%@” and deleted what came before it %@. Treat it as changing your mind?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "You said “%1$@” and deleted what came before it %2$@. Treat it as changing your mind?"
+          }
+        }
+      }
+    },
+    "You're set." : {
+
+    },
+    "Your current layout is replaced." : {
+
+    },
+    "Your dashboard is empty." : {
+
+    }
+  },
+  "version" : "1.0"
+}

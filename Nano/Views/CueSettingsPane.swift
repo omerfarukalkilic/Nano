@@ -558,7 +558,7 @@ private struct CueCaptureTab: View {
                 SettingsRow(
                     "Keyboard shortcut",
                     symbol: "keyboard",
-                    subtitle: shortcutDetail,
+                    subtitle: "\(shortcutDetail)",
                     subtitleIsWarning: viewModel.cueQuickCaptureError != nil || shortcutClashes
                 ) {
                     if settings.cueQuickCaptureEnabled {
@@ -614,7 +614,7 @@ private struct CueCaptureTab: View {
             SettingsSection("Library") {
                 SettingsRow(
                     "\(store.totalOpenCount) open, \(store.doneCount) done, \(store.folders.count) folder\(store.folders.count == 1 ? "" : "s")",
-                    subtitle: librarySize.map { ByteCountFormatter.string(fromByteCount: $0, countStyle: .file) + " including screenshots" }
+                    subtitle: librarySize.map { "\(ByteCountFormatter.string(fromByteCount: $0, countStyle: .file)) including screenshots" }
                 ) {
                     Button("Show in Finder") { store.reveal() }
                         .controlSize(.small)
@@ -623,7 +623,7 @@ private struct CueCaptureTab: View {
                         .disabled(store.doneCount == 0)
                 }
                 if let error = store.errorMessage {
-                    SettingsRow(error, symbol: "exclamationmark.triangle")
+                    SettingsRow(verbatim: error, symbol: "exclamationmark.triangle")
                         .foregroundStyle(.orange)
                 }
             }

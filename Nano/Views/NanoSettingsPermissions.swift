@@ -356,9 +356,9 @@ struct PermissionsSettingsPane: View {
             symbol: "hand.raised",
             subtitle: "What Nano can reach on this Mac. Nothing it reads leaves it."
         ) {
-            SettingsSection(trailing: monitor.summary) {
+            SettingsSection(trailing: "\(monitor.summary)") {
                 ForEach(monitor.rows, id: \.kind) { row in
-                    SettingsRow(row.kind.title, symbol: row.kind.symbol, subtitle: row.kind.detail) {
+                    SettingsRow(verbatim: row.kind.title, symbol: row.kind.symbol, subtitle: row.kind.detail) {
                         status(row.kind, row.state)
                     }
                     .opacity(row.state == .unavailable ? 0.5 : 1)
