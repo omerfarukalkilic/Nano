@@ -130,8 +130,13 @@ struct AgentAlertPreferences: Codable, Equatable, Sendable {
     var quietWhenMicrophoneInUse = true
     var remindersEnabled = false
     var reminderMinutes = 2
+    var usageAlertsEnabled = true
+    /// Percent used at which a usage window is announced.
+    var usageThreshold = 80
+    var usageResetAlerts = true
 
     static let reminderChoices = [1, 2, 3, 5]
+    static let usageThresholdChoices = [50, 70, 80, 90]
     static let maximumReminders = 3
 
     init() {}
@@ -153,6 +158,7 @@ struct AgentAlertPreferences: Codable, Equatable, Sendable {
     private enum CodingKeys: String, CodingKey {
         case soundsEnabled, sounds, quietSchedule, quietWhenScreenLocked
         case quietWhenMicrophoneInUse, remindersEnabled, reminderMinutes
+        case usageAlertsEnabled, usageThreshold, usageResetAlerts
     }
 
     init(from decoder: Decoder) throws {
@@ -168,6 +174,10 @@ struct AgentAlertPreferences: Codable, Equatable, Sendable {
         remindersEnabled = try container.decodeIfPresent(Bool.self, forKey: .remindersEnabled) ?? defaults.remindersEnabled
         let minutes = try container.decodeIfPresent(Int.self, forKey: .reminderMinutes) ?? defaults.reminderMinutes
         reminderMinutes = Self.reminderChoices.contains(minutes) ? minutes : defaults.reminderMinutes
+        usageAlertsEnabled = try container.decodeIfPresent(Bool.self, forKey: .usageAlertsEnabled) ?? defaults.usageAlertsEnabled
+        let threshold = try container.decodeIfPresent(Int.self, forKey: .usageThreshold) ?? defaults.usageThreshold
+        usageThreshold = Self.usageThresholdChoices.contains(threshold) ? threshold : defaults.usageThreshold
+        usageResetAlerts = try container.decodeIfPresent(Bool.self, forKey: .usageResetAlerts) ?? defaults.usageResetAlerts
     }
 
     func encode(to encoder: Encoder) throws {
@@ -179,6 +189,87 @@ struct AgentAlertPreferences: Codable, Equatable, Sendable {
         try container.encode(quietWhenMicrophoneInUse, forKey: .quietWhenMicrophoneInUse)
         try container.encode(remindersEnabled, forKey: .remindersEnabled)
         try container.encode(reminderMinutes, forKey: .reminderMinutes)
+        try container.encode(usageAlertsEnabled, forKey: .usageAlertsEnabled)
+        try container.encode(usageThreshold, forKey: .usageThreshold)
+        try container.encode(usageResetAlerts, forKey: .usageResetAlerts)
+    }
+}
+
+// MARK: - Usage alerts
+
+/// A usage window crossing the user's threshold, or coming back after it did.
+struct AgentUsageAlert: Equatable, Sendable {
+    enum Kind: String, Equatable, Sendable {
+        case threshold
+        case reset
+    }
+
+    let kind: Kind
+    let provider: AgentProviderID
+    let window: NanoUsageWindow
+
+    var key: String { AgentUsageAlertTracker.key(provider: provider, windowID: window.id) }
+}
+
+/// Decides which usage windows to announce, once per reset period.
+///
+/// Stored between launches so a window already announced is not announced
+/// again when Nano restarts.
+struct AgentUsageAlertTracker: Codable, Equatable, Sendable {
+    struct Entry: Codable, Equatable, Sendable {
+        var alerted = false
+        /// The reset time of the period that was announced, when known.
+        var alertedResetsAt: Double?
+        var lastUsed: Double = 0
+    }
+
+    var entries: [String: Entry] = [:]
+
+    /// Providers report a period's end with a few seconds of drift between
+    /// fetches (Codex sends seconds-until-reset); periods are hours apart.
+    static let periodTolerance: TimeInterval = 15 * 60
+    /// Usage this far under the threshold counts as a new period when the
+    /// window has no reset time.
+    static let rearmMargin: Double = 10
+    /// A drop this large counts as a reset even with no reset time.
+    static let resetDrop: Double = 20
+
+    static func key(provider: AgentProviderID, windowID: String) -> String {
+        "\(provider.rawValue)|\(windowID)"
+    }
+
+    mutating func evaluate(_ windows: [(AgentProviderID, NanoUsageWindow)], threshold: Double) -> [AgentUsageAlert] {
+        var alerts: [AgentUsageAlert] = []
+        for (provider, window) in windows {
+            let key = Self.key(provider: provider, windowID: window.id)
+            var entry = entries[key] ?? Entry()
+            let used = window.usedPercent
+            let resetsAt = window.resetsAt?.timeIntervalSince1970
+            if entry.alerted {
+                let periodAdvanced = resetsAt.flatMap { new in
+                    entry.alertedResetsAt.map { new - $0 > Self.periodTolerance }
+                } ?? false
+                let dropped = used < threshold
+                    && (entry.lastUsed - used >= Self.resetDrop || used < threshold - Self.rearmMargin)
+                if (periodAdvanced && used < threshold) || dropped {
+                    entry.alerted = false
+                    entry.alertedResetsAt = nil
+                    alerts.append(AgentUsageAlert(kind: .reset, provider: provider, window: window))
+                } else if periodAdvanced {
+                    // A new period that is already past the line.
+                    entry.alertedResetsAt = resetsAt
+                    alerts.append(AgentUsageAlert(kind: .threshold, provider: provider, window: window))
+                }
+            }
+            if !entry.alerted, used >= threshold {
+                entry.alerted = true
+                entry.alertedResetsAt = resetsAt
+                alerts.append(AgentUsageAlert(kind: .threshold, provider: provider, window: window))
+            }
+            entry.lastUsed = used
+            entries[key] = entry
+        }
+        return alerts
     }
 }
 
@@ -286,6 +377,10 @@ final class AgentAlertCenter {
     private let probe: AgentQuietProbing
     private let now: () -> Date
     private let sleep: (TimeInterval) async -> Void
+    private let presentUsage: (AgentUsageAlert) -> Void
+    private let usageStore: UserDefaults?
+    private var usageTracker: AgentUsageAlertTracker
+    static let usageStateKey = "agents.usageAlertState"
 
     /// Requests already announced, so a card shown again (a reminder, a
     /// redelivered hook) does not sound twice.
@@ -299,7 +394,9 @@ final class AgentAlertCenter {
         player: AgentSoundPlaying = SystemAgentSoundPlayer(),
         probe: AgentQuietProbing = SystemAgentQuietProbe(),
         now: @escaping () -> Date = Date.init,
-        sleep: @escaping (TimeInterval) async -> Void = { try? await Task.sleep(nanoseconds: UInt64($0 * 1_000_000_000)) }
+        sleep: @escaping (TimeInterval) async -> Void = { try? await Task.sleep(nanoseconds: UInt64($0 * 1_000_000_000)) },
+        presentUsage: @escaping (AgentUsageAlert) -> Void = { _ in },
+        usageStore: UserDefaults? = .standard
     ) {
         self.preferences = preferences
         self.isPending = isPending
@@ -308,6 +405,29 @@ final class AgentAlertCenter {
         self.probe = probe
         self.now = now
         self.sleep = sleep
+        self.presentUsage = presentUsage
+        self.usageStore = usageStore
+        usageTracker = usageStore?.data(forKey: Self.usageStateKey)
+            .flatMap { try? JSONDecoder().decode(AgentUsageAlertTracker.self, from: $0) }
+            ?? AgentUsageAlertTracker()
+    }
+
+    /// Called after a usage refresh. Announces windows past the threshold
+    /// and, if wanted, windows that reset after being announced.
+    func usageDidRefresh(_ snapshots: [AgentProviderSnapshot]) {
+        let preferences = preferences()
+        guard preferences.usageAlertsEnabled else { return }
+        let windows = snapshots
+            .filter { $0.isConfigured && $0.hasQuota }
+            .flatMap { snapshot in snapshot.usage.map { (snapshot.id, $0) } }
+        let alerts = usageTracker.evaluate(windows, threshold: Double(preferences.usageThreshold))
+            .filter { $0.kind == .threshold || preferences.usageResetAlerts }
+        if let data = try? JSONEncoder().encode(usageTracker) {
+            usageStore?.set(data, forKey: Self.usageStateKey)
+        }
+        guard !alerts.isEmpty else { return }
+        alerts.forEach(presentUsage)
+        play(.usage)
     }
 
     func didPresent(_ attention: IslandAgentAttention) {
